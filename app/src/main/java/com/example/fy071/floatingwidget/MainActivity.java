@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements
         //读取SharedPreference
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         isWidgetEnabled =sharedPreferences.getBoolean(KEY_ENABLE_WIDGET,false);
-        Log.d(TAG, "onCreate: "+isWidgetEnabled);
         if(isWidgetEnabled){
             enableWidget();
         }
@@ -121,9 +120,9 @@ public class MainActivity extends AppCompatActivity implements
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                     Uri.parse("package:" + getPackageName()));
+            Toast.makeText(this, "Please grant permission", Toast.LENGTH_SHORT).show();
             startActivityForResult(intent, CODE_DRAW_OVER_OTHER_APP_PERMISSION);
         } else {
-            Log.d(TAG, "enableWidget: enabled");
             startService(new Intent(MainActivity.this, FloatingViewService.class));
         }
     }
@@ -144,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements
         if(s.equals(KEY_ENABLE_WIDGET)){
             isWidgetEnabled = sharedPreferences.getBoolean(MainActivity.KEY_ENABLE_WIDGET, false);
             if(isWidgetEnabled){
-                startService(new Intent(this,FloatingViewService.class));
+                enableWidget();
             } else {
                 stopService(new Intent(this, FloatingViewService.class));
             }
