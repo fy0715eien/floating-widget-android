@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements
 
 
         //读取SharedPreference
-        sharedPreferences=getPreferences(MODE_PRIVATE);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         isWidgetEnabled =sharedPreferences.getBoolean(KEY_ENABLE_WIDGET,false);
         Log.d(TAG, "onCreate: "+isWidgetEnabled);
         if(isWidgetEnabled){
@@ -122,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements
                     Uri.parse("package:" + getPackageName()));
             startActivityForResult(intent, CODE_DRAW_OVER_OTHER_APP_PERMISSION);
         } else {
+            Log.d(TAG, "enableWidget: enabled");
             startService(new Intent(MainActivity.this, FloatingViewService.class));
         }
     }
@@ -139,14 +141,13 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
-        Log.d(TAG, "onSharedPreferenceChanged: "+s);
         if(s.equals(KEY_ENABLE_WIDGET)){
-            Log.d(TAG, "onSharedPreferenceChanged: checkbox changed");
-            boolean isWidgetEnabled=sharedPreferences.getBoolean(MainActivity.KEY_ENABLE_WIDGET,false);
+            isWidgetEnabled = sharedPreferences.getBoolean(MainActivity.KEY_ENABLE_WIDGET, false);
             if(isWidgetEnabled){
                 startService(new Intent(this,FloatingViewService.class));
+            } else {
+                stopService(new Intent(this, FloatingViewService.class));
             }
-            stopService(new Intent(this,FloatingViewService.class));
         }
     }
 }
