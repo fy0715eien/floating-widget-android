@@ -7,6 +7,7 @@
     android:orientation="vertical"
     tools:context="com.example.fy071.floatingwidget.MainActivity">
 <include layout="@layout/layout_toolbar"/>
-<include layout="@layout/fragment_config"/>
+
+    <include layout="@layout/fragment_content" />
 
 </LinearLayout>
