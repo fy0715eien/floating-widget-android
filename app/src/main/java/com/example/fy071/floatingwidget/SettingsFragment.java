@@ -5,10 +5,10 @@ import android.os.Bundle;
 import android.preference.PreferenceFragment;
 
 
-public class ConfigFragment extends PreferenceFragment {
-    private static final String TAG = "ConfigFragment";
+public class SettingsFragment extends PreferenceFragment {
+    private static final String TAG = "SettingsFragment";
 
-    public ConfigFragment() {
+    public SettingsFragment() {
         // Required empty public constructor
     }
 
