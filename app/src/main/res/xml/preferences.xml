@@ -6,35 +6,37 @@
         <SwitchPreference
             android:defaultValue="false"
             android:key="enable_widget"
+            android:summaryOff="Disabled"
+            android:summaryOn="Enabled"
             android:title="Enable widget" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Pet profile">
 
         <EditTextPreference
             android:defaultValue="Pet"
-            android:key="edit_text_preference_pet_name"
+            android:key="pet_name"
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:summary="Set the name of your pet"
             android:title="Name" />
         <EditTextPreference
             android:defaultValue="User"
-            android:key="edit_text_preference_user_name"
+            android:key="user_name"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:summary="How your pet would call you"
+            android:summary="Set user name"
             android:title="User name" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Pet functions">
+    <PreferenceCategory android:title="Widget functions">
 
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="check_box_preference_notification"
+            android:key="wechat_notification"
             android:summary="Show popup when receiving WeChat notification"
             android:title="WeChat notification" />
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="check_box_preference_start_at_boot"
+            android:key="start_at_boot"
             android:title="Start widget at boot" />
     </PreferenceCategory>
 </PreferenceScreen>

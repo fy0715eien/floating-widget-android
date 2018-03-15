@@ -1,4 +1,4 @@
-package com.example.fy071.floatingwidget;
+package com.example.fy071.floatingwidget.component;
 
 import android.app.Service;
 import android.content.Intent;
