@@ -1,26 +1,22 @@
 package com.example.fy071.floatingwidget.component;
 
 
-import android.content.ClipData;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import com.example.fy071.floatingwidget.R;
 
 
 public class HomeFragment extends Fragment implements View.OnTouchListener {
     private static final String TAG = "HomeFragment";
-    float x, y, x2, y2;
+    float fingerStartX, fingerStartY, viewStartX, viewStartY;
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -42,30 +38,22 @@ public class HomeFragment extends Fragment implements View.OnTouchListener {
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-
-                x = event.getRawX();
-                y = event.getRawY();
-                x2 = v.getX();
-                y2 = v.getY();
-
+                fingerStartX = event.getRawX();
+                fingerStartY = event.getRawY();
+                viewStartX = v.getX();
+                viewStartY = v.getY();
                 break;
-
             case MotionEvent.ACTION_MOVE:
-
                 Log.d(TAG, "onTouch: move");
-                float dx = event.getRawX() - x;
-                float dy = event.getRawY() - y;
-                v.setX(x2 + dx);
-                v.setY(y2 + dy);
+                float dx = event.getRawX() - fingerStartX;
+                float dy = event.getRawY() - fingerStartY;
+                v.setX(viewStartX + dx);
+                v.setY(viewStartY + dy);
                 break;
-
             case MotionEvent.ACTION_UP:
                 break;
-
-
         }
         return true;
     }
