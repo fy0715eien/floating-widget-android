@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="array_pet_type_entries">
+        <item>Background 1</item>
+        <item>Background 2</item>
+        <item>Background 3</item>
+    </string-array>
+    <string-array name="array_pet_type_values">
+        <item></item>
+    </string-array>
+</resources>

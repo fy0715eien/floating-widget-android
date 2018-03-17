@@ -1,19 +1,12 @@
 package com.example.fy071.floatingwidget.component;
 
 import android.app.Fragment;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
-import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.util.*;
@@ -25,7 +18,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 
 public class MainActivity extends AppCompatActivity implements
-        Drawer.OnDrawerItemClickListener {
+        Drawer.OnDrawerItemClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = "MainActivity";
 
     public static final long DRAWER_HOME = 200;
@@ -36,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements
     Toolbar toolbar;
     Drawer drawer;
 
+    SharedPreferences defaultSharedPreferences;
     SharedPreferences sharedPreferences;
 
     @Override
@@ -73,8 +67,9 @@ public class MainActivity extends AppCompatActivity implements
         drawer.setToolbar(this,toolbar,true);
 
         //读取SharedPreference
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        PreferenceHelper.setPreferences(sharedPreferences);
+        defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences = getPreferences(MODE_PRIVATE);
+        PreferenceHelper.setPreferences(defaultSharedPreferences, sharedPreferences);
     }
 
 
@@ -87,12 +82,14 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
 
     @Override
     protected void onPause() {
         super.onPause();
+        defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
     }
 
 
@@ -141,5 +138,10 @@ public class MainActivity extends AppCompatActivity implements
             previousSelectedItem = DRAWER_HOME;
             drawer.setSelection(DRAWER_HOME);
         }
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences defaultSharedPreferences, String key) {
+        PreferenceHelper.setPreferences(defaultSharedPreferences, sharedPreferences);
     }
 }

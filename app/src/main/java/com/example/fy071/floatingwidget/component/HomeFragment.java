@@ -1,6 +1,8 @@
 package com.example.fy071.floatingwidget.component;
 
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -9,16 +11,21 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import com.example.fy071.floatingwidget.R;
+import com.example.fy071.floatingwidget.util.Key;
 
 
 public class HomeFragment extends Fragment implements View.OnTouchListener {
     private static final String TAG = "HomeFragment";
     float fingerStartX, fingerStartY, viewStartX, viewStartY;
+    FrameLayout pet;
+    ImageView imageView;
+    SharedPreferences sharedPreferences;
     public HomeFragment() {
-        // Required empty public constructor
     }
 
 
@@ -30,9 +37,13 @@ public class HomeFragment extends Fragment implements View.OnTouchListener {
         Drawable drawable = getResources().getDrawable(R.drawable.background1);
         currentView.setBackground(drawable);
 
-        FrameLayout pet = currentView.findViewById(R.id.layout_pet);
+        sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+
+        pet = currentView.findViewById(R.id.layout_pet);
+        imageView = pet.findViewById(R.id.imageView_pet);
         pet.setOnTouchListener(this);
-        Log.d(TAG, "onCreateView: " + pet.getX() + " " + pet.getY());
+        pet.setX(sharedPreferences.getFloat(Key.PET_LAST_X, 0));
+        pet.setY(sharedPreferences.getFloat(Key.PET_LAST_Y, 0));
         return currentView;
     }
 
@@ -44,15 +55,19 @@ public class HomeFragment extends Fragment implements View.OnTouchListener {
                 fingerStartY = event.getRawY();
                 viewStartX = v.getX();
                 viewStartY = v.getY();
+                imageView.setImageResource(R.drawable.test2);
                 break;
             case MotionEvent.ACTION_MOVE:
                 Log.d(TAG, "onTouch: move");
-                float dx = event.getRawX() - fingerStartX;
-                float dy = event.getRawY() - fingerStartY;
-                v.setX(viewStartX + dx);
-                v.setY(viewStartY + dy);
+                v.setX(event.getRawX() + viewStartX - fingerStartX);
+                v.setY(event.getRawY() + viewStartY - fingerStartY);
                 break;
             case MotionEvent.ACTION_UP:
+                imageView.setImageResource(R.drawable.test);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putFloat(Key.PET_LAST_X, v.getX());
+                editor.putFloat(Key.PET_LAST_Y, v.getY());
+                editor.apply();
                 break;
         }
         return true;

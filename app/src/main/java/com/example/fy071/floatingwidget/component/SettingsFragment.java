@@ -25,21 +25,17 @@ import static android.content.DialogInterface.BUTTON_POSITIVE;
 
 
 public class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener,
-        DialogInterface.OnClickListener,
-        SharedPreferences.OnSharedPreferenceChangeListener {
+        DialogInterface.OnClickListener {
     private static final String TAG = "SettingsFragment";
-    SharedPreferences sharedPreferences;
     SwitchPreference switchPreference;
 
     public SettingsFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         switchPreference = (SwitchPreference) findPreference(Key.ENABLE_WIDGET);
         switchPreference.setOnPreferenceChangeListener(this);
     }
@@ -47,7 +43,6 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
     /*
     当第一个开关被改变，检查系统版本和权限
-
      */
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -104,19 +99,12 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        PreferenceHelper.setPreferences(sharedPreferences);
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
     }
 }

@@ -4,6 +4,11 @@
     android:layout_height="match_parent"
     tools:context="com.example.fy071.floatingwidget.component.HomeFragment">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/background1" />
     <include
         layout="@layout/layout_pet"
         android:layout_width="100dp"

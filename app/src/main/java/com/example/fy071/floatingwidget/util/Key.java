@@ -11,6 +11,9 @@ public class Key {
     public static final String WECHAT_NOTIFICATION = "wechat_notification";
     public static final String START_AT_BOOT = "start_at_boot";
 
+    public static final String PET_LAST_X = "pet_last_x";
+    public static final String PET_LAST_Y = "pet_last_y";
+
     public static final int DRAW_OVER_OTHER_APP_PERMISSION = 100;
 
 }
