@@ -4,16 +4,13 @@ package com.example.fy071.floatingwidget.component;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
 import android.provider.Settings;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.example.fy071.floatingwidget.R;
@@ -42,24 +39,28 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
 
     /*
-    当第一个开关被改变，检查系统版本和权限
+    启用Enable widget开关时
+    如果系统版本高于6.0且无权限，弹窗要求权限获取
      */
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
-        Log.d(TAG, "onPreferenceChange: " + preference.getKey());
-        if (preference.getKey().equals(Key.ENABLE_WIDGET)) {
-            if (newValue.equals(true)) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getActivity())) {
-                    new AlertDialog.Builder(getActivity())
-                            .setTitle("Special permission required")
-                            .setMessage("Please grant permission for this app in the next page")
-                            .setNegativeButton("Cancel", this)
-                            .setPositiveButton("OK", this)
-                            .show();
-                } else {
-                    return true;
+        final String key = preference.getKey();
+        switch (key) {
+            case Key.ENABLE_WIDGET:
+                if (newValue.equals(true)) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getActivity())) {
+                        new AlertDialog.Builder(getActivity())
+                                .setTitle("Special permission required")
+                                .setMessage("Please grant permission for this app in the next page")
+                                .setNegativeButton("Cancel", this)
+                                .setPositiveButton("OK", this)
+                                .show();
+                    } else {
+                        return true;
+                    }
                 }
-            }
+                break;
+            default:
         }
         return true;
     }
@@ -73,6 +74,9 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         }
     }
 
+    /*
+    对话框按钮监听器
+     */
     @Override
     public void onClick(DialogInterface dialog, int which) {
         if (which == BUTTON_NEGATIVE) {

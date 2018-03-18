@@ -9,7 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.example.fy071.floatingwidget.R;
-import com.example.fy071.floatingwidget.util.*;
+import com.example.fy071.floatingwidget.util.PreferenceHelper;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
@@ -19,11 +19,10 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 public class MainActivity extends AppCompatActivity implements
         Drawer.OnDrawerItemClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
-    private static final String TAG = "MainActivity";
-
     public static final long DRAWER_HOME = 200;
     public static final long DRAWER_SETTINGS = 201;
     public static final long DRAWER_ABOUT = 202;
+    private static final String TAG = "MainActivity";
     long previousSelectedItem = DRAWER_HOME;
 
     Toolbar toolbar;
@@ -36,13 +35,13 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //传入设置碎片
-        getFragmentManager().beginTransaction()
-                .replace(R.id.content, new HomeFragment())
-                .commit();
-        //工具栏设置标题
+
+        //工具栏
         toolbar=findViewById(R.id.toolbar);
-        toolbar.setTitle("Home");
+
+        //传入碎片
+        displayFragment(new HomeFragment(), R.string.drawer_item_home);
+
         //建立抽屉
         drawer=new DrawerBuilder()
                 .withActivity(this)
@@ -60,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements
                         .withName("About")
                 )
                 .withOnDrawerItemClickListener(this)
+                .withDelayDrawerClickEvent(300)
                 .withActionBarDrawerToggle(true)
                 .build();
 
@@ -93,9 +93,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-    /*
-    * 抽屉项目监听器
-     */
     @Override
     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
         long id = drawerItem.getIdentifier();
@@ -103,14 +100,12 @@ public class MainActivity extends AppCompatActivity implements
             drawer.closeDrawer();
         } else {
             if (id == DRAWER_HOME) {
-                toolbar.setTitle("Home");
                 previousSelectedItem = DRAWER_HOME;
-                displayFragment(new HomeFragment());
+                displayFragment(new HomeFragment(), R.string.drawer_item_home);
             }
             if (id == DRAWER_SETTINGS) {
-                toolbar.setTitle("Settings");
                 previousSelectedItem = DRAWER_SETTINGS;
-                displayFragment(new SettingsFragment());
+                displayFragment(new SettingsFragment(), R.string.drawer_item_settings);
             }
             // TODO: 2018/3/10 aboutfragment
             return true;
@@ -118,27 +113,33 @@ public class MainActivity extends AppCompatActivity implements
         return false;
     }
 
-
-    public void displayFragment(Fragment fragment) {
+    /**
+     * 点击抽屉项目时的所有操作
+     *
+     * @param fragment      将要显示的fragment
+     * @param titleStringId 将要显示的工具栏标题
+     */
+    public void displayFragment(Fragment fragment, int titleStringId) {
+        toolbar.setTitle(titleStringId);
         getFragmentManager().beginTransaction()
                 .replace(R.id.content, fragment)
                 .commit();
-        drawer.closeDrawer();
     }
-
 
 
     @Override
     public void onBackPressed() {
-        if (previousSelectedItem == DRAWER_HOME) {
+        if (drawer.isDrawerOpen()) {
+            drawer.closeDrawer();
+        } else if (previousSelectedItem == DRAWER_HOME) {
             super.onBackPressed();
         } else {
-            displayFragment(new HomeFragment());
-            toolbar.setTitle("Home");
+            displayFragment(new HomeFragment(), R.string.drawer_item_home);
             previousSelectedItem = DRAWER_HOME;
             drawer.setSelection(DRAWER_HOME);
         }
     }
+
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences defaultSharedPreferences, String key) {
