@@ -23,10 +23,13 @@ public class MainActivity extends AppCompatActivity implements
     public static final long DRAWER_SETTINGS = 201;
     public static final long DRAWER_ABOUT = 202;
     private static final String TAG = "MainActivity";
-    long previousSelectedItem = DRAWER_HOME;
+    long previousSelectedItem;
 
     Toolbar toolbar;
     Drawer drawer;
+
+    HomeFragment homeFragment;
+    SettingsFragment settingsFragment;
 
     SharedPreferences defaultSharedPreferences;
     SharedPreferences sharedPreferences;
@@ -39,8 +42,12 @@ public class MainActivity extends AppCompatActivity implements
         //工具栏
         toolbar=findViewById(R.id.toolbar);
 
+        //初始化碎片，避免在displayFragment中进行new操作
+        homeFragment = new HomeFragment();
+        settingsFragment = new SettingsFragment();
+
         //传入碎片
-        displayFragment(new HomeFragment(), R.string.drawer_item_home);
+        displayFragment(homeFragment, R.string.drawer_item_home, DRAWER_HOME);
 
         //建立抽屉
         drawer=new DrawerBuilder()
@@ -52,13 +59,14 @@ public class MainActivity extends AppCompatActivity implements
                         new PrimaryDrawerItem().withIdentifier(DRAWER_SETTINGS)
                                 .withIcon(R.drawable.ic_settings_black_24dp)
                                 .withName("Settings")
-        )
+                )
                 .addStickyDrawerItems(
                         new PrimaryDrawerItem().withIdentifier(DRAWER_ABOUT)
                         .withIcon(R.drawable.ic_info_black_24dp)
                         .withName("About")
                 )
                 .withOnDrawerItemClickListener(this)
+                .withDelayOnDrawerClose(-1)
                 .withDelayDrawerClickEvent(300)
                 .withActionBarDrawerToggle(true)
                 .build();
@@ -100,14 +108,13 @@ public class MainActivity extends AppCompatActivity implements
             drawer.closeDrawer();
         } else {
             if (id == DRAWER_HOME) {
-                previousSelectedItem = DRAWER_HOME;
-                displayFragment(new HomeFragment(), R.string.drawer_item_home);
+                displayFragment(homeFragment, R.string.drawer_item_home, id);
+            } else if (id == DRAWER_SETTINGS) {
+                displayFragment(settingsFragment, R.string.drawer_item_settings, id);
+            } else if (id == DRAWER_ABOUT) {
+                //displayFragment(aboutFragment,R.string.drawer_item_about,id);
             }
-            if (id == DRAWER_SETTINGS) {
-                previousSelectedItem = DRAWER_SETTINGS;
-                displayFragment(new SettingsFragment(), R.string.drawer_item_settings);
-            }
-            // TODO: 2018/3/10 aboutfragment
+            drawer.closeDrawer();
             return true;
         }
         return false;
@@ -116,14 +123,16 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * 点击抽屉项目时的所有操作
      *
-     * @param fragment      将要显示的fragment
+     * @param fragment 将要显示的fragment
      * @param titleStringId 将要显示的工具栏标题
+     * @param identifier 抽屉id
      */
-    public void displayFragment(Fragment fragment, int titleStringId) {
-        toolbar.setTitle(titleStringId);
+    public void displayFragment(Fragment fragment, int titleStringId, long identifier) {
         getFragmentManager().beginTransaction()
                 .replace(R.id.content, fragment)
                 .commit();
+        toolbar.setTitle(titleStringId);
+        previousSelectedItem = identifier;
     }
 
 
@@ -134,8 +143,7 @@ public class MainActivity extends AppCompatActivity implements
         } else if (previousSelectedItem == DRAWER_HOME) {
             super.onBackPressed();
         } else {
-            displayFragment(new HomeFragment(), R.string.drawer_item_home);
-            previousSelectedItem = DRAWER_HOME;
+            displayFragment(homeFragment, R.string.drawer_item_home, DRAWER_HOME);
             drawer.setSelection(DRAWER_HOME);
         }
     }
