@@ -15,10 +15,9 @@ import com.example.fy071.floatingwidget.util.PreferenceHelper;
  */
 
 public class Pet implements View.OnTouchListener {
-    public FrameLayout frameLayout;
-    public ImageView petModel;
     public ImageView background;
-
+    private FrameLayout frameLayout;
+    private ImageView petModel;
     private float fingerStartX, fingerStartY, viewStartX, viewStartY;
 
     public Pet() {
