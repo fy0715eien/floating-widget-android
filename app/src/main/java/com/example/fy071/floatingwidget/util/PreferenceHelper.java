@@ -3,6 +3,9 @@ package com.example.fy071.floatingwidget.util;
 import android.content.SharedPreferences;
 
 public class PreferenceHelper {
+    public static SharedPreferences defaultSharedPreferences;
+    public static SharedPreferences sharedPreferences;
+
     //设置界面
     public static boolean widgetEnabled;
     public static String petName;
@@ -14,7 +17,10 @@ public class PreferenceHelper {
     public static float petLastX;
     public static float petLastY;
 
-    public static void setPreferences(SharedPreferences defaultSharedPreferences, SharedPreferences sharedPreferences) {
+    public static void setPreferences(SharedPreferences dSP, SharedPreferences sP) {
+        defaultSharedPreferences = dSP;
+        sharedPreferences = sP;
+
         widgetEnabled = defaultSharedPreferences.getBoolean(Key.ENABLE_WIDGET, false);
         petName = defaultSharedPreferences.getString(Key.PET_NAME, "default value");
         userName = defaultSharedPreferences.getString(Key.USER_NAME, "default value");

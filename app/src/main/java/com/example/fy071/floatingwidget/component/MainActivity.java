@@ -23,16 +23,13 @@ public class MainActivity extends AppCompatActivity implements
     public static final long DRAWER_SETTINGS = 201;
     public static final long DRAWER_ABOUT = 202;
     private static final String TAG = "MainActivity";
+    public SharedPreferences sharedPreferences;
     long previousSelectedItem;
-
     Toolbar toolbar;
     Drawer drawer;
-
     HomeFragment homeFragment;
     SettingsFragment settingsFragment;
-
     SharedPreferences defaultSharedPreferences;
-    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +88,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
         defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
 
@@ -98,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onPause() {
         super.onPause();
         defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
+        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
     }
 
 
@@ -150,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements
 
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences defaultSharedPreferences, String key) {
+    public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
         PreferenceHelper.setPreferences(defaultSharedPreferences, sharedPreferences);
     }
 }

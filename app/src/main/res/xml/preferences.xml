@@ -17,22 +17,29 @@
             android:key="pet_name"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:summary="Set the name of your pet"
-            android:title="Name" />
+            android:summary="Pet"
+            android:title="Pet name" />
         <EditTextPreference
             android:defaultValue="User"
             android:key="user_name"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:summary="Set user name"
+            android:summary="User"
             android:title="User name" />
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/array_background_entries"
+            android:entryValues="@array/array_background_values"
+            android:key="background"
+            android:summary="Background 1"
+            android:title="Background" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Widget functions">
 
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="wechat_notification"
-            android:summary="Show popup when receiving WeChat notification"
+            android:summary="Shows popup when receiving WeChat notification"
             android:title="WeChat notification" />
         <CheckBoxPreference
             android:defaultValue="false"

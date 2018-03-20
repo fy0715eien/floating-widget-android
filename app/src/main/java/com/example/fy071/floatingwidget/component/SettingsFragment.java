@@ -38,10 +38,9 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
     }
 
 
-    /*
-    启用Enable widget开关时
-    如果系统版本高于6.0且无权限，弹窗要求权限获取
-     */
+    //启用Enable widget开关时
+    //如果系统版本高于6.0且无权限，弹窗要求获取权限，根据权限获得情况决定是否保存该改变
+    //如果系统版本低于6.0，则保存该开关改变
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         final String key = preference.getKey();
@@ -71,12 +70,12 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         super.onDestroy();
         if (PreferenceHelper.widgetEnabled) {
             getActivity().startService(new Intent(getActivity(), FloatingViewService.class));
+        } else {
+            getActivity().stopService(new Intent(getActivity(), FloatingViewService.class));
         }
     }
 
-    /*
-    对话框按钮监听器
-     */
+    //对话框按钮监听器
     @Override
     public void onClick(DialogInterface dialog, int which) {
         if (which == BUTTON_NEGATIVE) {
@@ -84,7 +83,10 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
             switchPreference.setChecked(false);
             dialog.cancel();
         } else if (which == BUTTON_POSITIVE) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getActivity().getPackageName()));
+            Intent intent = new Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + getActivity().getPackageName())
+            );
             startActivityForResult(intent, Key.DRAW_OVER_OTHER_APP_PERMISSION);
         }
     }
