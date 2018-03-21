@@ -40,7 +40,9 @@ public class Pet implements View.OnTouchListener {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 this.petModel.setImageResource(R.drawable.test2);
-
+                //event.getRawXY()获得手指相对屏幕左上角的坐标
+                //v.getXY()获得view相对layout左上角的坐标
+                //二者原点不同故需先保存，之后补上相差坐标
                 fingerStartX = event.getRawX();
                 fingerStartY = event.getRawY();
                 viewStartX = v.getX();

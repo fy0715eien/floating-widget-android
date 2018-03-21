@@ -11,12 +11,12 @@
         <item>R.drawable.background3</item>
     </string-array>
 
-    <string-array name="array_pet_type_entries">
-        <item>Background 1</item>
-        <item>Background 2</item>
-        <item>Background 3</item>
+    <string-array name="array_pet_model_entries">
+        <item>Model 1</item>
+        <item>Model 2</item>
+        <item>Model 3</item>
     </string-array>
-    <string-array name="array_pet_type_values">
+    <string-array name="array_pet_model_values">
         <item>R.drawable.background1</item>
         <item>R.drawable.background2</item>
         <item>R.drawable.background3</item>

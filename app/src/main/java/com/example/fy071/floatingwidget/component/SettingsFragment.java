@@ -7,6 +7,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
+import android.preference.EditTextPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
@@ -21,11 +24,14 @@ import static android.content.DialogInterface.BUTTON_NEGATIVE;
 import static android.content.DialogInterface.BUTTON_POSITIVE;
 
 
-public class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener,
+public class SettingsFragment extends PreferenceFragment implements
+        Preference.OnPreferenceChangeListener,
         DialogInterface.OnClickListener {
     private static final String TAG = "SettingsFragment";
     SwitchPreference switchPreference;
-
+    EditTextPreference petName, userName;
+    ListPreference background, petModel;
+    CheckBoxPreference wechatNotification, startAtBoot;
     public SettingsFragment() {
     }
 
@@ -33,18 +39,29 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
+
         switchPreference = (SwitchPreference) findPreference(Key.ENABLE_WIDGET);
         switchPreference.setOnPreferenceChangeListener(this);
+
+        petName = (EditTextPreference) findPreference(Key.PET_NAME);
+        petName.setSummary(PreferenceHelper.petName);
+        petName.setOnPreferenceChangeListener(this);
+
+        userName = (EditTextPreference) findPreference(Key.USER_NAME);
+        userName.setSummary(PreferenceHelper.userName);
+        userName.setOnPreferenceChangeListener(this);
+
     }
 
 
-    //启用Enable widget开关时
-    //如果系统版本高于6.0且无权限，弹窗要求获取权限，根据权限获得情况决定是否保存该改变
-    //如果系统版本低于6.0，则保存该开关改变
+
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         final String key = preference.getKey();
         switch (key) {
+            //启用Enable widget开关时
+            //如果系统版本高于6.0且无权限，弹窗要求获取权限，根据权限获得情况决定是否保存该改变
+            //如果系统版本低于6.0，则保存该开关改变
             case Key.ENABLE_WIDGET:
                 if (newValue.equals(true)) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getActivity())) {
@@ -54,10 +71,12 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
                                 .setNegativeButton("Cancel", this)
                                 .setPositiveButton("OK", this)
                                 .show();
-                    } else {
-                        return true;
                     }
                 }
+                break;
+            case Key.PET_NAME:
+            case Key.USER_NAME:
+                preference.setSummary(newValue.toString());
                 break;
             default:
         }
@@ -75,7 +94,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         }
     }
 
-    //对话框按钮监听器
+
     @Override
     public void onClick(DialogInterface dialog, int which) {
         if (which == BUTTON_NEGATIVE) {

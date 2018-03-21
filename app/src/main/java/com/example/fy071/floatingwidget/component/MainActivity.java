@@ -18,17 +18,20 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 
 public class MainActivity extends AppCompatActivity implements
-        Drawer.OnDrawerItemClickListener, SharedPreferences.OnSharedPreferenceChangeListener {
-    public static final long DRAWER_HOME = 200;
-    public static final long DRAWER_SETTINGS = 201;
-    public static final long DRAWER_ABOUT = 202;
+        Drawer.OnDrawerItemClickListener,
+        SharedPreferences.OnSharedPreferenceChangeListener {
+    public static final long DRAWER_HOME = 1L;
+    public static final long DRAWER_SETTINGS = 2L;
+    public static final long DRAWER_ABOUT = 3L;
     private static final String TAG = "MainActivity";
-    public SharedPreferences sharedPreferences;
     long previousSelectedItem;
+
     Toolbar toolbar;
     Drawer drawer;
     HomeFragment homeFragment;
     SettingsFragment settingsFragment;
+
+    SharedPreferences sharedPreferences;
     SharedPreferences defaultSharedPreferences;
 
     @Override
@@ -36,42 +39,39 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //工具栏
         toolbar=findViewById(R.id.toolbar);
 
-        //初始化碎片，避免在displayFragment中进行new操作
         homeFragment = new HomeFragment();
         settingsFragment = new SettingsFragment();
 
-        //传入碎片
         displayFragment(homeFragment, R.string.drawer_item_home, DRAWER_HOME);
 
-        //建立抽屉
         drawer=new DrawerBuilder()
                 .withActivity(this)
+                .withHeader(R.layout.layout_header)
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withIdentifier(DRAWER_HOME)
+                        new PrimaryDrawerItem()
+                                .withIdentifier(DRAWER_HOME)
                                 .withIcon(R.drawable.ic_home_black_24dp)
-                                .withName("Home"),
-                        new PrimaryDrawerItem().withIdentifier(DRAWER_SETTINGS)
-                                .withIcon(R.drawable.ic_settings_black_24dp)
-                                .withName("Settings")
+                                .withName(R.string.drawer_item_home)
                 )
                 .addStickyDrawerItems(
-                        new PrimaryDrawerItem().withIdentifier(DRAWER_ABOUT)
-                        .withIcon(R.drawable.ic_info_black_24dp)
-                        .withName("About")
+                        new PrimaryDrawerItem()
+                                .withIdentifier(DRAWER_SETTINGS)
+                                .withIcon(R.drawable.ic_settings_black_24dp)
+                                .withName(R.string.drawer_item_settings),
+                        new PrimaryDrawerItem()
+                                .withIdentifier(DRAWER_ABOUT)
+                                .withIcon(R.drawable.ic_info_black_24dp)
+                                .withName(R.string.drawer_item_about)
                 )
                 .withOnDrawerItemClickListener(this)
-                .withDelayOnDrawerClose(-1)
-                .withDelayDrawerClickEvent(300)
                 .withActionBarDrawerToggle(true)
                 .build();
 
         //为工具栏加入打开抽屉的按钮
         drawer.setToolbar(this,toolbar,true);
 
-        //读取SharedPreference
         defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPreferences = getPreferences(MODE_PRIVATE);
         PreferenceHelper.setPreferences(defaultSharedPreferences, sharedPreferences);
@@ -100,9 +100,10 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
+    //无法switch(long)故使用if else
     @Override
     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-        long id = drawerItem.getIdentifier();
+        final long id = drawerItem.getIdentifier();
         if (id == previousSelectedItem) {
             drawer.closeDrawer();
         } else {
@@ -127,7 +128,8 @@ public class MainActivity extends AppCompatActivity implements
      * @param identifier 抽屉id
      */
     public void displayFragment(Fragment fragment, int titleStringId, long identifier) {
-        getFragmentManager().beginTransaction()
+        getFragmentManager()
+                .beginTransaction()
                 .replace(R.id.content, fragment)
                 .commit();
         toolbar.setTitle(titleStringId);
@@ -142,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements
         } else if (previousSelectedItem == DRAWER_HOME) {
             super.onBackPressed();
         } else {
-            displayFragment(homeFragment, R.string.drawer_item_home, DRAWER_HOME);
             drawer.setSelection(DRAWER_HOME);
         }
     }

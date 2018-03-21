@@ -22,8 +22,8 @@ public class PreferenceHelper {
         sharedPreferences = sP;
 
         widgetEnabled = defaultSharedPreferences.getBoolean(Key.ENABLE_WIDGET, false);
-        petName = defaultSharedPreferences.getString(Key.PET_NAME, "default value");
-        userName = defaultSharedPreferences.getString(Key.USER_NAME, "default value");
+        petName = defaultSharedPreferences.getString(Key.PET_NAME, "");
+        userName = defaultSharedPreferences.getString(Key.USER_NAME, "");
         wechatNotification = defaultSharedPreferences.getBoolean(Key.WECHAT_NOTIFICATION, false);
         startAtBoot = defaultSharedPreferences.getBoolean(Key.START_AT_BOOT, false);
 
