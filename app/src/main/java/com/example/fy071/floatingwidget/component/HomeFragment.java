@@ -2,6 +2,7 @@ package com.example.fy071.floatingwidget.component;
 
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,5 +25,10 @@ public class HomeFragment extends Fragment {
         pet = new Pet();
         pet.addSelfToView(currentView);
         return currentView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 }
