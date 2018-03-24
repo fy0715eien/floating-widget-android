@@ -2,6 +2,8 @@ package com.example.fy071.floatingwidget.component;
 
 
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
