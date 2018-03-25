@@ -3,8 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/floating-widget-android.iml" filepath="$PROJECT_DIR$/floating-widget-android.iml" />
-      <module fileurl="file://D:\AndroidFile\floating-widget-android\floatingwidget.iml" filepath="D:\AndroidFile\floating-widget-android\floatingwidget.iml" />
+      <module fileurl="file://$PROJECT_DIR$/floatingwidget.iml" filepath="$PROJECT_DIR$/floatingwidget.iml" />
     </modules>
   </component>
 </project>
