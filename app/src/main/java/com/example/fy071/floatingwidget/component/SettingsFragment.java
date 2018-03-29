@@ -2,8 +2,6 @@ package com.example.fy071.floatingwidget.component;
 
 
 import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -53,6 +51,8 @@ public class SettingsFragment extends PreferenceFragment implements
         userName.setSummary(PreferenceHelper.userName);
         userName.setOnPreferenceChangeListener(this);
 
+        wechatNotification = (CheckBoxPreference) findPreference(Key.WECHAT_NOTIFICATION);
+        wechatNotification.setOnPreferenceChangeListener(this);
     }
 
 
@@ -80,6 +80,10 @@ public class SettingsFragment extends PreferenceFragment implements
             case Key.USER_NAME:
                 preference.setSummary(newValue.toString());
                 break;
+            case Key.WECHAT_NOTIFICATION:
+                if (newValue.equals(true)) {
+                    // TODO: 2018/3/26 check permission & require permission
+                }
             default:
         }
         return true;

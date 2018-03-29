@@ -22,12 +22,13 @@ import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 
 import com.example.fy071.floatingwidget.R;
+
 public class FloatingViewService extends Service {
 
-    public static final int TO_LEFT = 1;
-    public static final int TO_RIGHT = 2;
-    public static final int TO_UP = 3;
-    public static final int TO_BOTTOM = 4;
+    private static final int TO_LEFT = 1;
+    private static final int TO_RIGHT = 2;
+    private static final int TO_UP = 3;
+    private static final int TO_BOTTOM = 4;
     private static final int UPDATE_PIC = 0x100;
     private View view;// 透明窗体
     private HandlerUI handler = null;
@@ -48,13 +49,6 @@ public class FloatingViewService extends Service {
         createFloatView();
         refresh();
         startForeground(this);
-    }
-
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        int retVal = super.onStartCommand(intent, flags, startId);
-        return retVal;
     }
 
 
@@ -115,7 +109,7 @@ public class FloatingViewService extends Service {
         handler = new HandlerUI();
         UpdateUI update = new UpdateUI();
         updateThread = new Thread(update);
-        updateThread.start(); // 开户线程
+        updateThread.start();
         view = LayoutInflater.from(this).inflate(R.layout.service_floating_view, null);
         windowManager = (WindowManager) this.getSystemService(WINDOW_SERVICE);
 
@@ -124,8 +118,7 @@ public class FloatingViewService extends Service {
          * LayoutParams.FLAG_NOT_FOCUSABLE:该浮动窗不会获得焦点，但可以获得拖动
          * PixelFormat.TRANSPARENT：悬浮窗透明
          */
-        if(Build.VERSION.SDK_INT>26)
-        {
+        if (Build.VERSION.SDK_INT > 26) {
             layoutParams = new LayoutParams(
                     LayoutParams.WRAP_CONTENT,
                     LayoutParams.WRAP_CONTENT,
@@ -133,9 +126,7 @@ public class FloatingViewService extends Service {
                     LayoutParams.FLAG_NOT_FOCUSABLE,
                     PixelFormat.TRANSPARENT
             );
-        }
-        else
-        {
+        } else {
             layoutParams = new LayoutParams(
                     LayoutParams.WRAP_CONTENT,
                     LayoutParams.WRAP_CONTENT,
@@ -144,14 +135,15 @@ public class FloatingViewService extends Service {
                     PixelFormat.TRANSPARENT
             );
         }
-        // layoutParams.gravity = Gravity.RIGHT|Gravity.BOTTOM; //悬浮窗开始在右下角显示
-        layoutParams.gravity = Gravity.LEFT | Gravity.TOP;
+        //悬浮窗开始在左上角显示
+        layoutParams.gravity = Gravity.START | Gravity.TOP;
 
         /*
          * 监听窗体移动事件
          */
         view.setOnTouchListener(new OnTouchListener() {
             float fingerStartX, fingerStartY;
+
             public boolean onTouch(View v, MotionEvent event) {
                 int eventAction = event.getAction();
                 switch (eventAction) {
@@ -161,15 +153,14 @@ public class FloatingViewService extends Service {
                         break;
 
                     case MotionEvent.ACTION_MOVE:
-                        refreshView(event.getRawX() - fingerStartX,
-                                event.getRawY() - fingerStartY);
+                        refreshView(event.getRawX() - fingerStartX, event.getRawY() - fingerStartY);
                         break;
                     case MotionEvent.ACTION_UP:
                         DisplayMetrics dm = new DisplayMetrics();
                         windowManager.getDefaultDisplay().getMetrics(dm);
 
                         float left = event.getRawX() - fingerStartX + v.getWidth() / 2;
-                        float up = (event.getRawY() - fingerStartY) + v.getHeight() / 2;
+                        float up = event.getRawY() - fingerStartY + v.getHeight() / 2;
                         float right = dm.widthPixels - left;
                         float button = dm.heightPixels - up;
 
@@ -195,24 +186,25 @@ public class FloatingViewService extends Service {
         });
     }
 
-    int getMin(float left, float right, float up, float bottom)
-    {
-        if (left <= right && left <= up && left <= bottom) return TO_LEFT;
-        if (right <= up && right <= bottom) return TO_RIGHT;
-        if (up <= bottom) return TO_UP;
+    int getMin(float left, float right, float up, float bottom) {
+        if (left <= right && left <= up && left <= bottom)
+            return TO_LEFT;
+        if (right <= up && right <= bottom)
+            return TO_RIGHT;
+        if (up <= bottom)
+            return TO_UP;
         return TO_BOTTOM;
     }
+
     /**
      * 刷新悬浮窗
      *
-     * @param x
-     *            拖动后的X轴坐标
-     * @param y
-     *            拖动后的Y轴坐标
+     * @param x 拖动后的X轴坐标
+     * @param y 拖动后的Y轴坐标
      */
     private void refreshView(float x, float y) {
         layoutParams.x = (int) x;
-        layoutParams.y = (int) y;// STATUS_HEIGHT;
+        layoutParams.y = (int) y;
         refresh();
     }
 
@@ -233,18 +225,17 @@ public class FloatingViewService extends Service {
      * 接受消息和处理消息
      *
      * @author Administrator
-     *
      */
     class HandlerUI extends Handler {
         public HandlerUI() {
 
         }
     }
+
     /**
      * 更新悬浮窗的信息
      *
      * @author Administrator
-     *
      */
     class UpdateUI implements Runnable {
 
