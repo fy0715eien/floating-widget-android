@@ -93,11 +93,7 @@ public class SettingsFragment extends PreferenceFragment implements
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (PreferenceHelper.widgetEnabled) {
-            getActivity().startService(new Intent(getActivity(), FloatingViewService.class));
-        } else {
-            getActivity().stopService(new Intent(getActivity(), FloatingViewService.class));
-        }
+
     }
 
 

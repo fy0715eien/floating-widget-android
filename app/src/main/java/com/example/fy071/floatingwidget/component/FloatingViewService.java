@@ -7,7 +7,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -18,7 +17,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 
@@ -35,7 +33,7 @@ public class FloatingViewService extends Service {
     int statusBarHeight;
     private HandlerUI handler = null;
     private Thread updateThread = null;
-    private boolean viewAdded = false;// 透明窗体是否已经显示
+    private boolean isViewAdded = false;// 透明窗体是否已经显示
     private WindowManager windowManager;
     private WindowManager.LayoutParams layoutParams;
 
@@ -100,9 +98,9 @@ public class FloatingViewService extends Service {
      * 关闭悬浮窗
      */
     public void removeView() {
-        if (viewAdded) {
+        if (isViewAdded) {
             windowManager.removeView(view);
-            viewAdded = false;
+            isViewAdded = false;
         }
     }
 
@@ -181,11 +179,11 @@ public class FloatingViewService extends Service {
      */
     private void refresh() {
         // 如果已经添加了就只更新view
-        if (viewAdded) {
+        if (isViewAdded) {
             windowManager.updateViewLayout(view, layoutParams);
         } else {
             windowManager.addView(view, layoutParams);
-            viewAdded = true;
+            isViewAdded = true;
         }
     }
 
@@ -235,9 +233,7 @@ public class FloatingViewService extends Service {
                     fingerStartX = event.getX();
                     fingerStartY = event.getY();
                     break;
-
                 case MotionEvent.ACTION_MOVE:
-
                     refreshView(event.getRawX() - fingerStartX, event.getRawY() - fingerStartY-statusBarHeight);
                     break;
                 case MotionEvent.ACTION_UP:
