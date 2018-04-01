@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -24,7 +25,7 @@ import android.view.WindowManager.LayoutParams;
 import com.example.fy071.floatingwidget.R;
 
 public class FloatingViewService extends Service {
-
+    private static final String TAG = "FloatingViewService";
     private static final int TO_LEFT = 1;
     private static final int TO_RIGHT = 2;
     private static final int TO_UP = 3;
@@ -148,6 +149,7 @@ public class FloatingViewService extends Service {
                 int eventAction = event.getAction();
                 switch (eventAction) {
                     case MotionEvent.ACTION_DOWN: // 按下事件，记录按下时手指在悬浮窗的XY坐标值
+                        Log.d(TAG, "onTouch: "+v.getClass()+event.getX()+" "+event.getY());
                         fingerStartX = event.getX();
                         fingerStartY = event.getY();
                         break;
@@ -158,7 +160,7 @@ public class FloatingViewService extends Service {
                     case MotionEvent.ACTION_UP:
                         DisplayMetrics dm = new DisplayMetrics();
                         windowManager.getDefaultDisplay().getMetrics(dm);
-
+/*
                         float left = event.getRawX() - fingerStartX + v.getWidth() / 2;
                         float up = event.getRawY() - fingerStartY + v.getHeight() / 2;
                         float right = dm.widthPixels - left;
@@ -179,7 +181,7 @@ public class FloatingViewService extends Service {
                             case TO_BOTTOM:
                                 refreshView(event.getRawX() - fingerStartX, dm.heightPixels - v.getHeight());
                                 break;
-                        }
+                        }*/
                 }
                 return true;
             }
@@ -204,7 +206,7 @@ public class FloatingViewService extends Service {
      */
     private void refreshView(float x, float y) {
         layoutParams.x = (int) x;
-        layoutParams.y = (int) y;
+        layoutParams.y = (int) y-70;
         refresh();
     }
 

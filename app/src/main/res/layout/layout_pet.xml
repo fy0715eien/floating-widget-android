@@ -5,7 +5,7 @@
     android:layout_width="wrap_content">
 
     <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:src="@drawable/test"
+        android:src="@drawable/down_anime"
         android:id="@+id/imageView_pet"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
