@@ -56,6 +56,17 @@ public class SettingsFragment extends PreferenceFragment implements
     }
 
 
+    private void checkPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getActivity())) {
+            new AlertDialog.Builder(getActivity())
+                    .setTitle("Special permission required")
+                    .setMessage("Please grant permission for this app in the next page")
+                    .setNegativeButton("Cancel", this)
+                    .setPositiveButton("OK", this)
+                    .show();
+        }
+    }
+
 
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -66,14 +77,7 @@ public class SettingsFragment extends PreferenceFragment implements
             //如果系统版本低于6.0，则保存该开关改变
             case Key.ENABLE_WIDGET:
                 if (newValue.equals(true)) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getActivity())) {
-                        new AlertDialog.Builder(getActivity())
-                                .setTitle("Special permission required")
-                                .setMessage("Please grant permission for this app in the next page")
-                                .setNegativeButton("Cancel", this)
-                                .setPositiveButton("OK", this)
-                                .show();
-                    }
+                    checkPermission();
                 }
                 break;
             case Key.PET_NAME:
@@ -93,11 +97,7 @@ public class SettingsFragment extends PreferenceFragment implements
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (PreferenceHelper.widgetEnabled) {
-            getActivity().startService(new Intent(getActivity(), FloatingViewService.class));
-        } else {
-            getActivity().stopService(new Intent(getActivity(), FloatingViewService.class));
-        }
+
     }
 
 

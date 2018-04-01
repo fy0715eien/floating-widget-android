@@ -1,13 +1,13 @@
 package com.example.fy071.floatingwidget.component;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
@@ -88,6 +88,8 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        Intent intent = new Intent(this, FloatingViewService.class);
+        stopService(intent);
         defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this);
         sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
@@ -153,5 +155,18 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
         PreferenceHelper.setPreferences(defaultSharedPreferences, sharedPreferences);
+    }
+
+
+    //用户离开当前应用时开启Service
+    @Override
+    protected void onUserLeaveHint() {
+        super.onUserLeaveHint();
+        Intent intent = new Intent(this, FloatingViewService.class);
+        if (PreferenceHelper.widgetEnabled) {
+            startService(intent);
+        } else {
+            stopService(intent);
+        }
     }
 }
