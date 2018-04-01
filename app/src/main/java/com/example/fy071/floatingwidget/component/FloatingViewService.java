@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -31,6 +32,7 @@ public class FloatingViewService extends Service {
     private static final int TO_BOTTOM = 4;
     private static final int UPDATE_PIC = 0x100;
     private View view;// 透明窗体
+    int statusBarHeight;
     private HandlerUI handler = null;
     private Thread updateThread = null;
     private boolean viewAdded = false;// 透明窗体是否已经显示
@@ -106,6 +108,14 @@ public class FloatingViewService extends Service {
 
 
     private void createFloatView() {
+        statusBarHeight = 0;
+
+        //获取status_bar_height资源的ID
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            //根据资源ID获取响应的尺寸值
+            statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+        }
         handler = new HandlerUI();
         UpdateUI update = new UpdateUI();
         updateThread = new Thread(update);
@@ -141,49 +151,7 @@ public class FloatingViewService extends Service {
         /*
          * 监听窗体移动事件
          */
-        view.setOnTouchListener(new OnTouchListener() {
-            float fingerStartX, fingerStartY;
-
-            public boolean onTouch(View v, MotionEvent event) {
-                int eventAction = event.getAction();
-                switch (eventAction) {
-                    case MotionEvent.ACTION_DOWN: // 按下事件，记录按下时手指在悬浮窗的XY坐标值
-                        fingerStartX = event.getX();
-                        fingerStartY = event.getY();
-                        break;
-
-                    case MotionEvent.ACTION_MOVE:
-                        refreshView(event.getRawX() - fingerStartX, event.getRawY() - fingerStartY);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        DisplayMetrics dm = new DisplayMetrics();
-                        windowManager.getDefaultDisplay().getMetrics(dm);
-
-                        float left = event.getRawX() - fingerStartX + v.getWidth() / 2;
-                        float up = event.getRawY() - fingerStartY + v.getHeight() / 2;
-                        float right = dm.widthPixels - left;
-                        float button = dm.heightPixels - up;
-
-                        int min = getMin(left, right, up, button);
-
-                        switch (min) {
-                            case TO_LEFT:
-                                refreshView(0, event.getRawY() - fingerStartY);
-                                break;
-                            case TO_RIGHT:
-                                refreshView(dm.widthPixels - v.getWidth(), event.getRawY() - fingerStartY);
-                                break;
-                            case TO_UP:
-                                refreshView(event.getRawX() - fingerStartX, 0);
-                                break;
-                            case TO_BOTTOM:
-                                refreshView(event.getRawX() - fingerStartX, dm.heightPixels - v.getHeight());
-                                break;
-                        }
-                }
-                return true;
-            }
-        });
+        view.setOnTouchListener(new floatingListner());
     }
 
     int getMin(float left, float right, float up, float bottom) {
@@ -255,4 +223,51 @@ public class FloatingViewService extends Service {
             }
         }
     }
+
+    /*悬浮窗监听器*/
+    class floatingListner implements View.OnTouchListener{
+        float fingerStartX, fingerStartY;
+
+        public boolean onTouch(View v, MotionEvent event) {
+            int eventAction = event.getAction();
+            switch (eventAction) {
+                case MotionEvent.ACTION_DOWN: // 按下事件，记录按下时手指在悬浮窗的XY坐标值
+                    fingerStartX = event.getX();
+                    fingerStartY = event.getY();
+                    break;
+
+                case MotionEvent.ACTION_MOVE:
+
+                    refreshView(event.getRawX() - fingerStartX, event.getRawY() - fingerStartY-statusBarHeight);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    DisplayMetrics dm = new DisplayMetrics();
+                    windowManager.getDefaultDisplay().getMetrics(dm);
+
+                    float left = event.getRawX() - fingerStartX + v.getWidth() / 2;
+                    float up = event.getRawY() - fingerStartY + v.getHeight() / 2;
+                    float right = dm.widthPixels - left;
+                    float button = dm.heightPixels - up;
+
+                    int min = getMin(left, right, up, button);
+
+                    switch (min) {
+                        case TO_LEFT:
+                            refreshView(0, event.getRawY() - fingerStartY);
+                            break;
+                        case TO_RIGHT:
+                            refreshView(dm.widthPixels - v.getWidth(), event.getRawY() - fingerStartY);
+                            break;
+                        case TO_UP:
+                            refreshView(event.getRawX() - fingerStartX, 0);
+                            break;
+                        case TO_BOTTOM:
+                            refreshView(event.getRawX() - fingerStartX, dm.heightPixels - v.getHeight());
+                            break;
+                    }
+            }
+            return true;
+        }
+    }
+
 }
