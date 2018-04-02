@@ -1,9 +1,13 @@
 package com.example.fy071.floatingwidget.component;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 
@@ -13,6 +17,12 @@ import java.util.Calendar;
 
 public class ReminderConfigActivity extends Activity implements TimePickerDialog.TimePickerDialogInterface {
     private TimePickerDialog mTimePickerDialog;
+    private EditText rd_content;
+    private SharedPreferences sharedPrefrences;
+    private SharedPreferences.Editor editor;
+
+    // 要存储的文件名
+    private static final String FILENAME = "filename";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +32,24 @@ public class ReminderConfigActivity extends Activity implements TimePickerDialog
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.toolbar_new_reminder);
 
+        rd_content = (EditText) findViewById(R.id.reminder_content);
+
+
+        sharedPrefrences = this.getSharedPreferences(FILENAME, MODE_WORLD_READABLE);
+        String r_upgrade= sharedPrefrences.getString("upgrade", "请输入提醒内容！");
+
+        rd_content.setText(r_upgrade);
+
+        Button bt = (Button) findViewById(R.id.button_save);
+        bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                editor = getSharedPreferences(FILENAME, MODE_WORLD_WRITEABLE).edit();
+                String upgrade=rd_content.getText().toString();
+                editor.putString("upgrade", upgrade);
+                editor.apply();
+                }
+        });
     }
 
     //时间选择器----------确定
