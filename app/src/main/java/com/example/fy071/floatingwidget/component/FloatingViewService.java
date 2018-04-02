@@ -93,6 +93,31 @@ public class FloatingViewService extends Service {
         return channelId;
     }
 
+    private LayoutParams layoutParamsFactory() {
+        /*
+         * LayoutParams.TYPE_SYSTEM_ERROR：保证该悬浮窗所有View的最上层
+         * LayoutParams.FLAG_NOT_FOCUSABLE:该浮动窗不会获得焦点，但可以获得拖动
+         * PixelFormat.TRANSPARENT：悬浮窗透明
+         */
+        if (Build.VERSION.SDK_INT > 26) {
+            return new LayoutParams(
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSPARENT
+            );
+        } else {
+            return new LayoutParams(
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.TYPE_SYSTEM_ERROR,
+                    LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSPARENT
+            );
+        }
+    }
+
 
     /**
      * 关闭悬浮窗
@@ -103,7 +128,6 @@ public class FloatingViewService extends Service {
             isViewAdded = false;
         }
     }
-
 
     private void createFloatView() {
         statusBarHeight = 0;
@@ -121,38 +145,17 @@ public class FloatingViewService extends Service {
         view = LayoutInflater.from(this).inflate(R.layout.service_floating_view, null);
         windowManager = (WindowManager) this.getSystemService(WINDOW_SERVICE);
 
-        /*
-         * LayoutParams.TYPE_SYSTEM_ERROR：保证该悬浮窗所有View的最上层
-         * LayoutParams.FLAG_NOT_FOCUSABLE:该浮动窗不会获得焦点，但可以获得拖动
-         * PixelFormat.TRANSPARENT：悬浮窗透明
-         */
-        if (Build.VERSION.SDK_INT > 26) {
-            layoutParams = new LayoutParams(
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.TYPE_APPLICATION_OVERLAY,
-                    LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSPARENT
-            );
-        } else {
-            layoutParams = new LayoutParams(
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.TYPE_SYSTEM_ERROR,
-                    LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSPARENT
-            );
-        }
+        layoutParams = layoutParamsFactory();
         //悬浮窗开始在左上角显示
         layoutParams.gravity = Gravity.START | Gravity.TOP;
 
         /*
          * 监听窗体移动事件
          */
-        view.setOnTouchListener(new floatingListner());
+        view.setOnTouchListener(new Listener());
     }
 
-    int getMin(float left, float right, float up, float bottom) {
+    private int getMin(float left, float right, float up, float bottom) {
         if (left <= right && left <= up && left <= bottom)
             return TO_LEFT;
         if (right <= up && right <= bottom)
@@ -223,7 +226,7 @@ public class FloatingViewService extends Service {
     }
 
     /*悬浮窗监听器*/
-    class floatingListner implements View.OnTouchListener{
+    class Listener implements View.OnTouchListener {
         float fingerStartX, fingerStartY;
 
         public boolean onTouch(View v, MotionEvent event) {
@@ -245,8 +248,7 @@ public class FloatingViewService extends Service {
                     float right = dm.widthPixels - left;
                     float button = dm.heightPixels - up;
 
-                    int min = getMin(left, right, up, button);
-
+                    final int min = getMin(left, right, up, button);
                     switch (min) {
                         case TO_LEFT:
                             refreshView(0, event.getRawY() - fingerStartY);

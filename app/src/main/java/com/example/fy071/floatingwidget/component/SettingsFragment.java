@@ -41,18 +41,21 @@ public class SettingsFragment extends PreferenceFragment implements
         addPreferencesFromResource(R.xml.preferences);
 
         switchPreference = (SwitchPreference) findPreference(Key.ENABLE_WIDGET);
-        switchPreference.setOnPreferenceChangeListener(this);
-
         petName = (EditTextPreference) findPreference(Key.PET_NAME);
-        petName.setSummary(PreferenceHelper.petName);
-        petName.setOnPreferenceChangeListener(this);
-
         userName = (EditTextPreference) findPreference(Key.USER_NAME);
-        userName.setSummary(PreferenceHelper.userName);
-        userName.setOnPreferenceChangeListener(this);
-
+        petModel = (ListPreference) findPreference(Key.PET_MODEL);
         wechatNotification = (CheckBoxPreference) findPreference(Key.WECHAT_NOTIFICATION);
+
+        switchPreference.setOnPreferenceChangeListener(this);
+        petName.setOnPreferenceChangeListener(this);
+        userName.setOnPreferenceChangeListener(this);
+        petModel.setOnPreferenceChangeListener(this);
         wechatNotification.setOnPreferenceChangeListener(this);
+
+        //设置Summary以显示上次设置内容
+        petName.setSummary(PreferenceHelper.petName);
+        userName.setSummary(PreferenceHelper.userName);
+        petModel.setSummary(petModel.getEntry());
     }
 
 
@@ -84,6 +87,12 @@ public class SettingsFragment extends PreferenceFragment implements
             case Key.USER_NAME:
                 preference.setSummary(newValue.toString());
                 break;
+            case Key.PET_MODEL:
+                //选中选项时设置Summary
+                ListPreference listPreference = (ListPreference) preference;
+                CharSequence[] entries = listPreference.getEntries();
+                int index = listPreference.findIndexOfValue(newValue.toString());
+                preference.setSummary(entries[index]);
             case Key.WECHAT_NOTIFICATION:
                 if (newValue.equals(true)) {
                     // TODO: 2018/3/26 check permission & require permission
