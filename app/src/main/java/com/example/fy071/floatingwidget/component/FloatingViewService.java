@@ -124,6 +124,7 @@ public class FloatingViewService extends Service {
         UpdateUI update = new UpdateUI();
         updateThread = new Thread(update);
         updateThread.start();
+        setTheme(R.style.AppTheme);
         view = LayoutInflater.from(this).inflate(R.layout.popup_menu, null);
         windowManager = (WindowManager) this.getSystemService(WINDOW_SERVICE);
 
@@ -157,6 +158,55 @@ public class FloatingViewService extends Service {
          */
         view.setOnTouchListener(new FloatingTouchListener());
         view.setOnClickListener(new FloatingClickListener());
+        /*
+       circleMenuView.setEventListener(new CircleMenuView.EventListener() {
+            @Override
+            public void onMenuOpenAnimationStart(@NonNull CircleMenuView view) {
+                Log.d("D", "onMenuOpenAnimationStart");
+            }
+
+            @Override
+            public void onMenuOpenAnimationEnd(@NonNull CircleMenuView view) {
+                Log.d("D", "onMenuOpenAnimationEnd");
+            }
+
+            @Override
+            public void onMenuCloseAnimationStart(@NonNull CircleMenuView view) {
+                Log.d("D", "onMenuCloseAnimationStart");
+            }
+
+            @Override
+            public void onMenuCloseAnimationEnd(@NonNull CircleMenuView view) {
+                Log.d("D", "onMenuCloseAnimationEnd");
+            }
+
+            @Override
+            public void onButtonClickAnimationStart(@NonNull CircleMenuView view, int index) {
+                Log.d("D", "onButtonClickAnimationStart| index: " + index);
+            }
+
+            @Override
+            public void onButtonClickAnimationEnd(@NonNull CircleMenuView view, int index) {
+                Log.d("D", "onButtonClickAnimationEnd| index: " + index);
+            }
+
+            @Override
+            public boolean onButtonLongClick(@NonNull CircleMenuView view, int index) {
+                Log.d("D", "onButtonLongClick| index: " + index);
+                return true;
+            }
+
+            @Override
+            public void onButtonLongClickAnimationStart(@NonNull CircleMenuView view, int index) {
+                Log.d("D", "onButtonLongClickAnimationStart| index: " + index);
+            }
+
+            @Override
+            public void onButtonLongClickAnimationEnd(@NonNull CircleMenuView view, int index) {
+                Log.d("D", "onButtonLongClickAnimationEnd| index: " + index);
+            }
+        });
+       */
     }
 
     int getMin(float left, float right, float up, float bottom) {

@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 
 import com.example.fy071.floatingwidget.R;
 import com.ramotion.circlemenu.CircleMenuView;
@@ -16,7 +18,8 @@ public class Test extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.popup_menu);
-
+        View view = LayoutInflater.from(this).inflate(R.layout.popup_menu, null);
+        Log.d(TAG, "onCreate: " + view);
         final CircleMenuView menu = findViewById(R.id.circle_menu);
         Log.d(TAG, "onCreate: " + menu);
         menu.setEventListener(new CircleMenuView.EventListener() {
