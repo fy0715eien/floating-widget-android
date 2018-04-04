@@ -21,8 +21,11 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
+import android.widget.Toast;
 
 import com.example.fy071.floatingwidget.R;
+
+import static java.lang.Math.abs;
 
 public class FloatingViewService extends Service {
 
@@ -32,7 +35,8 @@ public class FloatingViewService extends Service {
     private static final int TO_BOTTOM = 4;
     private static final int UPDATE_PIC = 0x100;
     private View view;// 透明窗体
-    int statusBarHeight;
+    private int statusBarHeight;
+    private static final int DIFFER = 5;
     private HandlerUI handler = null;
     private Thread updateThread = null;
     private boolean viewAdded = false;// 透明窗体是否已经显示
@@ -151,7 +155,8 @@ public class FloatingViewService extends Service {
         /*
          * 监听窗体移动事件
          */
-        view.setOnTouchListener(new floatingListner());
+        view.setOnTouchListener(new floatingTouchListner());
+        view.setOnClickListener(new floatingClickListner());
     }
 
     int getMin(float left, float right, float up, float bottom) {
@@ -225,15 +230,17 @@ public class FloatingViewService extends Service {
     }
 
     /*悬浮窗监听器*/
-    class floatingListner implements View.OnTouchListener{
+    class floatingTouchListner implements View.OnTouchListener{
         float fingerStartX, fingerStartY;
-
+        float ScreenStartX,ScreenStartY;
         public boolean onTouch(View v, MotionEvent event) {
             int eventAction = event.getAction();
             switch (eventAction) {
                 case MotionEvent.ACTION_DOWN: // 按下事件，记录按下时手指在悬浮窗的XY坐标值
                     fingerStartX = event.getX();
                     fingerStartY = event.getY();
+                    ScreenStartX= event.getRawX();
+                    ScreenStartY= event.getRawY();
                     break;
 
                 case MotionEvent.ACTION_MOVE:
@@ -244,6 +251,8 @@ public class FloatingViewService extends Service {
                     DisplayMetrics dm = new DisplayMetrics();
                     windowManager.getDefaultDisplay().getMetrics(dm);
 
+                    float ScreenEndX=event.getRawX();
+                    float ScreenEndY=event.getRawY();
                     float left = event.getRawX() - fingerStartX + v.getWidth() / 2;
                     float up = event.getRawY() - fingerStartY + v.getHeight() / 2;
                     float right = dm.widthPixels - left;
@@ -265,9 +274,15 @@ public class FloatingViewService extends Service {
                             refreshView(event.getRawX() - fingerStartX, dm.heightPixels - v.getHeight());
                             break;
                     }
+                    if(abs(ScreenEndX-ScreenStartX)>DIFFER||abs(ScreenEndY-ScreenStartY)>DIFFER)
+                        return false;
             }
             return true;
         }
     }
-
+    class floatingClickListner implements View.OnClickListener{
+        public void onClick(View v) {
+            Toast.makeText(FloatingViewService.this,"hhhhh", Toast.LENGTH_LONG).show();
+        }
+        }
 }
