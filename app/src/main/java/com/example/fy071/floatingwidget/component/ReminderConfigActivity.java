@@ -9,10 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-
 import com.example.fy071.floatingwidget.R;
-
-import java.util.Calendar;
 
 public class ReminderConfigActivity extends Activity implements TimePickerDialog.TimePickerDialogInterface {
     private TimePickerDialog mTimePickerDialog;
@@ -33,7 +30,7 @@ public class ReminderConfigActivity extends Activity implements TimePickerDialog
         rd_content = (EditText) findViewById(R.id.reminder_content);
 
 
-        sharedPrefrences = this.getSharedPreferences(FILENAME, MODE_WORLD_READABLE);
+        sharedPrefrences = this.getSharedPreferences(FILENAME, MODE_PRIVATE);
         String r_upgrade= sharedPrefrences.getString("upgrade", "请输入提醒内容！");
 
         rd_content.setText(r_upgrade);
@@ -42,7 +39,7 @@ public class ReminderConfigActivity extends Activity implements TimePickerDialog
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editor = getSharedPreferences(FILENAME, MODE_WORLD_WRITEABLE).edit();
+                editor = getSharedPreferences(FILENAME, MODE_PRIVATE).edit();
                 String upgrade=rd_content.getText().toString();
                 editor.putString("upgrade", upgrade);
                 editor.apply();

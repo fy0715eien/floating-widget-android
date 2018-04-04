@@ -23,7 +23,8 @@ public class MainActivity extends AppCompatActivity implements
         SharedPreferences.OnSharedPreferenceChangeListener {
     public static final long DRAWER_HOME = 1L;
     public static final long DRAWER_SETTINGS = 2L;
-    public static final long DRAWER_ABOUT = 3L;
+    public static final long DRAWER_REMINDER = 3L;
+    public static final long DRAWER_ABOUT = 4L;
     private static final String TAG = "MainActivity";
     long previousSelectedItem;
 
@@ -54,7 +55,11 @@ public class MainActivity extends AppCompatActivity implements
                         new PrimaryDrawerItem()
                                 .withIdentifier(DRAWER_HOME)
                                 .withIcon(R.drawable.ic_home_black_24dp)
-                                .withName(R.string.drawer_item_home)
+                                .withName(R.string.drawer_item_home),
+                        new PrimaryDrawerItem()
+                                .withIdentifier(DRAWER_REMINDER)
+                                .withIcon(R.drawable.ic_alarm_black_24dp)
+                                .withName(R.string.drawer_item_reminder)
                 )
                 .addStickyDrawerItems(
                         new PrimaryDrawerItem()
@@ -76,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements
         defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPreferences = getPreferences(MODE_PRIVATE);
         PreferenceHelper.setPreferences(defaultSharedPreferences, sharedPreferences);
+
+        test();
     }
 
 
@@ -112,6 +119,8 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             if (id == DRAWER_HOME) {
                 displayFragment(homeFragment, R.string.drawer_item_home, id);
+            } else if (id == DRAWER_REMINDER) {
+                //displayFragment(reminderFragment, R.string.drawer_item_home, id);
             } else if (id == DRAWER_SETTINGS) {
                 displayFragment(settingsFragment, R.string.drawer_item_settings, id);
             } else if (id == DRAWER_ABOUT) {
@@ -168,5 +177,10 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             stopService(intent);
         }
+    }
+
+    private void test() {
+        Intent intent = new Intent(this, ReminderConfigActivity.class);
+        startActivity(intent);
     }
 }
