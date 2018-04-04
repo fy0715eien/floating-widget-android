@@ -1,14 +1,62 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:animateLayoutChanges="true">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
-    <include
-        layout="@layout/layout_pet"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-         />
-</FrameLayout>
+    <ImageView
+        android:id="@+id/id_b"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="clickview"
+        android:src="@drawable/ic_alarm_black_24dp" />
+
+    <ImageView
+        android:id="@+id/id_c"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="clickview"
+        android:src="@drawable/ic_alarm_black_24dp" />
+
+    <ImageView
+        android:id="@+id/id_d"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="clickview"
+        android:src="@drawable/ic_alarm_black_24dp" />
+
+    <ImageView
+        android:id="@+id/id_e"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="clickview"
+        android:src="@drawable/ic_alarm_black_24dp" />
+
+    <ImageView
+        android:id="@+id/id_f"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="clickview"
+        android:src="@drawable/ic_alarm_black_24dp" />
+
+    <ImageView
+        android:id="@+id/id_g"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="clickview"
+        android:src="@drawable/ic_alarm_black_24dp" />
+
+    <ImageView
+        android:id="@+id/id_h"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="clickview"
+        android:src="@drawable/ic_alarm_black_24dp" />
+
+    <ImageView
+        android:id="@+id/id_a"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="clickview"
+        android:src="@drawable/ic_close_black_24dp" />
+
+</RelativeLayout>
