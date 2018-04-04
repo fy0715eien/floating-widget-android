@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements
         sharedPreferences = getPreferences(MODE_PRIVATE);
         PreferenceHelper.setPreferences(defaultSharedPreferences, sharedPreferences);
 
-        test();
     }
 
 

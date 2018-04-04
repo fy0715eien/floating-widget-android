@@ -7,7 +7,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -18,7 +17,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.Toast;
@@ -28,7 +26,7 @@ import com.example.fy071.floatingwidget.R;
 import static java.lang.Math.abs;
 
 public class FloatingViewService extends Service {
-
+    private static final String TAG = "FloatingViewService";
     private static final int TO_LEFT = 1;
     private static final int TO_RIGHT = 2;
     private static final int TO_UP = 3;
@@ -155,8 +153,8 @@ public class FloatingViewService extends Service {
         /*
          * 监听窗体移动事件
          */
-        view.setOnTouchListener(new floatingTouchListner());
-        view.setOnClickListener(new floatingClickListner());
+        view.setOnTouchListener(new floatingTouchListener());
+        view.setOnClickListener(new FloatingClickListener());
     }
 
     int getMin(float left, float right, float up, float bottom) {
@@ -177,7 +175,7 @@ public class FloatingViewService extends Service {
      */
     private void refreshView(float x, float y) {
         layoutParams.x = (int) x;
-        layoutParams.y = (int) y;
+        layoutParams.y = (int) y - statusBarHeight;
         refresh();
     }
 
@@ -230,7 +228,7 @@ public class FloatingViewService extends Service {
     }
 
     /*悬浮窗监听器*/
-    class floatingTouchListner implements View.OnTouchListener{
+    class floatingTouchListener implements View.OnTouchListener {
         float fingerStartX, fingerStartY;
         float ScreenStartX,ScreenStartY;
         public boolean onTouch(View v, MotionEvent event) {
@@ -245,7 +243,7 @@ public class FloatingViewService extends Service {
 
                 case MotionEvent.ACTION_MOVE:
 
-                    refreshView(event.getRawX() - fingerStartX, event.getRawY() - fingerStartY-statusBarHeight);
+                    refreshView(event.getRawX() - fingerStartX, event.getRawY() - fingerStartY);
                     break;
                 case MotionEvent.ACTION_UP:
                     DisplayMetrics dm = new DisplayMetrics();
@@ -274,15 +272,18 @@ public class FloatingViewService extends Service {
                             refreshView(event.getRawX() - fingerStartX, dm.heightPixels - v.getHeight());
                             break;
                     }
-                    if(abs(ScreenEndX-ScreenStartX)>DIFFER||abs(ScreenEndY-ScreenStartY)>DIFFER)
-                        return false;
+                    if (abs(ScreenEndX - ScreenStartX) < DIFFER && abs(ScreenEndY - ScreenStartY) < DIFFER) {
+                        v.performClick();
+                    }
             }
             return true;
         }
     }
-    class floatingClickListner implements View.OnClickListener{
+
+    class FloatingClickListener implements View.OnClickListener {
+        @Override
         public void onClick(View v) {
             Toast.makeText(FloatingViewService.this,"hhhhh", Toast.LENGTH_LONG).show();
         }
-        }
+    }
 }
