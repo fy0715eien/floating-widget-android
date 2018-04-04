@@ -10,6 +10,7 @@ public class PreferenceHelper {
     public static boolean widgetEnabled;
     public static String petName;
     public static String userName;
+    public static String petModel;
     public static boolean wechatNotification;
     public static boolean startAtBoot;
 
@@ -24,6 +25,7 @@ public class PreferenceHelper {
         widgetEnabled = defaultSharedPreferences.getBoolean(Key.ENABLE_WIDGET, false);
         petName = defaultSharedPreferences.getString(Key.PET_NAME, "");
         userName = defaultSharedPreferences.getString(Key.USER_NAME, "");
+        petModel = defaultSharedPreferences.getString(Key.PET_MODEL, "");
         wechatNotification = defaultSharedPreferences.getBoolean(Key.WECHAT_NOTIFICATION, false);
         startAtBoot = defaultSharedPreferences.getBoolean(Key.START_AT_BOOT, false);
 

@@ -41,20 +41,34 @@ public class SettingsFragment extends PreferenceFragment implements
         addPreferencesFromResource(R.xml.preferences);
 
         switchPreference = (SwitchPreference) findPreference(Key.ENABLE_WIDGET);
-        switchPreference.setOnPreferenceChangeListener(this);
-
         petName = (EditTextPreference) findPreference(Key.PET_NAME);
-        petName.setSummary(PreferenceHelper.petName);
-        petName.setOnPreferenceChangeListener(this);
-
         userName = (EditTextPreference) findPreference(Key.USER_NAME);
-        userName.setSummary(PreferenceHelper.userName);
-        userName.setOnPreferenceChangeListener(this);
-
+        petModel = (ListPreference) findPreference(Key.PET_MODEL);
         wechatNotification = (CheckBoxPreference) findPreference(Key.WECHAT_NOTIFICATION);
+
+        switchPreference.setOnPreferenceChangeListener(this);
+        petName.setOnPreferenceChangeListener(this);
+        userName.setOnPreferenceChangeListener(this);
+        petModel.setOnPreferenceChangeListener(this);
         wechatNotification.setOnPreferenceChangeListener(this);
+
+        //设置Summary以显示上次设置内容
+        petName.setSummary(PreferenceHelper.petName);
+        userName.setSummary(PreferenceHelper.userName);
+        petModel.setSummary(petModel.getEntry());
     }
 
+
+    private void checkPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getActivity())) {
+            new AlertDialog.Builder(getActivity())
+                    .setTitle("Special permission required")
+                    .setMessage("Please grant permission for this app in the next page")
+                    .setNegativeButton("Cancel", this)
+                    .setPositiveButton("OK", this)
+                    .show();
+        }
+    }
 
 
     @Override
@@ -66,20 +80,19 @@ public class SettingsFragment extends PreferenceFragment implements
             //如果系统版本低于6.0，则保存该开关改变
             case Key.ENABLE_WIDGET:
                 if (newValue.equals(true)) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getActivity())) {
-                        new AlertDialog.Builder(getActivity())
-                                .setTitle("Special permission required")
-                                .setMessage("Please grant permission for this app in the next page")
-                                .setNegativeButton("Cancel", this)
-                                .setPositiveButton("OK", this)
-                                .show();
-                    }
+                    checkPermission();
                 }
                 break;
             case Key.PET_NAME:
             case Key.USER_NAME:
                 preference.setSummary(newValue.toString());
                 break;
+            case Key.PET_MODEL:
+                //选中选项时设置Summary
+                ListPreference listPreference = (ListPreference) preference;
+                CharSequence[] entries = listPreference.getEntries();
+                int index = listPreference.findIndexOfValue(newValue.toString());
+                preference.setSummary(entries[index]);
             case Key.WECHAT_NOTIFICATION:
                 if (newValue.equals(true)) {
                     // TODO: 2018/3/26 check permission & require permission
@@ -93,11 +106,7 @@ public class SettingsFragment extends PreferenceFragment implements
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (PreferenceHelper.widgetEnabled) {
-            getActivity().startService(new Intent(getActivity(), FloatingViewService.class));
-        } else {
-            getActivity().stopService(new Intent(getActivity(), FloatingViewService.class));
-        }
+
     }
 
 
