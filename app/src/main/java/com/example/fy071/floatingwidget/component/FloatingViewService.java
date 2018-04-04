@@ -1,5 +1,7 @@
 package com.example.fy071.floatingwidget.component;
 
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -19,10 +21,15 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
+import android.view.animation.BounceInterpolator;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.fy071.floatingwidget.R;
 import com.ramotion.circlemenu.CircleMenuView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.Math.abs;
 
@@ -42,6 +49,16 @@ public class FloatingViewService extends Service {
     private boolean viewAdded = false;// 透明窗体是否已经显示
     private WindowManager windowManager;
     private WindowManager.LayoutParams layoutParams;
+    private WindowManager.LayoutParams centerLayoutParams;
+
+
+    //图片资源
+    private int[] res = { R.id.id_a, R.id.id_b, R.id.id_c, R.id.id_d, R.id.id_e, R.id.id_f, R.id.id_g, R.id.id_h };
+    //存放ImageView
+    private List<ImageView> imageViewList = new ArrayList<ImageView>();
+    //菜单是不是展开
+    private boolean isNotExpand = true;
+
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -124,8 +141,18 @@ public class FloatingViewService extends Service {
         UpdateUI update = new UpdateUI();
         updateThread = new Thread(update);
         updateThread.start();
-        setTheme(R.style.AppTheme);
-        view = LayoutInflater.from(this).inflate(R.layout.popup_menu, null);
+        view = LayoutInflater.from(this).inflate(R.layout.service_floating_view, null);
+        view.setOnTouchListener(new FloatingTouchListener());
+
+        for (int i = 0; i < res.length; i++) {
+            ImageView imageView = (ImageView) view.findViewById(res[i]);
+            //存放在list中
+            imageView.setOnTouchListener(new FloatingTouchListener());
+            imageView.setOnClickListener(new FloatingClickListener());
+            imageViewList.add(imageView);
+
+        }
+
         windowManager = (WindowManager) this.getSystemService(WINDOW_SERVICE);
 
         /*
@@ -141,8 +168,23 @@ public class FloatingViewService extends Service {
                     LayoutParams.FLAG_NOT_FOCUSABLE,
                     PixelFormat.TRANSPARENT
             );
+            centerLayoutParams = new LayoutParams(
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSPARENT
+            );
+
         } else {
             layoutParams = new LayoutParams(
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.TYPE_SYSTEM_ERROR,
+                    LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSPARENT
+            );
+            centerLayoutParams = new LayoutParams(
                     LayoutParams.WRAP_CONTENT,
                     LayoutParams.WRAP_CONTENT,
                     LayoutParams.TYPE_SYSTEM_ERROR,
@@ -152,61 +194,12 @@ public class FloatingViewService extends Service {
         }
         //悬浮窗开始在左上角显示
         layoutParams.gravity = Gravity.START | Gravity.TOP;
+        centerLayoutParams.gravity=Gravity.CENTER;
 
         /*
          * 监听窗体移动事件
          */
-        view.setOnTouchListener(new FloatingTouchListener());
-        view.setOnClickListener(new FloatingClickListener());
-        /*
-       circleMenuView.setEventListener(new CircleMenuView.EventListener() {
-            @Override
-            public void onMenuOpenAnimationStart(@NonNull CircleMenuView view) {
-                Log.d("D", "onMenuOpenAnimationStart");
-            }
 
-            @Override
-            public void onMenuOpenAnimationEnd(@NonNull CircleMenuView view) {
-                Log.d("D", "onMenuOpenAnimationEnd");
-            }
-
-            @Override
-            public void onMenuCloseAnimationStart(@NonNull CircleMenuView view) {
-                Log.d("D", "onMenuCloseAnimationStart");
-            }
-
-            @Override
-            public void onMenuCloseAnimationEnd(@NonNull CircleMenuView view) {
-                Log.d("D", "onMenuCloseAnimationEnd");
-            }
-
-            @Override
-            public void onButtonClickAnimationStart(@NonNull CircleMenuView view, int index) {
-                Log.d("D", "onButtonClickAnimationStart| index: " + index);
-            }
-
-            @Override
-            public void onButtonClickAnimationEnd(@NonNull CircleMenuView view, int index) {
-                Log.d("D", "onButtonClickAnimationEnd| index: " + index);
-            }
-
-            @Override
-            public boolean onButtonLongClick(@NonNull CircleMenuView view, int index) {
-                Log.d("D", "onButtonLongClick| index: " + index);
-                return true;
-            }
-
-            @Override
-            public void onButtonLongClickAnimationStart(@NonNull CircleMenuView view, int index) {
-                Log.d("D", "onButtonLongClickAnimationStart| index: " + index);
-            }
-
-            @Override
-            public void onButtonLongClickAnimationEnd(@NonNull CircleMenuView view, int index) {
-                Log.d("D", "onButtonLongClickAnimationEnd| index: " + index);
-            }
-        });
-       */
     }
 
     int getMin(float left, float right, float up, float bottom) {
@@ -334,9 +327,71 @@ public class FloatingViewService extends Service {
 
 
     class FloatingClickListener implements View.OnClickListener {
+
         @Override
         public void onClick(View v) {
-            Toast.makeText(FloatingViewService.this,"hhhhh", Toast.LENGTH_LONG).show();
+
+            switch (v.getId()) {
+                //主菜单被点击
+                case R.id.id_a:
+                    //主菜单没有展开时被点击
+                    if (isNotExpand == true) {
+                        //启动动画
+                        startAnim();
+                    } else {
+                        //关闭动画
+                        closeAnim();
+                    }
+                    break;
+                //定义其他组件被点击时触发的事件
+                default:
+                    Toast.makeText(FloatingViewService.this, "您点击了:" + view.getId(), Toast.LENGTH_LONG).show();
+                    break;
+            }
+        }
+
+        //关闭动画
+        private void closeAnim() {
+            for (int i = 1; i < res.length; i++) {
+                float angle = (360 * 1.0f / (res.length - 2)) * (i - 1);
+                PropertyValuesHolder holder1 = PropertyValuesHolder.ofFloat("translationX", (float) (Math.sin((angle * 1.57 / 90)) * 200), 0);
+                PropertyValuesHolder holder2 = PropertyValuesHolder.ofFloat("translationY", (float) (Math.cos((angle * 1.57 / 90)) * 200), 0);
+                ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(imageViewList.get(i), holder1, holder2);
+                // ObjectAnimator animator =
+                // ObjectAnimator.ofFloat(imageViewList.get(i), "translationY", i * 60, 0);
+                animator.setDuration(300);
+                animator.start();
+                isNotExpand = true;
+
+            }
+        }
+
+        //开始动画
+        private void startAnim() {
+            //遍历第一个不是主菜单的ImageView列表
+            for (int i = 1; i < res.length; i++) {
+                //获取展开角度
+                float angle = (360 * 1.0f / (res.length - 2)) * (i - 1);
+                //获取X位移
+                PropertyValuesHolder holder1 = PropertyValuesHolder.ofFloat("translationX", 0, (float) (Math.sin((angle * 1.57 / 90)) * 200));
+                //获取Y位移
+                PropertyValuesHolder holder2 = PropertyValuesHolder.ofFloat("translationY", 0, (float) (Math.cos((angle * 1.57 / 90)) * 200));
+                //设置ImageView的属性动画
+                ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(imageViewList.get(i), holder1, holder2);
+                // ObjectAnimator animator =
+                // ObjectAnimator.ofFloat(imageViewList.get(i), "translationY", 0, i *
+                // 60);
+                //动画时间
+                animator.setDuration(1000);
+                //动画延迟时间
+                animator.setFrameDelay(500 * i);
+                //设置加速器
+                animator.setInterpolator(new BounceInterpolator());
+                //启动动画
+                animator.start();
+                isNotExpand = false;
+            }
         }
     }
 }
+
