@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.fy071.floatingwidget">
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -19,6 +21,8 @@
         <activity android:name=".component.ReminderConfigActivity" />
 
         <service android:name=".component.FloatingViewService" />
+
+        <activity android:name=".component.Test"></activity>
     </application>
 
 </manifest>

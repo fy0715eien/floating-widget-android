@@ -3,6 +3,7 @@ package com.example.fy071.floatingwidget.component;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -25,7 +26,8 @@ public class ReminderConfigActivity extends Activity implements TimePickerDialog
         super.onCreate(savedInstanceState);
         setContentView(R.layout.reminder);
         mTimePickerDialog = new TimePickerDialog(ReminderConfigActivity.this);
-
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.toolbar_new_reminder);
 
         rd_content = (EditText) findViewById(R.id.reminder_content);
 

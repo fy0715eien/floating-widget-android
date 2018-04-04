@@ -22,6 +22,7 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.Toast;
 
 import com.example.fy071.floatingwidget.R;
+import com.ramotion.circlemenu.CircleMenuView;
 
 import static java.lang.Math.abs;
 
@@ -34,6 +35,7 @@ public class FloatingViewService extends Service {
     private static final int UPDATE_PIC = 0x100;
     private View view;// 透明窗体
     private int statusBarHeight;
+    private CircleMenuView circleMenuView;
     private static final int DIFFER = 5;//距离
     private HandlerUI handler = null;
     private Thread updateThread = null;
@@ -122,7 +124,7 @@ public class FloatingViewService extends Service {
         UpdateUI update = new UpdateUI();
         updateThread = new Thread(update);
         updateThread.start();
-        view = LayoutInflater.from(this).inflate(R.layout.service_floating_view, null);
+        view = LayoutInflater.from(this).inflate(R.layout.popup_menu, null);
         windowManager = (WindowManager) this.getSystemService(WINDOW_SERVICE);
 
         /*
@@ -153,7 +155,7 @@ public class FloatingViewService extends Service {
         /*
          * 监听窗体移动事件
          */
-        view.setOnTouchListener(new floatingTouchListener());
+        view.setOnTouchListener(new FloatingTouchListener());
         view.setOnClickListener(new FloatingClickListener());
     }
 
@@ -228,7 +230,7 @@ public class FloatingViewService extends Service {
     }
 
     /*悬浮窗监听器*/
-    class floatingTouchListener implements View.OnTouchListener {
+    class FloatingTouchListener implements View.OnTouchListener {
         float fingerStartX, fingerStartY;
         float ScreenStartX,ScreenStartY;
         public boolean onTouch(View v, MotionEvent event) {
@@ -279,6 +281,7 @@ public class FloatingViewService extends Service {
             return true;
         }
     }
+
 
     class FloatingClickListener implements View.OnClickListener {
         @Override

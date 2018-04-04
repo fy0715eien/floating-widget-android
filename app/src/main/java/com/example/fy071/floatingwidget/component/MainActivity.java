@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity implements
         defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPreferences = getPreferences(MODE_PRIVATE);
         PreferenceHelper.setPreferences(defaultSharedPreferences, sharedPreferences);
-
     }
 
 
@@ -154,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements
             drawer.closeDrawer();
         } else if (previousSelectedItem == DRAWER_HOME) {
             super.onBackPressed();
+            startWidget();
         } else {
             drawer.setSelection(DRAWER_HOME);
         }
@@ -166,10 +166,18 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-    //用户离开当前应用时开启Service
+    //用户离开当前应用时(点击Home键或多任务键)开启Service
     @Override
     protected void onUserLeaveHint() {
         super.onUserLeaveHint();
+        startWidget();
+    }
+
+
+    /*Enable Widget开关开启时调用本方法启动Service
+    关闭时调用本方法不开启
+     */
+    private void startWidget() {
         Intent intent = new Intent(this, FloatingViewService.class);
         if (PreferenceHelper.widgetEnabled) {
             startService(intent);
@@ -178,8 +186,10 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+
+    //用于测试其他Activity
     private void test() {
-        Intent intent = new Intent(this, ReminderConfigActivity.class);
+        Intent intent = new Intent(this, Test.class);
         startActivity(intent);
     }
 }
