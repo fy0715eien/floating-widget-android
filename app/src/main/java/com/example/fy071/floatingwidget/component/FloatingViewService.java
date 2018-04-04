@@ -36,7 +36,7 @@ public class FloatingViewService extends Service {
     private static final int UPDATE_PIC = 0x100;
     private View view;// 透明窗体
     private int statusBarHeight;
-    private static final int DIFFER = 5;
+    private static final int DIFFER = 5;//距离
     private HandlerUI handler = null;
     private Thread updateThread = null;
     private boolean viewAdded = false;// 透明窗体是否已经显示
