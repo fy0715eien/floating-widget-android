@@ -175,7 +175,7 @@ public class FloatingViewService extends Service {
                     LayoutParams.FLAG_NOT_FOCUSABLE,
                     PixelFormat.TRANSPARENT
             );
-
+//注释
         } else {
             layoutParams = new LayoutParams(
                     LayoutParams.WRAP_CONTENT,
