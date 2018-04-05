@@ -1,7 +1,5 @@
 package com.example.fy071.floatingwidget.component;
 
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -13,33 +11,36 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
-import android.view.animation.BounceInterpolator;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.fy071.floatingwidget.R;
 import com.ramotion.circlemenu.CircleMenuView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static java.lang.Math.abs;
 
 public class FloatingViewService extends Service {
     private static final String TAG = "FloatingViewService";
+
     private static final int TO_LEFT = 1;
     private static final int TO_RIGHT = 2;
     private static final int TO_UP = 3;
     private static final int TO_BOTTOM = 4;
     private static final int UPDATE_PIC = 0x100;
+
+    public static final int BUTTON_REMINDER = 0;
+    public static final int BUTTON_SETTINGS = 1;
+    public static final int BUTTON_CLOSE = 2;
+
     private View view;// 透明窗体
     private int statusBarHeight;
     private CircleMenuView circleMenuView;
@@ -49,16 +50,6 @@ public class FloatingViewService extends Service {
     private boolean viewAdded = false;// 透明窗体是否已经显示
     private WindowManager windowManager;
     private WindowManager.LayoutParams layoutParams;
-    private WindowManager.LayoutParams centerLayoutParams;
-
-
-    //图片资源
-    private int[] res = { R.id.id_a, R.id.id_b, R.id.id_c, R.id.id_d, R.id.id_e, R.id.id_f, R.id.id_g, R.id.id_h };
-    //存放ImageView
-    private List<ImageView> imageViewList = new ArrayList<ImageView>();
-    //菜单是不是展开
-    private boolean isNotExpand = true;
-
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -141,18 +132,9 @@ public class FloatingViewService extends Service {
         UpdateUI update = new UpdateUI();
         updateThread = new Thread(update);
         updateThread.start();
-        view = LayoutInflater.from(this).inflate(R.layout.service_floating_view, null);
-        view.setOnTouchListener(new FloatingTouchListener());
-
-        for (int i = 0; i < res.length; i++) {
-            ImageView imageView = (ImageView) view.findViewById(res[i]);
-            //存放在list中
-            imageView.setOnTouchListener(new FloatingTouchListener());
-            imageView.setOnClickListener(new FloatingClickListener());
-            imageViewList.add(imageView);
-
-        }
-
+        setTheme(R.style.AppTheme);
+        view = LayoutInflater.from(this).inflate(R.layout.popup_menu, null);
+        CircleMenuView circleMenuView = view.findViewById(R.id.circle_menu);
         windowManager = (WindowManager) this.getSystemService(WINDOW_SERVICE);
 
         /*
@@ -168,23 +150,8 @@ public class FloatingViewService extends Service {
                     LayoutParams.FLAG_NOT_FOCUSABLE,
                     PixelFormat.TRANSPARENT
             );
-            centerLayoutParams = new LayoutParams(
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.TYPE_APPLICATION_OVERLAY,
-                    LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSPARENT
-            );
-//注释
         } else {
             layoutParams = new LayoutParams(
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.TYPE_SYSTEM_ERROR,
-                    LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSPARENT
-            );
-            centerLayoutParams = new LayoutParams(
                     LayoutParams.WRAP_CONTENT,
                     LayoutParams.WRAP_CONTENT,
                     LayoutParams.TYPE_SYSTEM_ERROR,
@@ -194,12 +161,36 @@ public class FloatingViewService extends Service {
         }
         //悬浮窗开始在左上角显示
         layoutParams.gravity = Gravity.START | Gravity.TOP;
-        centerLayoutParams.gravity=Gravity.CENTER;
 
-        /*
-         * 监听窗体移动事件
-         */
+        view.setOnTouchListener(new FloatingTouchListener());
+        view.setOnClickListener(new FloatingClickListener());
+        circleMenuView.setEventListener(new CircleMenuView.EventListener() {
+            @Override
+            public void onMenuCloseAnimationStart(@NonNull CircleMenuView view) {
+                Log.d("D", "onMenuCloseAnimationStart");
+            }
 
+            @Override
+            public void onMenuCloseAnimationEnd(@NonNull CircleMenuView view) {
+            }
+
+            @Override
+            public void onButtonClickAnimationEnd(@NonNull CircleMenuView view, int index) {
+                switch (index) {
+                    case BUTTON_REMINDER:
+                        MainActivity.startThis(FloatingViewService.this, "ReminderFragment");
+                        break;
+                    case BUTTON_SETTINGS:
+                        MainActivity.startThis(FloatingViewService.this, "SettingsFragment");
+                        break;
+                    case BUTTON_CLOSE:
+                        stopSelf();
+                        break;
+                    default:
+                }
+                view.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 
     int getMin(float left, float right, float up, float bottom) {
@@ -254,7 +245,6 @@ public class FloatingViewService extends Service {
      * @author Administrator
      */
     class UpdateUI implements Runnable {
-
         @Override
         public void run() {
             // 如果没有中断就一直运行
@@ -271,6 +261,7 @@ public class FloatingViewService extends Service {
             }
         }
     }
+
 
     /*悬浮窗监听器*/
     class FloatingTouchListener implements View.OnTouchListener {
@@ -327,71 +318,12 @@ public class FloatingViewService extends Service {
 
 
     class FloatingClickListener implements View.OnClickListener {
-
         @Override
         public void onClick(View v) {
-
-            switch (v.getId()) {
-                //主菜单被点击
-                case R.id.id_a:
-                    //主菜单没有展开时被点击
-                    if (isNotExpand == true) {
-                        //启动动画
-                        startAnim();
-                    } else {
-                        //关闭动画
-                        closeAnim();
-                    }
-                    break;
-                //定义其他组件被点击时触发的事件
-                default:
-                    Toast.makeText(FloatingViewService.this, "您点击了:" + view.getId(), Toast.LENGTH_LONG).show();
-                    break;
-            }
-        }
-
-        //关闭动画
-        private void closeAnim() {
-            for (int i = 1; i < res.length; i++) {
-                float angle = (360 * 1.0f / (res.length - 2)) * (i - 1);
-                PropertyValuesHolder holder1 = PropertyValuesHolder.ofFloat("translationX", (float) (Math.sin((angle * 1.57 / 90)) * 200), 0);
-                PropertyValuesHolder holder2 = PropertyValuesHolder.ofFloat("translationY", (float) (Math.cos((angle * 1.57 / 90)) * 200), 0);
-                ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(imageViewList.get(i), holder1, holder2);
-                // ObjectAnimator animator =
-                // ObjectAnimator.ofFloat(imageViewList.get(i), "translationY", i * 60, 0);
-                animator.setDuration(300);
-                animator.start();
-                isNotExpand = true;
-
-            }
-        }
-
-        //开始动画
-        private void startAnim() {
-            //遍历第一个不是主菜单的ImageView列表
-            for (int i = 1; i < res.length; i++) {
-                //获取展开角度
-                float angle = (360 * 1.0f / (res.length - 2)) * (i - 1);
-                //获取X位移
-                PropertyValuesHolder holder1 = PropertyValuesHolder.ofFloat("translationX", 0, (float) (Math.sin((angle * 1.57 / 90)) * 200));
-                //获取Y位移
-                PropertyValuesHolder holder2 = PropertyValuesHolder.ofFloat("translationY", 0, (float) (Math.cos((angle * 1.57 / 90)) * 200));
-                //设置ImageView的属性动画
-                ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(imageViewList.get(i), holder1, holder2);
-                // ObjectAnimator animator =
-                // ObjectAnimator.ofFloat(imageViewList.get(i), "translationY", 0, i *
-                // 60);
-                //动画时间
-                animator.setDuration(1000);
-                //动画延迟时间
-                animator.setFrameDelay(500 * i);
-                //设置加速器
-                animator.setInterpolator(new BounceInterpolator());
-                //启动动画
-                animator.start();
-                isNotExpand = false;
-            }
+            Toast.makeText(FloatingViewService.this, "hhhhh", Toast.LENGTH_LONG).show();
         }
     }
-}
 
+
+
+}

@@ -1,6 +1,7 @@
 package com.example.fy071.floatingwidget.component;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements
     public static final long DRAWER_ABOUT = 4L;
     private static final String TAG = "MainActivity";
     long previousSelectedItem;
+    private static String startFragment;
 
     Toolbar toolbar;
     Drawer drawer;
@@ -35,6 +37,12 @@ public class MainActivity extends AppCompatActivity implements
 
     SharedPreferences sharedPreferences;
     SharedPreferences defaultSharedPreferences;
+
+    public static void startThis(Context context, String fragment) {
+        Intent intent = new Intent(context, MainActivity.class);
+        startFragment = fragment;
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements
         homeFragment = new HomeFragment();
         settingsFragment = new SettingsFragment();
 
-        displayFragment(homeFragment, R.string.drawer_item_home, DRAWER_HOME);
 
         drawer=new DrawerBuilder()
                 .withActivity(this)
@@ -81,7 +88,6 @@ public class MainActivity extends AppCompatActivity implements
         defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPreferences = getPreferences(MODE_PRIVATE);
         PreferenceHelper.setPreferences(defaultSharedPreferences, sharedPreferences);
-        test();
     }
 
 
@@ -90,14 +96,16 @@ public class MainActivity extends AppCompatActivity implements
         super.onDestroy();
     }
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Intent intent = new Intent(this, FloatingViewService.class);
-        stopService(intent);
-        defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this);
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+    //以静态变量设置活动开启时的碎片
+    private void setStartSelection() {
+        if (startFragment == null) {
+            displayFragment(homeFragment, R.string.drawer_item_home, DRAWER_HOME);
+        } else if (startFragment.equals("ReminderFragment")) {
+            drawer.setSelection(DRAWER_REMINDER);
+        } else if (startFragment.equals("SettingsFragment")) {
+            drawer.setStickyFooterSelection(DRAWER_SETTINGS, true);
+        }
+        startFragment = null;
     }
 
 
@@ -192,5 +200,15 @@ public class MainActivity extends AppCompatActivity implements
     private void test() {
         Intent intent = new Intent(this, Test.class);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Intent intent = new Intent(this, FloatingViewService.class);
+        stopService(intent);
+        setStartSelection();
+        defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this);
+        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 }
