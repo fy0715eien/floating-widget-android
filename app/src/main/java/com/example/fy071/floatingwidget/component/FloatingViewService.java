@@ -184,10 +184,11 @@ public class FloatingViewService extends Service {
         view.setOnClickListener(new FloatingClickListener());
         circleMenuView.setEventListener(new CircleMenuView.EventListener() {
             public void onMenuOpenAnimationStart(@NonNull CircleMenuView view) {
-                Toast.makeText(FloatingViewService.this,"1111111111111",Toast.LENGTH_LONG).show();
+                Log.d(TAG, "onMenuOpenAnimationStart: ");
             }
 
             public void onMenuOpenAnimationEnd(@NonNull CircleMenuView view) {
+                Log.d(TAG, "onMenuOpenAnimationEnd: ");
             }
             @Override
             public void onMenuCloseAnimationStart(@NonNull CircleMenuView v) {
@@ -196,6 +197,7 @@ public class FloatingViewService extends Service {
 
             @Override
             public void onMenuCloseAnimationEnd(@NonNull CircleMenuView v) {
+                Log.d(TAG, "onMenuCloseAnimationEnd: ");
                 windowManager.removeView(menuview);
                 refresh();
             }
@@ -204,10 +206,8 @@ public class FloatingViewService extends Service {
             public void onButtonClickAnimationEnd(@NonNull CircleMenuView view, int index) {
                 switch (index) {
                     case BUTTON_REMINDER:
-                        MainActivity.startThis(FloatingViewService.this, "ReminderFragment");
                         break;
                     case BUTTON_SETTINGS:
-                        MainActivity.startThis(FloatingViewService.this, "SettingsFragment");
                         break;
                     case BUTTON_CLOSE:
                         stopSelf();

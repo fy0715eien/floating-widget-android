@@ -1,8 +1,8 @@
 package com.example.fy071.floatingwidget.component;
 
-import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -12,12 +12,12 @@ import android.widget.TextView;
 
 import com.example.fy071.floatingwidget.R;
 
-public class ReminderConfigActivity extends Activity implements TimePickerDialog.TimePickerDialogInterface {
+public class ReminderConfigActivity extends AppCompatActivity implements TimePickerDialog.TimePickerDialogInterface {
     private TimePickerDialog mTimePickerDialog;
     private EditText rd_content;
-    private SharedPreferences sharedPrefrences;
+    private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
-
+    private Toolbar toolbar;
     // 要存储的文件名
     private static final String FILENAME = "filename";
 
@@ -26,44 +26,53 @@ public class ReminderConfigActivity extends Activity implements TimePickerDialog
         super.onCreate(savedInstanceState);
         setContentView(R.layout.reminder);
         mTimePickerDialog = new TimePickerDialog(ReminderConfigActivity.this);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.toolbar_new_reminder);
 
-        rd_content = (EditText) findViewById(R.id.reminder_content);
+        toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.drawer_item_reminder);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
+        rd_content = findViewById(R.id.reminder_content);
 
-        sharedPrefrences = this.getSharedPreferences(FILENAME, MODE_PRIVATE);
-        String r_upgrade= sharedPrefrences.getString("upgrade", "请输入提醒内容！");
+        sharedPreferences = this.getSharedPreferences(FILENAME, MODE_PRIVATE);
+        String r_upgrade = sharedPreferences.getString("upgrade", "请输入提醒内容！");
 
         rd_content.setText(r_upgrade);
 
-        Button bt = (Button) findViewById(R.id.button_save);
-        bt.setOnClickListener(new View.OnClickListener() {
+        Button button = findViewById(R.id.button_save);
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 editor = getSharedPreferences(FILENAME, MODE_PRIVATE).edit();
-                String upgrade=rd_content.getText().toString();
+                String upgrade = rd_content.getText().toString();
                 editor.putString("upgrade", upgrade);
                 editor.apply();
-                }
+            }
         });
     }
 
     //时间选择器----------确定
     @Override
     public void positiveListener() {
-        TextView reminder_time = (TextView)findViewById(R.id.reminder_time);
+        TextView reminder_time = (TextView) findViewById(R.id.reminder_time);
         int year = mTimePickerDialog.getYear();
         int month = mTimePickerDialog.getMonth();
         int day = mTimePickerDialog.getDay();
         int hour = mTimePickerDialog.getHour();
         int minute = mTimePickerDialog.getMinute();
-        Log.i("=====","=======year======"+mTimePickerDialog.getYear());
-        Log.i("=====","=======getMonth======"+mTimePickerDialog.getMonth());
-        Log.i("=====","=======getDay======"+mTimePickerDialog.getDay());
-        Log.i("=====","=======getHour======"+mTimePickerDialog.getHour());
-        Log.i("=====","=======getMinute======"+mTimePickerDialog.getMinute());
-        reminder_time.setText(year+"年"+month+"月"+day+"日"+hour+":"+minute);
+        Log.i("=====", "=======year======" + mTimePickerDialog.getYear());
+        Log.i("=====", "=======getMonth======" + mTimePickerDialog.getMonth());
+        Log.i("=====", "=======getDay======" + mTimePickerDialog.getDay());
+        Log.i("=====", "=======getHour======" + mTimePickerDialog.getHour());
+        Log.i("=====", "=======getMinute======" + mTimePickerDialog.getMinute());
+        reminder_time.setText(year + "年" + month + "月" + day + "日" + hour + ":" + minute);
     }
 
     //时间选择器-------取消

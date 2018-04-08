@@ -14,7 +14,7 @@ import java.util.List;
 
 
 
-public class WeChatNotifacation extends AccessibilityService {
+public class WeChatNotification extends AccessibilityService {
     private String ChatName;
     private String ChatRecord = "abc";
     private String VideoSecond;
@@ -31,7 +31,6 @@ public class WeChatNotifacation extends AccessibilityService {
                 getWeChatLog(rootNode);
                 break;
         }
-
     }
 
     /**
