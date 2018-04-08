@@ -42,6 +42,7 @@ public class FloatingViewService extends Service {
     public static final int BUTTON_CLOSE = 2;
 
     private View view;// 透明窗体
+    private View menuview;// 菜单窗体
     private int statusBarHeight;
     private CircleMenuView circleMenuView;
     private static final int DIFFER = 5;//距离
@@ -50,6 +51,7 @@ public class FloatingViewService extends Service {
     private boolean viewAdded = false;// 透明窗体是否已经显示
     private WindowManager windowManager;
     private WindowManager.LayoutParams layoutParams;
+    private WindowManager.LayoutParams centerLayoutParams;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -133,8 +135,9 @@ public class FloatingViewService extends Service {
         updateThread = new Thread(update);
         updateThread.start();
         setTheme(R.style.AppTheme);
-        view = LayoutInflater.from(this).inflate(R.layout.popup_menu, null);
-        CircleMenuView circleMenuView = view.findViewById(R.id.circle_menu);
+        view = LayoutInflater.from(this).inflate(R.layout.service_floating_view, null);
+        menuview=LayoutInflater.from(this).inflate(R.layout.popup_menu, null);
+        circleMenuView = menuview.findViewById(R.id.circle_menu);
         windowManager = (WindowManager) this.getSystemService(WINDOW_SERVICE);
 
         /*
@@ -150,8 +153,22 @@ public class FloatingViewService extends Service {
                     LayoutParams.FLAG_NOT_FOCUSABLE,
                     PixelFormat.TRANSPARENT
             );
+            centerLayoutParams = new LayoutParams(
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSPARENT
+            );
         } else {
             layoutParams = new LayoutParams(
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.TYPE_SYSTEM_ERROR,
+                    LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSPARENT
+            );
+            centerLayoutParams = new LayoutParams(
                     LayoutParams.WRAP_CONTENT,
                     LayoutParams.WRAP_CONTENT,
                     LayoutParams.TYPE_SYSTEM_ERROR,
@@ -161,17 +178,26 @@ public class FloatingViewService extends Service {
         }
         //悬浮窗开始在左上角显示
         layoutParams.gravity = Gravity.START | Gravity.TOP;
+        centerLayoutParams.gravity=Gravity.CENTER;
 
         view.setOnTouchListener(new FloatingTouchListener());
         view.setOnClickListener(new FloatingClickListener());
         circleMenuView.setEventListener(new CircleMenuView.EventListener() {
+            public void onMenuOpenAnimationStart(@NonNull CircleMenuView view) {
+                Toast.makeText(FloatingViewService.this,"1111111111111",Toast.LENGTH_LONG).show();
+            }
+
+            public void onMenuOpenAnimationEnd(@NonNull CircleMenuView view) {
+            }
             @Override
-            public void onMenuCloseAnimationStart(@NonNull CircleMenuView view) {
+            public void onMenuCloseAnimationStart(@NonNull CircleMenuView v) {
                 Log.d("D", "onMenuCloseAnimationStart");
             }
 
             @Override
-            public void onMenuCloseAnimationEnd(@NonNull CircleMenuView view) {
+            public void onMenuCloseAnimationEnd(@NonNull CircleMenuView v) {
+                windowManager.removeView(menuview);
+                refresh();
             }
 
             @Override
@@ -188,7 +214,7 @@ public class FloatingViewService extends Service {
                         break;
                     default:
                 }
-                view.setVisibility(View.INVISIBLE);
+                windowManager.removeView(menuview);
             }
         });
     }
@@ -320,10 +346,9 @@ public class FloatingViewService extends Service {
     class FloatingClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            Toast.makeText(FloatingViewService.this, "hhhhh", Toast.LENGTH_LONG).show();
+            removeView();
+            windowManager.addView(menuview,centerLayoutParams);
+            circleMenuView.open(true);
         }
     }
-
-
-
 }

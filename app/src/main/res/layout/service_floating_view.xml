@@ -3,60 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <ImageView
-        android:id="@+id/id_b"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="clickview"
-        android:src="@drawable/ic_alarm_black_24dp" />
-
-    <ImageView
-        android:id="@+id/id_c"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="clickview"
-        android:src="@drawable/ic_alarm_black_24dp" />
-
-    <ImageView
-        android:id="@+id/id_d"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="clickview"
-        android:src="@drawable/ic_alarm_black_24dp" />
-
-    <ImageView
-        android:id="@+id/id_e"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="clickview"
-        android:src="@drawable/ic_alarm_black_24dp" />
-
-    <ImageView
-        android:id="@+id/id_f"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="clickview"
-        android:src="@drawable/ic_alarm_black_24dp" />
-
-    <ImageView
-        android:id="@+id/id_g"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="clickview"
-        android:src="@drawable/ic_alarm_black_24dp" />
-
-    <ImageView
-        android:id="@+id/id_h"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="clickview"
-        android:src="@drawable/ic_alarm_black_24dp" />
-
-    <ImageView
-        android:id="@+id/id_a"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="clickview"
-        android:src="@drawable/ic_close_black_24dp" />
+    <include
+        layout="@layout/layout_pet"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" />
 
 </RelativeLayout>
