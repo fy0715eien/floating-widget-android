@@ -257,6 +257,27 @@ public class FloatingViewService extends Service {
         layoutParams.y = (int) y - statusBarHeight;
         refresh();
     }
+    private void refreshView2(float xlast,float ylast,float xnext, float ynext) {
+        ylast=ylast-statusBarHeight;
+        ynext=ynext-statusBarHeight;
+        WindowManager.LayoutParams lp=layoutParams;
+        float xadd=(xnext-xlast)/100,yadd=(ynext-ylast)/100;
+        for(int i=1;i<100;i++)
+        {
+            lp.x=(int)(xlast+i*xadd);
+            lp.y=(int)(ylast+i*yadd);
+            windowManager.updateViewLayout(view,lp);
+            try{
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+        }
+        layoutParams.x = (int) xnext;
+        layoutParams.y = (int) ynext;
+        windowManager.updateViewLayout(view, layoutParams);
+    }
 
     /**
      * 添加悬浮窗或者更新悬浮窗 如果悬浮窗还没添加则添加 如果已经添加则更新其位置
@@ -351,16 +372,16 @@ public class FloatingViewService extends Service {
 
                     switch (min) {
                         case TO_LEFT:
-                            refreshView(0, event.getRawY() - fingerStartY);
+                            refreshView2(event.getRawX() - fingerStartX,event.getRawY() - fingerStartY,0, event.getRawY() - fingerStartY);
                             break;
                         case TO_RIGHT:
-                            refreshView(dm.widthPixels - v.getWidth(), event.getRawY() - fingerStartY);
+                            refreshView2(event.getRawX() - fingerStartX,event.getRawY() - fingerStartY,dm.widthPixels - v.getWidth(), event.getRawY() - fingerStartY);
                             break;
                         case TO_UP:
-                            refreshView(event.getRawX() - fingerStartX, 0);
+                            refreshView2(event.getRawX() - fingerStartX,event.getRawY() - fingerStartY,event.getRawX() - fingerStartX, 0);
                             break;
                         case TO_BOTTOM:
-                            refreshView(event.getRawX() - fingerStartX, dm.heightPixels - v.getHeight());
+                            refreshView2(event.getRawX() - fingerStartX,event.getRawY() - fingerStartY,event.getRawX() - fingerStartX, dm.heightPixels - v.getHeight());
                             break;
                     }
                     int upAnimeID;
