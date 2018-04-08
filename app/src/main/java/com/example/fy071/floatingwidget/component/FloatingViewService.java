@@ -259,12 +259,6 @@ public class FloatingViewService extends Service {
             lp.x=(int)(xlast+i*xadd);
             lp.y=(int)(ylast+i*yadd);
             windowManager.updateViewLayout(view,lp);
-            try{
-                    Thread.sleep(1);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
         }
         layoutParams.x = (int) xnext;
         layoutParams.y = (int) ynext;
