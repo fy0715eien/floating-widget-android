@@ -9,9 +9,7 @@ import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.util.DisplayMetrics;
@@ -50,8 +48,6 @@ public class FloatingViewService extends Service {
     private int statusBarHeight;
     private CircleMenuView circleMenuView;
     private static final int DIFFER = 5;//距离
-    private HandlerUI handler = null;
-    Thread updateThread = null;
     private boolean viewAdded = false;// 透明窗体是否已经显示
     private WindowManager windowManager;
     private WindowManager.LayoutParams layoutParams;
@@ -136,10 +132,6 @@ public class FloatingViewService extends Service {
             //根据资源ID获取响应的尺寸值
             statusBarHeight = getResources().getDimensionPixelSize(resourceId);
         }
-        handler = new HandlerUI();
-        UpdateUI update = new UpdateUI();
-        updateThread = new Thread(update);
-        updateThread.start();
         setTheme(R.style.AppTheme);
         int layoutID;
         switch(PreferenceHelper.petModel){
@@ -291,41 +283,6 @@ public class FloatingViewService extends Service {
             viewAdded = true;
         }
     }
-
-    /**
-     * 接受消息和处理消息
-     *
-     * @author Administrator
-     */
-    class HandlerUI extends Handler {
-        public HandlerUI() {
-
-        }
-    }
-
-    /**
-     * 更新悬浮窗的信息
-     *
-     * @author Administrator
-     */
-    class UpdateUI implements Runnable {
-        @Override
-        public void run() {
-            // 如果没有中断就一直运行
-            while (!Thread.currentThread().isInterrupted()) {
-                Message msg = handler.obtainMessage();
-                msg.what = UPDATE_PIC; // 设置消息标识
-                handler.sendMessage(msg);
-                // 休眠1s
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
 
     /*悬浮窗监听器*/
     class FloatingTouchListener implements View.OnTouchListener {
