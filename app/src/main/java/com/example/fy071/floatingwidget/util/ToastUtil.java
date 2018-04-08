@@ -7,15 +7,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 /**
- *Toast工具类
+ * Toast工具类
  */
-
 
 
 public class ToastUtil {
 
-   public Toast toast;
+    public Toast toast;
     public LinearLayout toastView;
+
     public ToastUtil() {
 
     }
@@ -23,8 +23,8 @@ public class ToastUtil {
     /**
      * 自定义布局Toast
      */
-    public ToastUtil(Context context, View view,int duration){
-        toast=new Toast(context);
+    public ToastUtil(Context context, View view, int duration) {
+        toast = new Toast(context);
         toast.setView(view);
         toast.setDuration(duration);
     }
@@ -32,7 +32,7 @@ public class ToastUtil {
     /**
      * 向Toast中添加自定义view
      */
-    public  ToastUtil addView(View view,int postion) {
+    public ToastUtil addView(View view, int postion) {
         toastView = (LinearLayout) toast.getView();
         toastView.addView(view, postion);
 
@@ -44,8 +44,8 @@ public class ToastUtil {
      */
     public ToastUtil setToastColor(int messageColor, int backgroundColor) {
         View view = toast.getView();
-        if(view!=null){
-            TextView message=((TextView) view.findViewById(android.R.id.message));
+        if (view != null) {
+            TextView message = ((TextView) view.findViewById(android.R.id.message));
             message.setBackgroundColor(backgroundColor);
             message.setTextColor(messageColor);
         }
@@ -57,8 +57,8 @@ public class ToastUtil {
      */
     public ToastUtil setToastBackground(int messageColor, int background) {
         View view = toast.getView();
-        if(view!=null){
-            TextView message=((TextView) view.findViewById(android.R.id.message));
+        if (view != null) {
+            TextView message = ((TextView) view.findViewById(android.R.id.message));
             message.setBackgroundResource(background);
             message.setTextColor(messageColor);
         }
@@ -68,11 +68,11 @@ public class ToastUtil {
     /**
      * 短时间显示Toast
      */
-    public  ToastUtil Short(Context context, CharSequence message){
-        if(toast==null||(toastView!=null&&toastView.getChildCount()>1)){
-            toast= Toast.makeText(context, message, Toast.LENGTH_SHORT);
-            toastView=null;
-        }else{
+    public ToastUtil Short(Context context, CharSequence message) {
+        if (toast == null || (toastView != null && toastView.getChildCount() > 1)) {
+            toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
+            toastView = null;
+        } else {
             toast.setText(message);
             toast.setDuration(Toast.LENGTH_SHORT);
         }
@@ -83,10 +83,10 @@ public class ToastUtil {
      * 短时间显示Toast
      */
     public ToastUtil Short(Context context, int message) {
-        if(toast==null||(toastView!=null&&toastView.getChildCount()>1)){
-            toast= Toast.makeText(context, message, Toast.LENGTH_SHORT);
-            toastView=null;
-        }else{
+        if (toast == null || (toastView != null && toastView.getChildCount() > 1)) {
+            toast = Toast.makeText(context, message, Toast.LENGTH_SHORT);
+            toastView = null;
+        } else {
             toast.setText(message);
             toast.setDuration(Toast.LENGTH_SHORT);
         }
@@ -96,11 +96,11 @@ public class ToastUtil {
     /**
      * 长时间显示Toast
      */
-    public ToastUtil Long(Context context, CharSequence message){
-        if(toast==null||(toastView!=null&&toastView.getChildCount()>1)){
-            toast= Toast.makeText(context, message, Toast.LENGTH_LONG);
-            toastView=null;
-        }else{
+    public ToastUtil Long(Context context, CharSequence message) {
+        if (toast == null || (toastView != null && toastView.getChildCount() > 1)) {
+            toast = Toast.makeText(context, message, Toast.LENGTH_LONG);
+            toastView = null;
+        } else {
             toast.setText(message);
             toast.setDuration(Toast.LENGTH_LONG);
         }
@@ -109,13 +109,12 @@ public class ToastUtil {
 
     /**
      * 长时间显示Toast
-     *
      */
     public ToastUtil Long(Context context, int message) {
-        if(toast==null||(toastView!=null&&toastView.getChildCount()>1)){
-            toast= Toast.makeText(context, message, Toast.LENGTH_LONG);
-            toastView=null;
-        }else{
+        if (toast == null || (toastView != null && toastView.getChildCount() > 1)) {
+            toast = Toast.makeText(context, message, Toast.LENGTH_LONG);
+            toastView = null;
+        } else {
             toast.setText(message);
             toast.setDuration(Toast.LENGTH_LONG);
         }
@@ -130,10 +129,10 @@ public class ToastUtil {
      * @param duration
      */
     public ToastUtil Indefinite(Context context, CharSequence message, int duration) {
-        if(toast==null||(toastView!=null&&toastView.getChildCount()>1)){
-            toast= Toast.makeText(context, message,duration);
-            toastView=null;
-        }else{
+        if (toast == null || (toastView != null && toastView.getChildCount() > 1)) {
+            toast = Toast.makeText(context, message, duration);
+            toastView = null;
+        } else {
             toast.setText(message);
             toast.setDuration(duration);
         }
@@ -148,10 +147,10 @@ public class ToastUtil {
      * @param duration
      */
     public ToastUtil Indefinite(Context context, int message, int duration) {
-        if(toast==null||(toastView!=null&&toastView.getChildCount()>1)){
-            toast= Toast.makeText(context, message,duration);
-            toastView=null;
-        }else{
+        if (toast == null || (toastView != null && toastView.getChildCount() > 1)) {
+            toast = Toast.makeText(context, message, duration);
+            toastView = null;
+        } else {
             toast.setText(message);
             toast.setDuration(duration);
         }
@@ -160,9 +159,10 @@ public class ToastUtil {
 
     /**
      * 显示Toast
+     *
      * @return
      */
-    public ToastUtil show (){
+    public ToastUtil show() {
         toast.show();
 
         return this;
@@ -170,9 +170,10 @@ public class ToastUtil {
 
     /**
      * 获取Toast
+     *
      * @return
      */
-    public Toast getToast(){
+    public Toast getToast() {
         return toast;
     }
 }

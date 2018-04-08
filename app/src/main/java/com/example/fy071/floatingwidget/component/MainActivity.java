@@ -23,8 +23,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 public class MainActivity extends AppCompatActivity implements
         Drawer.OnDrawerItemClickListener,
-        Drawer.OnDrawerListener,
-        SharedPreferences.OnSharedPreferenceChangeListener {
+        Drawer.OnDrawerListener {
     public static final long DRAWER_HOME = 1L;
     public static final long DRAWER_REMINDER = 2L;
     public static final long DRAWER_SETTINGS = 3L;
@@ -38,8 +37,7 @@ public class MainActivity extends AppCompatActivity implements
     HomeFragment homeFragment;
     SettingsFragment settingsFragment;
 
-    SharedPreferences sharedPreferences;
-    SharedPreferences defaultSharedPreferences;
+
 
 
     @Override
@@ -84,11 +82,6 @@ public class MainActivity extends AppCompatActivity implements
 
         //为工具栏加入打开抽屉的按钮
         drawer.setToolbar(this, toolbar, true);
-
-        defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        sharedPreferences = getPreferences(MODE_PRIVATE);
-        PreferenceHelper.setPreferences(defaultSharedPreferences, sharedPreferences);
-        //test();
     }
 
 
@@ -101,8 +94,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onPause() {
         super.onPause();
-        defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
-        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
+
     }
 
 
@@ -113,7 +105,8 @@ public class MainActivity extends AppCompatActivity implements
         if (id == DRAWER_HOME) {
             intent = null;
         } else if (id == DRAWER_REMINDER) {
-            intent=new Intent(MainActivity.this,ReminderConfigActivity.class);// TODO: 2018/4/8 change activity to ReminderActivity after it's written completed
+            intent=new Intent(MainActivity.this,ReminderConfigActivity.class);
+            // TODO: 2018/4/8 change activity to ReminderActivity after it's written completed
         } else if (id == DRAWER_SETTINGS) {
             intent = new Intent(MainActivity.this, SettingsActivity.class);
         } else if (id == DRAWER_ABOUT) {
@@ -132,12 +125,6 @@ public class MainActivity extends AppCompatActivity implements
             super.onBackPressed();
             startWidget();
         }
-    }
-
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
-        PreferenceHelper.setPreferences(defaultSharedPreferences, sharedPreferences);
     }
 
 
@@ -162,19 +149,9 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-    /*用于测试其他Activity
-    private void test() {
-        Intent intent = new Intent(this, Test.class);
-        startActivity(intent);
-    }*/
-
     @Override
     protected void onResume() {
         super.onResume();
-        Intent intent = new Intent(this, FloatingViewService.class);
-        stopService(intent);
-        defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this);
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
