@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
@@ -21,6 +22,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.fy071.floatingwidget.R;
@@ -42,6 +44,7 @@ public class FloatingViewService extends Service {
     public static final int BUTTON_CLOSE = 2;
 
     private View view;// 透明窗体
+    private ImageView petModel;
     private View menuview;// 菜单窗体
     private int statusBarHeight;
     private CircleMenuView circleMenuView;
@@ -135,7 +138,8 @@ public class FloatingViewService extends Service {
         updateThread = new Thread(update);
         updateThread.start();
         setTheme(R.style.AppTheme);
-        view = LayoutInflater.from(this).inflate(R.layout.service_floating_view, null);
+        view = LayoutInflater.from(this).inflate(R.layout.layout_pet, null);
+        petModel=view.findViewById(R.id.imageView_pet);
         menuview=LayoutInflater.from(this).inflate(R.layout.popup_menu, null);
         circleMenuView = menuview.findViewById(R.id.circle_menu);
         windowManager = (WindowManager) this.getSystemService(WINDOW_SERVICE);
@@ -294,9 +298,15 @@ public class FloatingViewService extends Service {
         float fingerStartX, fingerStartY;
         float ScreenStartX,ScreenStartY;
         public boolean onTouch(View v, MotionEvent event) {
+            AnimationDrawable animationDrawable;
             int eventAction = event.getAction();
             switch (eventAction) {
                 case MotionEvent.ACTION_DOWN: // 按下事件，记录按下时手指在悬浮窗的XY坐标值
+                    petModel.setImageResource(R.drawable.down_anime);
+                    animationDrawable=(AnimationDrawable)petModel.getDrawable();
+                    if(!animationDrawable.isRunning()) {
+                        animationDrawable.start();
+                    }
                     fingerStartX = event.getX();
                     fingerStartY = event.getY();
                     ScreenStartX= event.getRawX();
@@ -333,6 +343,11 @@ public class FloatingViewService extends Service {
                         case TO_BOTTOM:
                             refreshView(event.getRawX() - fingerStartX, dm.heightPixels - v.getHeight());
                             break;
+                    }
+                    petModel.setImageResource(R.drawable.up_anime);
+                    animationDrawable=(AnimationDrawable)petModel.getDrawable();
+                    if(!animationDrawable.isRunning()) {
+                        animationDrawable.start();
                     }
                     if (abs(ScreenEndX - ScreenStartX) < DIFFER && abs(ScreenEndY - ScreenStartY) < DIFFER) {
                         v.performClick();
