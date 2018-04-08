@@ -20,6 +20,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.ImageView;
@@ -182,6 +183,7 @@ public class FloatingViewService extends Service {
         }
         //悬浮窗开始在左上角显示
         layoutParams.gravity = Gravity.START | Gravity.TOP;
+        layoutParams.windowAnimations=android.R.style.Animation_Translucent;
         centerLayoutParams.gravity=Gravity.CENTER;
 
         view.setOnTouchListener(new FloatingTouchListener());
@@ -363,7 +365,13 @@ public class FloatingViewService extends Service {
         public void onClick(View v) {
             removeView();
             windowManager.addView(menuview,centerLayoutParams);
-            circleMenuView.open(true);
+            circleMenuView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    circleMenuView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    circleMenuView.open(true);
+                }
+            });
         }
     }
 }
