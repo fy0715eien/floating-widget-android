@@ -24,9 +24,9 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.example.fy071.floatingwidget.R;
+import com.example.fy071.floatingwidget.util.PreferenceHelper;
 import com.ramotion.circlemenu.CircleMenuView;
 
 import static java.lang.Math.abs;
@@ -51,7 +51,7 @@ public class FloatingViewService extends Service {
     private CircleMenuView circleMenuView;
     private static final int DIFFER = 5;//距离
     private HandlerUI handler = null;
-    private Thread updateThread = null;
+    Thread updateThread = null;
     private boolean viewAdded = false;// 透明窗体是否已经显示
     private WindowManager windowManager;
     private WindowManager.LayoutParams layoutParams;
@@ -139,7 +139,14 @@ public class FloatingViewService extends Service {
         updateThread = new Thread(update);
         updateThread.start();
         setTheme(R.style.AppTheme);
-        view = LayoutInflater.from(this).inflate(R.layout.layout_pet, null);
+        int layoutID;
+        switch(PreferenceHelper.petModel){
+            case "model_1":layoutID=R.layout.layout_pet_1;break;
+            case "model_2":layoutID=R.layout.layout_pet_2;break;
+            case "model_3":layoutID=R.layout.layout_pet_3;break;
+            default:layoutID=R.layout.layout_pet_1;
+        }
+        view = LayoutInflater.from(this).inflate(layoutID, null);
         petModel=view.findViewById(R.id.imageView_pet);
         menuview=LayoutInflater.from(this).inflate(R.layout.popup_menu, null);
         circleMenuView = menuview.findViewById(R.id.circle_menu);
@@ -304,7 +311,14 @@ public class FloatingViewService extends Service {
             int eventAction = event.getAction();
             switch (eventAction) {
                 case MotionEvent.ACTION_DOWN: // 按下事件，记录按下时手指在悬浮窗的XY坐标值
-                    petModel.setImageResource(R.drawable.down_anime);
+                    int downAnimeID;
+                    switch(PreferenceHelper.petModel){
+                        case "model_1":downAnimeID=R.drawable.down_anime_1;break;
+                        case "model_2":downAnimeID=R.drawable.down_anime_2;break;
+                        case "model_3":downAnimeID=R.drawable.down_anime_3;break;
+                        default:downAnimeID=R.drawable.down_anime_1;
+                    }
+                    petModel.setImageResource(downAnimeID);
                     animationDrawable=(AnimationDrawable)petModel.getDrawable();
                     if(!animationDrawable.isRunning()) {
                         animationDrawable.start();
@@ -346,7 +360,14 @@ public class FloatingViewService extends Service {
                             refreshView(event.getRawX() - fingerStartX, dm.heightPixels - v.getHeight());
                             break;
                     }
-                    petModel.setImageResource(R.drawable.up_anime);
+                    int upAnimeID;
+                    switch(PreferenceHelper.petModel){
+                        case "model_1":upAnimeID=R.drawable.up_anime_1;break;
+                        case "model_2":upAnimeID=R.drawable.up_anime_2;break;
+                        case "model_3":upAnimeID=R.drawable.up_anime_3;break;
+                        default:upAnimeID=R.drawable.up_anime_1;
+                    }
+                    petModel.setImageResource(upAnimeID);
                     animationDrawable=(AnimationDrawable)petModel.getDrawable();
                     if(!animationDrawable.isRunning()) {
                         animationDrawable.start();

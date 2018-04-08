@@ -17,8 +17,8 @@
         <item>Model 3</item>
     </string-array>
     <string-array name="array_pet_model_values">
-        <item>R.drawable.background1</item>
-        <item>R.drawable.background2</item>
-        <item>R.drawable.background3</item>
+        <item>model_1</item>
+        <item>model_2</item>
+        <item>model_3</item>
     </string-array>
 </resources>

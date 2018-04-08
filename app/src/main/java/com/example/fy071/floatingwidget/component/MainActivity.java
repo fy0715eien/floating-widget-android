@@ -127,6 +127,11 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        startWidget();
+    }
 
     //用户离开当前应用时(点击Home键或多任务键)开启Service
     @Override
