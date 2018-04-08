@@ -46,7 +46,7 @@ public class FloatingViewService extends Service {
 
     private View view;// 透明窗体
     private ImageView petModel;
-    private View menuview;// 菜单窗体
+    private View menuView;// 菜单窗体
     private int statusBarHeight;
     private CircleMenuView circleMenuView;
     private static final int DIFFER = 5;//距离
@@ -56,6 +56,8 @@ public class FloatingViewService extends Service {
     private WindowManager windowManager;
     private WindowManager.LayoutParams layoutParams;
     private WindowManager.LayoutParams centerLayoutParams;
+
+    private Intent intent;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -148,8 +150,8 @@ public class FloatingViewService extends Service {
         }
         view = LayoutInflater.from(this).inflate(layoutID, null);
         petModel=view.findViewById(R.id.imageView_pet);
-        menuview=LayoutInflater.from(this).inflate(R.layout.popup_menu, null);
-        circleMenuView = menuview.findViewById(R.id.circle_menu);
+        menuView =LayoutInflater.from(this).inflate(R.layout.popup_menu, null);
+        circleMenuView = menuView.findViewById(R.id.circle_menu);
         windowManager = (WindowManager) this.getSystemService(WINDOW_SERVICE);
 
         /*
@@ -211,7 +213,7 @@ public class FloatingViewService extends Service {
             @Override
             public void onMenuCloseAnimationEnd(@NonNull CircleMenuView v) {
                 Log.d(TAG, "onMenuCloseAnimationEnd: ");
-                windowManager.removeView(menuview);
+                windowManager.removeView(menuView);
                 refresh();
             }
 
@@ -219,20 +221,22 @@ public class FloatingViewService extends Service {
             public void onButtonClickAnimationEnd(@NonNull CircleMenuView view, int index) {
                 switch (index) {
                     case BUTTON_REMINDER:
+                        intent=new Intent(FloatingViewService.this,ReminderConfigActivity.class);// TODO: 2018/4/8 change activity
                         break;
                     case BUTTON_SETTINGS:
+                        intent=new Intent(FloatingViewService.this,SettingsActivity.class);
                         break;
                     case BUTTON_CLOSE:
                         stopSelf();
                         break;
                     default:
                 }
-                windowManager.removeView(menuview);
+                windowManager.removeView(menuView);
             }
         });
     }
 
-    int getMin(float left, float right, float up, float bottom) {
+    private int getMin(float left, float right, float up, float bottom) {
         if (left <= right && left <= up && left <= bottom)
             return TO_LEFT;
         if (right <= up && right <= bottom)
@@ -330,7 +334,6 @@ public class FloatingViewService extends Service {
                     break;
 
                 case MotionEvent.ACTION_MOVE:
-
                     refreshView(event.getRawX() - fingerStartX, event.getRawY() - fingerStartY);
                     break;
                 case MotionEvent.ACTION_UP:
@@ -385,7 +388,7 @@ public class FloatingViewService extends Service {
         @Override
         public void onClick(View v) {
             removeView();
-            windowManager.addView(menuview,centerLayoutParams);
+            windowManager.addView(menuView,centerLayoutParams);
             circleMenuView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
