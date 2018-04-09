@@ -5,7 +5,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
     <com.ramotion.circlemenu.CircleMenuView
-        tools:context=".component.FloatingViewService"
+        tools:context=".component.service.FloatingViewService"
         android:id="@+id/circle_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

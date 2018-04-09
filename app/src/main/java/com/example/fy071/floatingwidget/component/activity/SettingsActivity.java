@@ -1,16 +1,17 @@
-package com.example.fy071.floatingwidget.component;
+package com.example.fy071.floatingwidget.component.activity;
 
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.example.fy071.floatingwidget.R;
+import com.example.fy071.floatingwidget.component.fragment.SettingsFragment;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
 
-public class SettingsActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener{
+public class SettingsActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     Toolbar toolbar;
     SharedPreferences sharedPreferences;
     SharedPreferences defaultSharedPreferences;
@@ -20,7 +21,7 @@ public class SettingsActivity extends AppCompatActivity implements SharedPrefere
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        initialToolbar();
+        initToolbar();
 
         getFragmentManager().beginTransaction()
                 .replace(R.id.content, new SettingsFragment())
@@ -52,7 +53,7 @@ public class SettingsActivity extends AppCompatActivity implements SharedPrefere
         PreferenceHelper.setPreferences(defaultSharedPreferences, sharedPreferences);
     }
 
-    private void initialToolbar(){
+    private void initToolbar() {
         toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.drawer_item_settings);
         setSupportActionBar(toolbar);

@@ -4,7 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-    public class OpenBroadcastReceiver extends BroadcastReceiver {
+import com.example.fy071.floatingwidget.component.activity.MainActivity;
+
+public class OpenBroadcastReceiver extends BroadcastReceiver {
         static final String ACTION = "android.intent.action.BOOT_COMPLETED";
         @Override
         public void onReceive(Context context, Intent intent) {

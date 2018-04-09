@@ -1,4 +1,4 @@
-package com.example.fy071.floatingwidget.component;
+package com.example.fy071.floatingwidget.component.service;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -27,27 +27,27 @@ import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.example.fy071.floatingwidget.R;
+import com.example.fy071.floatingwidget.component.activity.PairingActivity;
+import com.example.fy071.floatingwidget.component.activity.ReminderConfigActivity;
+import com.example.fy071.floatingwidget.component.activity.SettingsActivity;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
 import com.ramotion.circlemenu.CircleMenuView;
 
 import static java.lang.Math.abs;
 
 public class FloatingViewService extends Service {
+    public static final int BUTTON_REMINDER = 0;
+    public static final int BUTTON_SETTINGS = 1;
+    public static final int BUTTON_CLOSE = 2;
     private static final String TAG = "FloatingViewService";
-
     private static final int TO_LEFT = 1;
     private static final int TO_RIGHT = 2;
     private static final int TO_UP = 3;
     private static final int TO_BOTTOM = 4;
     private static final int UPDATE_PIC = 0x100;
-
-    public static final int BUTTON_REMINDER = 0;
-    public static final int BUTTON_SETTINGS = 1;
-    public static final int BUTTON_CLOSE = 2;
-
+    private static final int DIFFER = 5;//距离
     private View view;// 透明窗体
     private ViewGroup virtualParent;
     private ImageView petModel;
@@ -55,7 +55,6 @@ public class FloatingViewService extends Service {
     private View menuView;// 菜单窗体
     private int statusBarHeight;
     private CircleMenuView circleMenuView;
-    private static final int DIFFER = 5;//距离
     private boolean viewAdded = false;// 透明窗体是否已经显示
     private WindowManager windowManager;
     private WindowManager.LayoutParams layoutParams;
@@ -258,8 +257,7 @@ public class FloatingViewService extends Service {
                         intent = new Intent(FloatingViewService.this, SettingsActivity.class);
                         break;
                     case BUTTON_CLOSE:
-                        stopSelf();
-                        intent = null;
+                        intent = new Intent(FloatingViewService.this, PairingActivity.class);
                         break;
                     default:
                         intent = null;
@@ -298,8 +296,8 @@ public class FloatingViewService extends Service {
     private void refreshView2(float xLast, float yLast, final float xNext, float yNext) {
         yLast = yLast - statusBarHeight;
         yNext = yNext - statusBarHeight;
-        layoutParams.x=(int)xNext;
-        layoutParams.y=(int)yNext;
+        layoutParams.x = (int) xNext;
+        layoutParams.y = (int) yNext;
         windowManager.addView(virtualParent, virtualLayoutParams);
         AnimationSet animationSet = new AnimationSet(true);
         //参数1～2：x轴的开始位置
@@ -332,7 +330,7 @@ public class FloatingViewService extends Service {
             @Override
             public void onAnimationEnd(Animation animation) {
                 // TODO Auto-generated method stub
-                windowManager.addView(view,layoutParams);
+                windowManager.addView(view, layoutParams);
                 windowManager.removeView(virtualParent);
             }
         });
@@ -370,22 +368,6 @@ public class FloatingViewService extends Service {
         petModel.setImageResource(downAnimId);
     }
 
-
-    class FloatingClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            removeView();
-            windowManager.addView(menuView, centerLayoutParams);
-            circleMenuView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    circleMenuView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    circleMenuView.open(true);
-                }
-            });
-        }
-    }
-
     private void setUpAnim() {
         int upAnimId;
         switch (PreferenceHelper.petModel) {
@@ -402,6 +384,21 @@ public class FloatingViewService extends Service {
                 upAnimId = R.drawable.up_anime_1;
         }
         petModel.setImageResource(upAnimId);
+    }
+
+    class FloatingClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            removeView();
+            windowManager.addView(menuView, centerLayoutParams);
+            circleMenuView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    circleMenuView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    circleMenuView.open(true);
+                }
+            });
+        }
     }
 
     /*悬浮窗监听器*/
@@ -460,8 +457,7 @@ public class FloatingViewService extends Service {
                                 break;
                         }
                         v.performClick();
-                    }
-                    else {
+                    } else {
                         switch (min) {
                             case TO_LEFT:
                                 refreshView2(

@@ -1,4 +1,4 @@
-package com.example.fy071.floatingwidget.component;
+package com.example.fy071.floatingwidget.util;
 
 import android.accessibilityservice.AccessibilityService;
 import android.content.Intent;
@@ -9,9 +9,8 @@ import android.view.Gravity;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
-import com.example.fy071.floatingwidget.util.ToastUtil;
-import java.util.List;
 
+import java.util.List;
 
 
 public class WeChatNotification extends AccessibilityService {
@@ -105,10 +104,11 @@ public class WeChatNotification extends AccessibilityService {
                             newtoast.toast.setGravity(Gravity.LEFT, 50, 0);
                             newtoast.toast.makeText(this, ChatName + "发了一条" + ChatRecord + "的语音", Toast.LENGTH_SHORT).show();
 
-                            Log.e("WeChatLog",ChatName + "发了一条" + ChatRecord + "的语音");
+                            Log.e("WeChatLog", ChatName + "发了一条" + ChatRecord + "的语音");
                         } else {
                             //这里在加多一层过滤条件，确保得到的是聊天信息，因为有可能是其他TextView的干扰，例如名片等
-                            if (nodeChild.isLongClickable()) { ToastUtil newtoast = new ToastUtil();
+                            if (nodeChild.isLongClickable()) {
+                                ToastUtil newtoast = new ToastUtil();
                                 newtoast.setToastColor(Color.WHITE, Color.YELLOW);
 
                                 //获取到宠物位置后再改变位置
@@ -131,9 +131,9 @@ public class WeChatNotification extends AccessibilityService {
 
                 //获取到宠物位置后再改变位置
                 newtoast.toast.setGravity(Gravity.LEFT, 50, 0);
-                newtoast.toast.makeText(this, ChatName+"发的是表情", Toast.LENGTH_SHORT).show();
+                newtoast.toast.makeText(this, ChatName + "发的是表情", Toast.LENGTH_SHORT).show();
 
-                Log.e("WeChatLog",ChatName+"发的是表情");
+                Log.e("WeChatLog", ChatName + "发的是表情");
 
                 return;
             }
@@ -141,17 +141,17 @@ public class WeChatNotification extends AccessibilityService {
             //聊天内容是:图片
             if ("android.widget.ImageView".equals(nodeChild.getClassName())) {
                 //安装软件的这一方发的图片（另一方发的暂时没实现）
-                if("android.widget.FrameLayout".equals(nodeChild.getParent().getClassName().toString())){
-                    if(!TextUtils.isEmpty(nodeChild.getContentDescription())){
-                        if(nodeChild.getContentDescription().toString().contains("图片")){
+                if ("android.widget.FrameLayout".equals(nodeChild.getParent().getClassName().toString())) {
+                    if (!TextUtils.isEmpty(nodeChild.getContentDescription())) {
+                        if (nodeChild.getContentDescription().toString().contains("图片")) {
                             ToastUtil newtoast = new ToastUtil();
                             newtoast.setToastColor(Color.WHITE, Color.YELLOW);
 
                             //获取到宠物位置后再改变位置
                             newtoast.toast.setGravity(Gravity.LEFT, 50, 0);
-                            newtoast.toast.makeText(this, ChatName+"发的是图片", Toast.LENGTH_SHORT).show();
+                            newtoast.toast.makeText(this, ChatName + "发的是图片", Toast.LENGTH_SHORT).show();
 
-                            Log.e("WeChatLog",ChatName+"发的是图片");
+                            Log.e("WeChatLog", ChatName + "发的是图片");
                         }
                     }
                 }
@@ -171,7 +171,7 @@ public class WeChatNotification extends AccessibilityService {
                         newtoast.toast.setGravity(Gravity.LEFT, 50, 0);
                         newtoast.toast.makeText(this, ChatName + "发了一段" + nodeChild.getText().toString() + "的小视频", Toast.LENGTH_SHORT).show();
 
-                        Log.e("WeChatLog","发了一段" + nodeChild.getText().toString() + "的小视频");
+                        Log.e("WeChatLog", "发了一段" + nodeChild.getText().toString() + "的小视频");
                     }
                 }
 

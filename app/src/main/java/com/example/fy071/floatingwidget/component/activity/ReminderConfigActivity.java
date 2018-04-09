@@ -1,4 +1,4 @@
-package com.example.fy071.floatingwidget.component;
+package com.example.fy071.floatingwidget.component.activity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,15 +11,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.fy071.floatingwidget.R;
+import com.example.fy071.floatingwidget.component.TimePickerDialog;
 
 public class ReminderConfigActivity extends AppCompatActivity implements TimePickerDialog.TimePickerDialogInterface {
+    // 要存储的文件名
+    private static final String FILENAME = "filename";
     private TimePickerDialog mTimePickerDialog;
     private EditText rd_content;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     private Toolbar toolbar;
-    // 要存储的文件名
-    private static final String FILENAME = "filename";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

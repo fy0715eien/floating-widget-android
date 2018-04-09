@@ -27,13 +27,7 @@
             android:summary="User"
             android:title="User name" />
         <ListPreference
-            android:defaultValue="1"
-            android:entries="@array/array_background_entries"
-            android:entryValues="@array/array_background_values"
-            android:key="background"
-            android:title="Background" />
-        <ListPreference
-            android:defaultValue="1"
+            android:defaultValue="model_1"
             android:entries="@array/array_pet_model_entries"
             android:entryValues="@array/array_pet_model_values"
             android:key="pet_model"

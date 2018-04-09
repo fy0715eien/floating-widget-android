@@ -1,9 +1,7 @@
-package com.example.fy071.floatingwidget.component;
+package com.example.fy071.floatingwidget.component.fragment;
 
 
 import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -16,6 +14,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.SwitchPreference;
 import android.provider.Settings;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.fy071.floatingwidget.R;
@@ -32,8 +31,9 @@ public class SettingsFragment extends PreferenceFragment implements
     private static final String TAG = "SettingsFragment";
     SwitchPreference switchPreference;
     EditTextPreference petName, userName;
-    ListPreference background, petModel;
+    ListPreference petModel;
     CheckBoxPreference wechatNotification, startAtBoot;
+
     public SettingsFragment() {
     }
 
@@ -57,6 +57,7 @@ public class SettingsFragment extends PreferenceFragment implements
         //设置Summary以显示上次设置内容
         petName.setSummary(PreferenceHelper.petName);
         userName.setSummary(PreferenceHelper.userName);
+        Log.d(TAG, "onCreate: " + petModel.getEntry());
         petModel.setSummary(petModel.getEntry());
     }
 

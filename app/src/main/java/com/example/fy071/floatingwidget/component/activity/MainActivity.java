@@ -1,4 +1,4 @@
-package com.example.fy071.floatingwidget.component;
+package com.example.fy071.floatingwidget.component.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +7,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.example.fy071.floatingwidget.R;
+import com.example.fy071.floatingwidget.component.service.FloatingViewService;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -19,19 +20,13 @@ public class MainActivity extends AppCompatActivity implements
         Drawer.OnDrawerListener {
     public static final long DRAWER_HOME = 1L;
     public static final long DRAWER_REMINDER = 2L;
-    public static final long DRAWER_SETTINGS = 3L;
-    public static final long DRAWER_ABOUT = 4L;
+    public static final long DRAWER_PAIRING = 3L;
+    public static final long DRAWER_SETTINGS = 4L;
+    public static final long DRAWER_ABOUT = 5L;
     private static final String TAG = "MainActivity";
-    long previousSelectedItem;
     Intent intent;
-
     Toolbar toolbar;
     Drawer drawer;
-    HomeFragment homeFragment;
-    SettingsFragment settingsFragment;
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +48,11 @@ public class MainActivity extends AppCompatActivity implements
                                 .withIdentifier(DRAWER_REMINDER)
                                 .withIcon(R.drawable.ic_alarm_black_24dp)
                                 .withName(R.string.drawer_item_reminder)
+                                .withSelectable(false),
+                        new PrimaryDrawerItem()
+                                .withIdentifier(DRAWER_PAIRING)
+                                .withIcon(R.drawable.ic_bluetooth_black_24dp)
+                                .withName(R.string.drawer_item_pairing)
                                 .withSelectable(false)
                 )
                 .addStickyDrawerItems(
@@ -77,29 +77,16 @@ public class MainActivity extends AppCompatActivity implements
         drawer.setToolbar(this, toolbar, true);
     }
 
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-    }
-
-
-    //无法switch(long)故使用if else
     @Override
     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
         final long id = drawerItem.getIdentifier();
         if (id == DRAWER_HOME) {
             intent = null;
         } else if (id == DRAWER_REMINDER) {
-            intent=new Intent(MainActivity.this,ReminderConfigActivity.class);
-            // TODO: 2018/4/8 change activity to ReminderActivity after it's written completed
+            intent = new Intent(MainActivity.this, ReminderConfigActivity.class);
+            // TODO: 2018/4/8 change activity to ReminderActivity after it's completely written
+        } else if (id == DRAWER_PAIRING) {
+            intent = new Intent(MainActivity.this, PairingActivity.class);
         } else if (id == DRAWER_SETTINGS) {
             intent = new Intent(MainActivity.this, SettingsActivity.class);
         } else if (id == DRAWER_ABOUT) {
@@ -109,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements
         }
         return false;
     }
-
 
     @Override
     public void onBackPressed() {
@@ -135,7 +121,6 @@ public class MainActivity extends AppCompatActivity implements
         startWidget();
     }
 
-
     /*Enable Widget开关开启时调用本方法启动Service
     关闭时调用本方法不开启
      */
@@ -148,15 +133,9 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
     @Override
     public void onDrawerOpened(View drawerView) {
-
+        //required override method
     }
 
     @Override
@@ -169,6 +148,6 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onDrawerSlide(View drawerView, float slideOffset) {
-
+        //required override method
     }
 }

@@ -3,11 +3,11 @@
     <array name="icons">
         <item>@drawable/ic_alarm_black_24dp</item>
         <item>@drawable/ic_settings_black_24dp</item>
-        <item>@drawable/ic_close_black_24dp</item>
+        <item>@drawable/ic_bluetooth_black_24dp</item>
     </array>
     <array name="colors">
         <item>@android:color/background_light</item>
         <item>@android:color/background_light</item>
-        <item>@android:color/holo_red_light</item>
+        <item>@android:color/background_light</item>
     </array>
 </resources>
