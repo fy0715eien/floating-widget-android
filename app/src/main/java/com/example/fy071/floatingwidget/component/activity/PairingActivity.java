@@ -1,9 +1,37 @@
 package com.example.fy071.floatingwidget.component.activity;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
+import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.component.service.BluetoothService;
+import com.example.fy071.floatingwidget.entity.BluetoothDeviceItem;
+import com.mikepenz.fastadapter.FastAdapter;
+import com.mikepenz.fastadapter.IAdapter;
+import com.mikepenz.fastadapter.adapters.ItemAdapter;
+import com.mikepenz.fastadapter.listeners.OnClickListener;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+import static com.mikepenz.fastadapter.adapters.ItemAdapter.items;
 
 public class PairingActivity extends AppCompatActivity {
     private static final int REQUEST_ENABLE_BT = 1;
@@ -13,17 +41,36 @@ public class PairingActivity extends AppCompatActivity {
     private BluetoothService bluetoothService = null;
 
     private static final String TAG = "PairingActivity";
-
-    //save our FastAdapter
-  /*  private FastAdapter<BluetoothDeviceItem> fastAdapter;
+    @BindView(R.id.recycler_view_devices)
+    RecyclerView recyclerView;
     private ItemAdapter<BluetoothDeviceItem> itemAdapter;
+    @BindView(R.id.fab_search)
+    FloatingActionButton floatingActionButton;
+    //save our FastAdapter
+    private FastAdapter<BluetoothDeviceItem> fastAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pairing);
         initToolbar();
+
         ButterKnife.bind(this);
+
+        itemAdapter = items();
+
+        fastAdapter = FastAdapter.with(itemAdapter);
+        fastAdapter.withSelectable(true);
+        fastAdapter.withOnClickListener(new OnClickListener<BluetoothDeviceItem>() {
+            @Override
+            public boolean onClick(@Nullable View v, IAdapter<BluetoothDeviceItem> adapter, BluetoothDeviceItem item, int position) {
+                Toast.makeText(PairingActivity.this, item.name.getText(), Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(fastAdapter);
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         //如果为null则本设备不支持蓝牙
@@ -35,13 +82,22 @@ public class PairingActivity extends AppCompatActivity {
 
     @OnClick(R.id.fab_search)
     void search() {
+        //获取配对过设备
         Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+
+        //若有配对过设备则更新列表
         if (pairedDevices.size() > 0) {
-            List<BluetoothDeviceItem> list=new List
+            List<BluetoothDeviceItem> list = new ArrayList<>();
             for (BluetoothDevice device : pairedDevices) {
-                itemAdapter.add(new BluetoothDeviceItem(device.getName(),device.getAddress()));
-                Log.d(TAG, "search: " + device.getName() + "\n" + device.getAddress());
+                list.add(new BluetoothDeviceItem()
+                        .withName(device.getName())
+                        .withAddress(device.getAddress())
+                );
+                Log.d(TAG, "search: " + list);
+                Log.d(TAG, "search: " + device.getName());
+                Log.d(TAG, "search: " + device.getAddress());
             }
+            itemAdapter.add(list);
         }
     }
 
@@ -56,7 +112,7 @@ public class PairingActivity extends AppCompatActivity {
         }
     }
 
-    @Override
+/*    @Override
     public void onResume() {
         super.onResume();
         if (bluetoothService != null) {
@@ -64,27 +120,27 @@ public class PairingActivity extends AppCompatActivity {
                 bluetoothService.start();
             }
         }
-    }
+    }*/
 
-    @Override
+/*    @Override
     public void onDestroy() {
         super.onDestroy();
         if (bluetoothService != null) {
             bluetoothService.stop();
         }
-    }
+    }*/
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case REQUEST_CONNECT_DEVICE:
+/*            case REQUEST_CONNECT_DEVICE:
                 // When DeviceListActivity returns with a device to connect
                 if (resultCode == Activity.RESULT_OK) {
                     connectDevice(data, false);
                 }
-                break;
+                break;*/
 
             case REQUEST_ENABLE_BT:
                 // When the request to enable Bluetooth returns
@@ -109,14 +165,14 @@ public class PairingActivity extends AppCompatActivity {
         }
     }
 
-    private void connectDevice(Intent data) {
+/*    private void connectDevice(Intent data) {
         // Get the device MAC address
         String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
         // Get the BluetoothDevice object
         BluetoothDevice device = bluetoothAdapter.getRemoteDevice(address);
         // Attempt to connect to the device
         bluetoothService.connect(device);
-    }
+    }*/
 
 
     private void initToolbar() {
@@ -131,6 +187,6 @@ public class PairingActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-    }*/
+    }
 }
 

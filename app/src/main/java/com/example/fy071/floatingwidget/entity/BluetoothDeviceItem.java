@@ -19,6 +19,16 @@ public class BluetoothDeviceItem extends AbstractItem<BluetoothDeviceItem, Bluet
     public StringHolder name;
     public StringHolder address;
 
+    public BluetoothDeviceItem withName(String Name) {
+        this.name = new StringHolder(Name);
+        return this;
+    }
+
+    public BluetoothDeviceItem withAddress(String Address) {
+        this.address = new StringHolder(Address);
+        return this;
+    }
+
     @NonNull
     @Override
     public BluetoothDeviceItem.ViewHolder getViewHolder(View v) {
