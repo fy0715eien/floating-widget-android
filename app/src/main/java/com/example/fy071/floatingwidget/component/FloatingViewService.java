@@ -134,7 +134,6 @@ public class FloatingViewService extends Service {
 
 
     private void createFloatView() {
-
         Toast.makeText(FloatingViewService.this, "0000", Toast.LENGTH_SHORT).show();
         statusBarHeight = 0;
 
@@ -162,10 +161,9 @@ public class FloatingViewService extends Service {
         view = LayoutInflater.from(this).inflate(layoutID, null);
         petModel = view.findViewById(R.id.imageView_pet);
         virtualParent = (ViewGroup) LayoutInflater.from(this).inflate(R.layout.layout_virtualparent, null);
-        virtualPetModel = new ImageView(this);
-        virtualPetModel.setImageResource(layoutID);
+        virtualPetModel = virtualParent.findViewById(R.id.imageView_pet);
         relativeParams = new RelativeLayout.LayoutParams(0, 0);
-        virtualParent.addView(virtualPetModel, relativeParams);
+        //virtualParent.addView(virtualPetModel, relativeParams);
         menuView = LayoutInflater.from(this).inflate(R.layout.popup_menu, null);
         circleMenuView = menuView.findViewById(R.id.circle_menu);
         windowManager = (WindowManager) this.getSystemService(WINDOW_SERVICE);
@@ -307,8 +305,9 @@ public class FloatingViewService extends Service {
         virtualParent.getLocationOnScreen(location_P);     //获取父View相对屏幕位置
         relativeParams.leftMargin = location[0] - location_P[0];
         relativeParams.topMargin = location[1] - location_P[1];   //给副本View设置位置，与目标View重合
-        windowManager.addView(virtualParent, virtualLayoutParams);
         windowManager.removeView(view);
+        windowManager.addView(virtualParent, virtualLayoutParams);
+
         AnimationSet animationSet = new AnimationSet(true);
         //参数1～2：x轴的开始位置
         //参数3～4：y轴的开始位置
@@ -320,16 +319,17 @@ public class FloatingViewService extends Service {
                 Animation.ABSOLUTE, yLast,
                 Animation.ABSOLUTE, yNext
         );
-        translateAnimation.setDuration(1000);
+        animationSet.setDuration(1000);
         animationSet.addAnimation(translateAnimation);
         virtualPetModel.startAnimation(animationSet);
 
         layoutParams.x = (int) xNext;
         layoutParams.y = (int) yNext;
+        windowManager.removeView(virtualParent);
         windowManager.addView(view, layoutParams);
 
-        windowManager.removeView(virtualParent);
     }
+
 
     /**
      * 添加悬浮窗或者更新悬浮窗 如果悬浮窗还没添加则添加 如果已经添加则更新其位置
@@ -344,6 +344,58 @@ public class FloatingViewService extends Service {
         }
     }
 
+    private void setDownAnim() {
+        int downAnimId;
+        switch (PreferenceHelper.petModel) {
+            case "model_1":
+                downAnimId = R.drawable.down_anime_1;
+                break;
+            case "model_2":
+                downAnimId = R.drawable.down_anime_2;
+                break;
+            case "model_3":
+                downAnimId = R.drawable.down_anime_3;
+                break;
+            default:
+                downAnimId = R.drawable.down_anime_1;
+        }
+        petModel.setImageResource(downAnimId);
+    }
+
+
+    class FloatingClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            removeView();
+            windowManager.addView(menuView, centerLayoutParams);
+            circleMenuView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    circleMenuView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    circleMenuView.open(true);
+                }
+            });
+        }
+    }
+
+    private void setUpAnim() {
+        int upAnimId;
+        switch (PreferenceHelper.petModel) {
+            case "model_1":
+                upAnimId = R.drawable.up_anime_1;
+                break;
+            case "model_2":
+                upAnimId = R.drawable.up_anime_2;
+                break;
+            case "model_3":
+                upAnimId = R.drawable.up_anime_3;
+                break;
+            default:
+                upAnimId = R.drawable.up_anime_1;
+        }
+        petModel.setImageResource(upAnimId);
+    }
+
     /*悬浮窗监听器*/
     class FloatingTouchListener implements View.OnTouchListener {
         float fingerStartX, fingerStartY;
@@ -354,21 +406,7 @@ public class FloatingViewService extends Service {
             int eventAction = event.getAction();
             switch (eventAction) {
                 case MotionEvent.ACTION_DOWN: // 按下事件，记录按下时手指在悬浮窗的XY坐标值
-                    int downAnimId;
-                    switch (PreferenceHelper.petModel) {
-                        case "model_1":
-                            downAnimId = R.drawable.down_anime_1;
-                            break;
-                        case "model_2":
-                            downAnimId = R.drawable.down_anime_2;
-                            break;
-                        case "model_3":
-                            downAnimId = R.drawable.down_anime_3;
-                            break;
-                        default:
-                            downAnimId = R.drawable.down_anime_1;
-                    }
-                    petModel.setImageResource(downAnimId);
+                    setDownAnim();
                     animationDrawable = (AnimationDrawable) petModel.getDrawable();
                     if (!animationDrawable.isRunning()) {
                         animationDrawable.start();
@@ -425,21 +463,7 @@ public class FloatingViewService extends Service {
                                     dm.heightPixels - v.getHeight());
                             break;
                     }
-                    int upAnimId;
-                    switch (PreferenceHelper.petModel) {
-                        case "model_1":
-                            upAnimId = R.drawable.up_anime_1;
-                            break;
-                        case "model_2":
-                            upAnimId = R.drawable.up_anime_2;
-                            break;
-                        case "model_3":
-                            upAnimId = R.drawable.up_anime_3;
-                            break;
-                        default:
-                            upAnimId = R.drawable.up_anime_1;
-                    }
-                    petModel.setImageResource(upAnimId);
+                    setUpAnim();
                     animationDrawable = (AnimationDrawable) petModel.getDrawable();
                     if (!animationDrawable.isRunning()) {
                         animationDrawable.start();
@@ -449,22 +473,6 @@ public class FloatingViewService extends Service {
                     }
             }
             return true;
-        }
-    }
-
-
-    class FloatingClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            removeView();
-            windowManager.addView(menuView, centerLayoutParams);
-            circleMenuView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    circleMenuView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    circleMenuView.open(true);
-                }
-            });
         }
     }
 }
