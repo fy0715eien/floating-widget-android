@@ -8,5 +8,5 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:contentDescription="Pet"
-        android:src="@drawable/down_anime_1" />
+        android:src="@drawable/test1_1" />
 </RelativeLayout>
