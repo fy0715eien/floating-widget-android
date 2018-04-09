@@ -18,10 +18,16 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
@@ -43,7 +49,9 @@ public class FloatingViewService extends Service {
     public static final int BUTTON_CLOSE = 2;
 
     private View view;// 透明窗体
+    private ViewGroup virtualParent;
     private ImageView petModel;
+    private ImageView virtualPetModel;
     private View menuView;// 菜单窗体
     private int statusBarHeight;
     private CircleMenuView circleMenuView;
@@ -51,7 +59,9 @@ public class FloatingViewService extends Service {
     private boolean viewAdded = false;// 透明窗体是否已经显示
     private WindowManager windowManager;
     private WindowManager.LayoutParams layoutParams;
+    private WindowManager.LayoutParams virtualLayoutParams;
     private WindowManager.LayoutParams centerLayoutParams;
+    private RelativeLayout.LayoutParams relativeParams;
 
     private Intent intent;
 
@@ -124,6 +134,8 @@ public class FloatingViewService extends Service {
 
 
     private void createFloatView() {
+
+        Toast.makeText(FloatingViewService.this, "0000", Toast.LENGTH_SHORT).show();
         statusBarHeight = 0;
 
         //获取status_bar_height资源的ID
@@ -134,17 +146,30 @@ public class FloatingViewService extends Service {
         }
         setTheme(R.style.AppTheme);
         int layoutID;
-        switch(PreferenceHelper.petModel){
-            case "model_1":layoutID=R.layout.layout_pet_1;break;
-            case "model_2":layoutID=R.layout.layout_pet_2;break;
-            case "model_3":layoutID=R.layout.layout_pet_3;break;
-            default:layoutID=R.layout.layout_pet_1;
+        switch (PreferenceHelper.petModel) {
+            case "model_1":
+                layoutID = R.layout.layout_pet_1;
+                break;
+            case "model_2":
+                layoutID = R.layout.layout_pet_2;
+                break;
+            case "model_3":
+                layoutID = R.layout.layout_pet_3;
+                break;
+            default:
+                layoutID = R.layout.layout_pet_1;
         }
         view = LayoutInflater.from(this).inflate(layoutID, null);
-        petModel=view.findViewById(R.id.imageView_pet);
-        menuView =LayoutInflater.from(this).inflate(R.layout.popup_menu, null);
+        petModel = view.findViewById(R.id.imageView_pet);
+        virtualParent = (ViewGroup) LayoutInflater.from(this).inflate(R.layout.layout_virtualparent, null);
+        virtualPetModel = new ImageView(this);
+        virtualPetModel.setImageResource(layoutID);
+        relativeParams = new RelativeLayout.LayoutParams(0, 0);
+        virtualParent.addView(virtualPetModel, relativeParams);
+        menuView = LayoutInflater.from(this).inflate(R.layout.popup_menu, null);
         circleMenuView = menuView.findViewById(R.id.circle_menu);
         windowManager = (WindowManager) this.getSystemService(WINDOW_SERVICE);
+        Toast.makeText(this, "1111", Toast.LENGTH_SHORT).show();
 
         /*
          * LayoutParams.TYPE_SYSTEM_ERROR：保证该悬浮窗所有View的最上层
@@ -155,6 +180,13 @@ public class FloatingViewService extends Service {
             layoutParams = new LayoutParams(
                     LayoutParams.WRAP_CONTENT,
                     LayoutParams.WRAP_CONTENT,
+                    LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSPARENT
+            );
+            virtualLayoutParams = new LayoutParams(
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.MATCH_PARENT,
                     LayoutParams.TYPE_APPLICATION_OVERLAY,
                     LayoutParams.FLAG_NOT_FOCUSABLE,
                     PixelFormat.TRANSPARENT
@@ -174,6 +206,13 @@ public class FloatingViewService extends Service {
                     LayoutParams.FLAG_NOT_FOCUSABLE,
                     PixelFormat.TRANSPARENT
             );
+            virtualLayoutParams = new LayoutParams(
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.TYPE_SYSTEM_ERROR,
+                    LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSPARENT
+            );
             centerLayoutParams = new LayoutParams(
                     LayoutParams.WRAP_CONTENT,
                     LayoutParams.WRAP_CONTENT,
@@ -184,9 +223,11 @@ public class FloatingViewService extends Service {
         }
         //悬浮窗开始在左上角显示
         layoutParams.gravity = Gravity.START | Gravity.TOP;
-        layoutParams.windowAnimations=android.R.style.Animation_Translucent;
-        centerLayoutParams.gravity=Gravity.CENTER;
+        layoutParams.windowAnimations = android.R.style.Animation_Dialog;
+        virtualLayoutParams.gravity = Gravity.START | Gravity.TOP;
+        centerLayoutParams.gravity = Gravity.CENTER;
 
+        Toast.makeText(this, "2222", Toast.LENGTH_SHORT).show();
         view.setOnTouchListener(new FloatingTouchListener());
         view.setOnClickListener(new FloatingClickListener());
         circleMenuView.setEventListener(new CircleMenuView.EventListener() {
@@ -197,6 +238,7 @@ public class FloatingViewService extends Service {
             public void onMenuOpenAnimationEnd(@NonNull CircleMenuView view) {
                 Log.d(TAG, "onMenuOpenAnimationEnd: ");
             }
+
             @Override
             public void onMenuCloseAnimationStart(@NonNull CircleMenuView v) {
                 Log.d("D", "onMenuCloseAnimationStart");
@@ -213,17 +255,22 @@ public class FloatingViewService extends Service {
             public void onButtonClickAnimationEnd(@NonNull CircleMenuView view, int index) {
                 switch (index) {
                     case BUTTON_REMINDER:
-                        intent=new Intent(FloatingViewService.this,ReminderConfigActivity.class);// TODO: 2018/4/8 change activity
+                        intent = new Intent(FloatingViewService.this, ReminderConfigActivity.class);// TODO: 2018/4/8 change activity
                         break;
                     case BUTTON_SETTINGS:
-                        intent=new Intent(FloatingViewService.this,SettingsActivity.class);
+                        intent = new Intent(FloatingViewService.this, SettingsActivity.class);
                         break;
                     case BUTTON_CLOSE:
                         stopSelf();
+                        intent = null;
                         break;
                     default:
+                        intent = null;
                 }
                 windowManager.removeView(menuView);
+                if (intent != null) {
+                    startActivity(intent);
+                }
             }
         });
     }
@@ -249,20 +296,39 @@ public class FloatingViewService extends Service {
         layoutParams.y = (int) y - statusBarHeight;
         refresh();
     }
-    private void refreshView2(float xlast,float ylast,float xnext, float ynext) {
-        ylast=ylast-statusBarHeight;
-        ynext=ynext-statusBarHeight;
-        WindowManager.LayoutParams lp=layoutParams;
-        float xadd=(xnext-xlast)/100,yadd=(ynext-ylast)/100;
-        for(int i=1;i<100;i++)
-        {
-            lp.x=(int)(xlast+i*xadd);
-            lp.y=(int)(ylast+i*yadd);
-            windowManager.updateViewLayout(view,lp);
-        }
-        layoutParams.x = (int) xnext;
-        layoutParams.y = (int) ynext;
-        windowManager.updateViewLayout(view, layoutParams);
+
+    private void refreshView2(float xLast, float yLast, float xNext, float yNext) {
+        yLast = yLast - statusBarHeight;
+        yNext = yNext - statusBarHeight;
+
+        int[] location = new int[2];
+        int[] location_P = new int[2];
+        petModel.getLocationOnScreen(location);  //获取目标View的相对屏幕位置
+        virtualParent.getLocationOnScreen(location_P);     //获取父View相对屏幕位置
+        relativeParams.leftMargin = location[0] - location_P[0];
+        relativeParams.topMargin = location[1] - location_P[1];   //给副本View设置位置，与目标View重合
+        windowManager.addView(virtualParent, virtualLayoutParams);
+        windowManager.removeView(view);
+        AnimationSet animationSet = new AnimationSet(true);
+        //参数1～2：x轴的开始位置
+        //参数3～4：y轴的开始位置
+        //参数5～6：x轴的结束位置
+        //参数7～8：x轴的结束位置
+        TranslateAnimation translateAnimation = new TranslateAnimation(
+                Animation.ABSOLUTE, xLast,
+                Animation.ABSOLUTE, xNext,
+                Animation.ABSOLUTE, yLast,
+                Animation.ABSOLUTE, yNext
+        );
+        translateAnimation.setDuration(1000);
+        animationSet.addAnimation(translateAnimation);
+        virtualPetModel.startAnimation(animationSet);
+
+        layoutParams.x = (int) xNext;
+        layoutParams.y = (int) yNext;
+        windowManager.addView(view, layoutParams);
+
+        windowManager.removeView(virtualParent);
     }
 
     /**
@@ -281,28 +347,36 @@ public class FloatingViewService extends Service {
     /*悬浮窗监听器*/
     class FloatingTouchListener implements View.OnTouchListener {
         float fingerStartX, fingerStartY;
-        float ScreenStartX,ScreenStartY;
+        float ScreenStartX, ScreenStartY;
+
         public boolean onTouch(View v, MotionEvent event) {
             AnimationDrawable animationDrawable;
             int eventAction = event.getAction();
             switch (eventAction) {
                 case MotionEvent.ACTION_DOWN: // 按下事件，记录按下时手指在悬浮窗的XY坐标值
-                    int downAnimeID;
-                    switch(PreferenceHelper.petModel){
-                        case "model_1":downAnimeID=R.drawable.down_anime_1;break;
-                        case "model_2":downAnimeID=R.drawable.down_anime_2;break;
-                        case "model_3":downAnimeID=R.drawable.down_anime_3;break;
-                        default:downAnimeID=R.drawable.down_anime_1;
+                    int downAnimId;
+                    switch (PreferenceHelper.petModel) {
+                        case "model_1":
+                            downAnimId = R.drawable.down_anime_1;
+                            break;
+                        case "model_2":
+                            downAnimId = R.drawable.down_anime_2;
+                            break;
+                        case "model_3":
+                            downAnimId = R.drawable.down_anime_3;
+                            break;
+                        default:
+                            downAnimId = R.drawable.down_anime_1;
                     }
-                    petModel.setImageResource(downAnimeID);
-                    animationDrawable=(AnimationDrawable)petModel.getDrawable();
-                    if(!animationDrawable.isRunning()) {
+                    petModel.setImageResource(downAnimId);
+                    animationDrawable = (AnimationDrawable) petModel.getDrawable();
+                    if (!animationDrawable.isRunning()) {
                         animationDrawable.start();
                     }
                     fingerStartX = event.getX();
                     fingerStartY = event.getY();
-                    ScreenStartX= event.getRawX();
-                    ScreenStartY= event.getRawY();
+                    ScreenStartX = event.getRawX();
+                    ScreenStartY = event.getRawY();
                     break;
 
                 case MotionEvent.ACTION_MOVE:
@@ -312,39 +386,62 @@ public class FloatingViewService extends Service {
                     DisplayMetrics dm = new DisplayMetrics();
                     windowManager.getDefaultDisplay().getMetrics(dm);
 
-                    float ScreenEndX=event.getRawX();
-                    float ScreenEndY=event.getRawY();
+                    float ScreenEndX = event.getRawX();
+                    float ScreenEndY = event.getRawY();
                     float left = event.getRawX() - fingerStartX + v.getWidth() / 2;
                     float up = event.getRawY() - fingerStartY + v.getHeight() / 2;
                     float right = dm.widthPixels - left;
                     float button = dm.heightPixels - up;
 
                     int min = getMin(left, right, up, button);
-
                     switch (min) {
                         case TO_LEFT:
-                            refreshView2(event.getRawX() - fingerStartX,event.getRawY() - fingerStartY,0, event.getRawY() - fingerStartY);
+                            refreshView2(
+                                    event.getRawX() - fingerStartX,
+                                    event.getRawY() - fingerStartY,
+                                    0,
+                                    event.getRawY() - fingerStartY
+                            );
                             break;
                         case TO_RIGHT:
-                            refreshView2(event.getRawX() - fingerStartX,event.getRawY() - fingerStartY,dm.widthPixels - v.getWidth(), event.getRawY() - fingerStartY);
+                            refreshView2(
+                                    event.getRawX() - fingerStartX,
+                                    event.getRawY() - fingerStartY,
+                                    dm.widthPixels - v.getWidth(),
+                                    event.getRawY() - fingerStartY);
                             break;
                         case TO_UP:
-                            refreshView2(event.getRawX() - fingerStartX,event.getRawY() - fingerStartY,event.getRawX() - fingerStartX, 0);
+                            refreshView2(
+                                    event.getRawX() - fingerStartX,
+                                    event.getRawY() - fingerStartY,
+                                    event.getRawX() - fingerStartX,
+                                    0);
                             break;
                         case TO_BOTTOM:
-                            refreshView2(event.getRawX() - fingerStartX,event.getRawY() - fingerStartY,event.getRawX() - fingerStartX, dm.heightPixels - v.getHeight());
+                            refreshView2(
+                                    event.getRawX() - fingerStartX,
+                                    event.getRawY() - fingerStartY,
+                                    event.getRawX() - fingerStartX,
+                                    dm.heightPixels - v.getHeight());
                             break;
                     }
-                    int upAnimeID;
-                    switch(PreferenceHelper.petModel){
-                        case "model_1":upAnimeID=R.drawable.up_anime_1;break;
-                        case "model_2":upAnimeID=R.drawable.up_anime_2;break;
-                        case "model_3":upAnimeID=R.drawable.up_anime_3;break;
-                        default:upAnimeID=R.drawable.up_anime_1;
+                    int upAnimId;
+                    switch (PreferenceHelper.petModel) {
+                        case "model_1":
+                            upAnimId = R.drawable.up_anime_1;
+                            break;
+                        case "model_2":
+                            upAnimId = R.drawable.up_anime_2;
+                            break;
+                        case "model_3":
+                            upAnimId = R.drawable.up_anime_3;
+                            break;
+                        default:
+                            upAnimId = R.drawable.up_anime_1;
                     }
-                    petModel.setImageResource(upAnimeID);
-                    animationDrawable=(AnimationDrawable)petModel.getDrawable();
-                    if(!animationDrawable.isRunning()) {
+                    petModel.setImageResource(upAnimId);
+                    animationDrawable = (AnimationDrawable) petModel.getDrawable();
+                    if (!animationDrawable.isRunning()) {
                         animationDrawable.start();
                     }
                     if (abs(ScreenEndX - ScreenStartX) < DIFFER && abs(ScreenEndY - ScreenStartY) < DIFFER) {
@@ -360,7 +457,7 @@ public class FloatingViewService extends Service {
         @Override
         public void onClick(View v) {
             removeView();
-            windowManager.addView(menuView,centerLayoutParams);
+            windowManager.addView(menuView, centerLayoutParams);
             circleMenuView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {

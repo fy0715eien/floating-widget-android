@@ -1,17 +1,10 @@
 package com.example.fy071.floatingwidget.component;
 
-import android.Manifest;
-import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
@@ -111,6 +104,8 @@ public class MainActivity extends AppCompatActivity implements
             intent = new Intent(MainActivity.this, SettingsActivity.class);
         } else if (id == DRAWER_ABOUT) {
             //intent=new Intent(MainActivity.this,AboutActivity.class);
+        } else {
+            intent = null;
         }
         return false;
     }
@@ -168,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onDrawerClosed(View drawerView) {
         if (intent != null) {
             startActivity(intent);
+            intent = null;
         }
     }
 
