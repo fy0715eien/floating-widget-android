@@ -2,33 +2,51 @@ package com.example.fy071.floatingwidget.component.activity;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.component.service.BluetoothService;
 
+import java.util.Set;
+
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class PairingActivity extends AppCompatActivity {
     private static final int REQUEST_ENABLE_BT = 1;
     private BluetoothAdapter bluetoothAdapter = null;
     private BluetoothService bluetoothService = null;
-    private Toolbar toolbar;
-
+    private static final String TAG = "PairingActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pairing);
         initToolbar();
+        ButterKnife.bind(this);
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         //如果为null则本设备不支持蓝牙
         if (bluetoothAdapter == null) {
             Toast.makeText(this, "Bluetooth is not available on this device", Toast.LENGTH_LONG).show();
             finish();
+        }
+    }
+
+    @OnClick(R.id.fab_search)
+    void search() {
+        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+        if (pairedDevices.size() > 0) {
+            for (BluetoothDevice device : pairedDevices) {
+                //mArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+                Log.d(TAG, "search: " + device.getName() + "\n" + device.getAddress());
+            }
         }
     }
 
@@ -47,13 +65,13 @@ public class PairingActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
         if (bluetoothService != null) {
-            if (bluetoothService.getState() == bluetoothService.STATE_NONE) {
+            if (bluetoothService.getState() == BluetoothService.STATE_NONE) {
                 bluetoothService.start();
             }
         }
-    }*/
+    }
 
-/*    @Override
+    @Override
     public void onDestroy() {
         super.onDestroy();
         if (bluetoothService != null) {
@@ -65,13 +83,7 @@ public class PairingActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            /*case REQUEST_CONNECT_DEVICE_SECURE:
-                // When DeviceListActivity returns with a device to connect
-                if (resultCode == Activity.RESULT_OK) {
-                    connectDevice(data, true);
-                }
-                break;
-            case REQUEST_CONNECT_DEVICE_INSECURE:
+/*            case REQUEST_CONNECT_DEVICE:
                 // When DeviceListActivity returns with a device to connect
                 if (resultCode == Activity.RESULT_OK) {
                     connectDevice(data, false);
@@ -100,9 +112,18 @@ public class PairingActivity extends AppCompatActivity {
         }
     }
 
+/*    private void connectDevice(Intent data) {
+        // Get the device MAC address
+        String address = data.getExtras().getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+        // Get the BluetoothDevice object
+        BluetoothDevice device = bluetoothAdapter.getRemoteDevice(address);
+        // Attempt to connect to the device
+        bluetoothService.connect(device);
+    }*/
+
     private void initToolbar() {
-        toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.drawer_item_settings);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.drawer_item_pairing);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);

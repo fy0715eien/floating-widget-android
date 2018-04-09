@@ -11,4 +11,7 @@
     <string name="reminder_time">Time</string>
     <string name="reminder_description">Description</string>
     <string name="reminder_save">Save</string>
+
+    <string name="bluetooth_not_connected">Not connected</string>
+    <string name="bluetooth_connected">Connected</string>
 </resources>
