@@ -14,9 +14,9 @@ import java.util.List;
 
 
 public class WeChatNotification extends AccessibilityService {
-    private String ChatName;
-    private String ChatRecord = "abc";
-    private String VideoSecond;
+    protected String ChatName;
+    protected String ChatRecord = "abc";
+    protected String VideoSecond;
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
@@ -38,7 +38,7 @@ public class WeChatNotification extends AccessibilityService {
      * @param rootNode
      */
 
-    private void getWeChatLog(AccessibilityNodeInfo rootNode) {
+    protected void getWeChatLog(AccessibilityNodeInfo rootNode) {
         if (rootNode != null) {
             //获取所有聊天的线性布局
             List<AccessibilityNodeInfo> listChatRecord = rootNode.findAccessibilityNodeInfosByViewId("com.tencent.mm:id/p");

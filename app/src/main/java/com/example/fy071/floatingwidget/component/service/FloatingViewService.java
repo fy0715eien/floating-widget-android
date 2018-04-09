@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
-import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.util.DisplayMetrics;
@@ -22,6 +21,8 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
+import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
@@ -34,11 +35,12 @@ import com.example.fy071.floatingwidget.component.activity.ReminderConfigActivit
 import com.example.fy071.floatingwidget.component.activity.SettingsActivity;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
 import com.example.fy071.floatingwidget.util.PxDpConverter;
+import com.example.fy071.floatingwidget.util.WeChatNotification;
 import com.ramotion.circlemenu.CircleMenuView;
 
 import static java.lang.Math.abs;
 
-public class FloatingViewService extends Service {
+public class FloatingViewService extends WeChatNotification {
     public static final int BUTTON_REMINDER = 0;
     public static final int BUTTON_SETTINGS = 1;
     public static final int BUTTON_CLOSE = 2;
@@ -67,10 +69,12 @@ public class FloatingViewService extends Service {
 
     private Intent intent;
 
+/*
     @Override
     public IBinder onBind(Intent arg0) {
         return null;
     }
+*/
 
 
     @Override
@@ -504,6 +508,20 @@ public class FloatingViewService extends Service {
                     }
             }
             return true;
+        }
+    }
+
+    @Override
+    public void onAccessibilityEvent(AccessibilityEvent event) {
+        int eventType = event.getEventType();
+        switch (eventType) {
+            //每次在聊天界面中有新消息到来时都出触发该事件
+            case AccessibilityEvent.TYPE_VIEW_SCROLLED:
+                //获取当前聊天页面的根布局
+                AccessibilityNodeInfo rootNode = getRootInActiveWindow();
+                //获取聊天信息
+                getWeChatLog(rootNode);
+                break;
         }
     }
 }

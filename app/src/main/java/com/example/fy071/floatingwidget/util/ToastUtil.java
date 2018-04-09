@@ -32,9 +32,9 @@ public class ToastUtil {
     /**
      * 向Toast中添加自定义view
      */
-    public ToastUtil addView(View view, int postion) {
+    public ToastUtil addView(View view, int position) {
         toastView = (LinearLayout) toast.getView();
-        toastView.addView(view, postion);
+        toastView.addView(view, position);
 
         return this;
     }
