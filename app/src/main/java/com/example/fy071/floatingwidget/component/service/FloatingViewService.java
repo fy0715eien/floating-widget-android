@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.util.DisplayMetrics;
@@ -35,18 +36,16 @@ import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.component.activity.PairingActivity;
 import com.example.fy071.floatingwidget.component.activity.ReminderConfigActivity;
 import com.example.fy071.floatingwidget.component.activity.SettingsActivity;
-import com.example.fy071.floatingwidget.util.AnotherWeChatNotification;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
 import com.example.fy071.floatingwidget.util.PxDpConverter;
-import com.example.fy071.floatingwidget.util.ToastUtil;
-import com.example.fy071.floatingwidget.util.WeChatNotification;
 import com.ramotion.circlemenu.CircleMenuView;
 
 import java.util.List;
+import java.util.Vector;
 
 import static java.lang.Math.abs;
 
-public class FloatingViewService extends AnotherWeChatNotification {
+public class FloatingViewService extends Service {
     public static final int BUTTON_REMINDER = 0;
     public static final int BUTTON_SETTINGS = 1;
     public static final int BUTTON_CLOSE = 2;
@@ -58,8 +57,7 @@ public class FloatingViewService extends AnotherWeChatNotification {
     private static final int DIFFER = 5;//距离
     private static final int MESSAGE_DURATION=1;
     private static final int MESSAGE_LENGTH=20;
-    private List<String> message;
-    private ToastUtil mToast;
+    private Vector message;
     private View view;// 透明窗体
     private ViewGroup virtualParent;
     private ImageView petModel;
@@ -79,13 +77,10 @@ public class FloatingViewService extends AnotherWeChatNotification {
 
     private Intent intent;
 
-/*
     @Override
     public IBinder onBind(Intent arg0) {
         return null;
     }
-*/
-
 
     @Override
     public void onCreate() {
@@ -95,14 +90,12 @@ public class FloatingViewService extends AnotherWeChatNotification {
         startForeground(this);
     }
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         removeView();
         stopForeground(true);
     }
-
 
     public void startForeground(Service context) {
         String channelId = generateChannelId(context);
@@ -115,7 +108,6 @@ public class FloatingViewService extends AnotherWeChatNotification {
                 .build();
         context.startForeground(8888, notification);
     }
-
 
     private String generateChannelId(Service context) {
         String channelId;
@@ -137,7 +129,6 @@ public class FloatingViewService extends AnotherWeChatNotification {
         return channelId;
     }
 
-
     /**
      * 关闭悬浮窗
      */
@@ -148,9 +139,9 @@ public class FloatingViewService extends AnotherWeChatNotification {
         }
     }
 
-
     private void createFloatView() {
         statusBarHeight = 0;
+        message=new Vector();
 
         //获取status_bar_height资源的ID
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -320,10 +311,10 @@ public class FloatingViewService extends AnotherWeChatNotification {
         yNext = yNext - statusBarHeight;
         layoutParams.x = (int) xNext;
         layoutParams.y = (int) yNext;
-        virtualLayoutParams.windowAnimations = 0;
+        //virtualLayoutParams.windowAnimations = 0;
         windowManager.addView(virtualParent, virtualLayoutParams);
-        virtualLayoutParams.windowAnimations = android.R.style.Animation_Dialog;
-        windowManager.updateViewLayout(virtualParent, virtualLayoutParams);
+        //virtualLayoutParams.windowAnimations = android.R.style.Animation_Dialog;
+        //windowManager.updateViewLayout(virtualParent, virtualLayoutParams);
         virtualViewAdded = true;
         AnimationSet animationSet = new AnimationSet(true);
         //参数1～2：x轴的开始位置
@@ -360,18 +351,17 @@ public class FloatingViewService extends AnotherWeChatNotification {
             public void onAnimationEnd(Animation animation) {
                 // TODO Auto-generated method stub
 
-                layoutParams.windowAnimations = 0;
+                //layoutParams.windowAnimations = 0;
                 windowManager.addView(view, layoutParams);
                 viewAdded = true;
-                layoutParams.windowAnimations = android.R.style.Animation_Dialog;
-                windowManager.updateViewLayout(view, layoutParams);
+                //layoutParams.windowAnimations = android.R.style.Animation_Dialog;
+                //windowManager.updateViewLayout(view, layoutParams);
                 windowManager.removeView(virtualParent);
                 virtualViewAdded = false;
+                sendMessage("It's me~");
             }
         });
     }
-
-
     /**
      * 添加悬浮窗或者更新悬浮窗 如果悬浮窗还没添加则添加 如果已经添加则更新其位置
      */
@@ -521,34 +511,20 @@ public class FloatingViewService extends AnotherWeChatNotification {
         }
     }
 
-    @Override
-    public void onAccessibilityEvent(AccessibilityEvent event) {
-        int eventType = event.getEventType();
-        switch (eventType) {
-            //每次在聊天界面中有新消息到来时都出触发该事件
-            case AccessibilityEvent.TYPE_VIEW_SCROLLED:
-                //获取当前聊天页面的根布局
-                AccessibilityNodeInfo rootNode = getRootInActiveWindow();
-                //获取聊天信息
-                getWeChatLog(rootNode);
-                String cn=new String(ChatName);
-                String cr=new String(ChatRecord);
-                String msg=cn+":"+cr;
-                sendMessage(msg);
-                break;
-        }
-    }
-    private synchronized void sendMessage(String msg)
-    {
-        while(msg.length()>MESSAGE_LENGTH)
+    private void sendMessage(String msg) {
+       /* while(msg.length()>MESSAGE_LENGTH)
         {
             message.add(msg.substring(0,MESSAGE_LENGTH-1));
             msg=msg.substring(MESSAGE_LENGTH,msg.length()-1);
         }
-        message.add(msg);
-        while(message.size()!=0)
+        message.add(msg);*/
+        Toast.makeText(this,message.size(),Toast.LENGTH_SHORT).show();
+       /* while(message.size()>0)
         {
-            if(viewAdded)
+            Toast.makeText(this,"1111",Toast.LENGTH_SHORT).show();
+            message.clear();
+        }*/
+           /* if(viewAdded)
             {
                 View message_layout = LayoutInflater.from(this).inflate(R.layout.layout_message, null);
                 TextView tvMessage =  message_layout.findViewById(R.id.message_view);
@@ -596,7 +572,7 @@ public class FloatingViewService extends AnotherWeChatNotification {
                 windowManager.addView(message_layout,toastLayoutParams);
                 message.remove(0);
             }
-        }
+        }*/
     }
 
 }
