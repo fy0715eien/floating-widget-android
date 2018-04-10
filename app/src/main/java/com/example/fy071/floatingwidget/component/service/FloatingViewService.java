@@ -28,61 +28,53 @@ import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.component.activity.PairingActivity;
 import com.example.fy071.floatingwidget.component.activity.ReminderConfigActivity;
 import com.example.fy071.floatingwidget.component.activity.SettingsActivity;
+import com.example.fy071.floatingwidget.util.AnotherWeChatNotification;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
 import com.example.fy071.floatingwidget.util.PxDpConverter;
+import com.example.fy071.floatingwidget.util.ToastUtil;
 import com.example.fy071.floatingwidget.util.WeChatNotification;
 import com.ramotion.circlemenu.CircleMenuView;
 
+import java.util.List;
+
 import static java.lang.Math.abs;
 
-public class FloatingViewService extends WeChatNotification {
+public class FloatingViewService extends AnotherWeChatNotification {
     public static final int BUTTON_REMINDER = 0;
     public static final int BUTTON_SETTINGS = 1;
     public static final int BUTTON_CLOSE = 2;
-
     private static final String TAG = "FloatingViewService";
-
     private static final int TO_LEFT = 1;
     private static final int TO_RIGHT = 2;
     private static final int TO_UP = 3;
     private static final int TO_BOTTOM = 4;
     private static final int DIFFER = 5;//距离
-
+    private static final int MESSAGE_DURATION=1;
+    private static final int MESSAGE_LENGTH=20;
+    private List<String> message;
+    private ToastUtil mToast;
     private View view;// 透明窗体
-
     private ViewGroup virtualParent;
-
     private ImageView petModel;
-
     private ImageView virtualPetModel;
-
     private View menuView;// 菜单窗体
-
     private int statusBarHeight;
-
     private CircleMenuView circleMenuView;
-
-    private static final int TO_SIDE = 100;//距离，判断是否需要贴边,单位为dp
-
+    private static final int TO_SIDE = 100;//距离，判断是否需要贴边,单位为px不是dp
     private boolean viewAdded = false;// 透明窗体是否已经显示
-
     private boolean circlemenuAdded = false;//环形菜单
-
     private boolean virtualViewAdded = false;//父窗口
-
     private WindowManager windowManager;
-
     private WindowManager.LayoutParams layoutParams;
-
     private WindowManager.LayoutParams virtualLayoutParams;
-
     private WindowManager.LayoutParams centerLayoutParams;
-
     private RelativeLayout.LayoutParams relativeParams;
 
     private Intent intent;
@@ -166,7 +158,6 @@ public class FloatingViewService extends WeChatNotification {
             //根据资源ID获取响应的尺寸值
             statusBarHeight = getResources().getDimensionPixelSize(resourceId);
         }
-
         setTheme(R.style.AppTheme);
         int layoutID;
         switch (PreferenceHelper.petModel) {
@@ -540,7 +531,72 @@ public class FloatingViewService extends WeChatNotification {
                 AccessibilityNodeInfo rootNode = getRootInActiveWindow();
                 //获取聊天信息
                 getWeChatLog(rootNode);
+                String cn=new String(ChatName);
+                String cr=new String(ChatRecord);
+                String msg=cn+":"+cr;
+                sendMessage(msg);
                 break;
         }
     }
+    private synchronized void sendMessage(String msg)
+    {
+        while(msg.length()>MESSAGE_LENGTH)
+        {
+            message.add(msg.substring(0,MESSAGE_LENGTH-1));
+            msg=msg.substring(MESSAGE_LENGTH,msg.length()-1);
+        }
+        message.add(msg);
+        while(message.size()!=0)
+        {
+            if(viewAdded)
+            {
+                View message_layout = LayoutInflater.from(this).inflate(R.layout.layout_message, null);
+                TextView tvMessage =  message_layout.findViewById(R.id.message_view);
+                tvMessage.setText(message.get(0));
+
+                WindowManager.LayoutParams toastLayoutParams;
+                if (Build.VERSION.SDK_INT > 26) {
+                    toastLayoutParams = new LayoutParams(
+                            LayoutParams.WRAP_CONTENT,
+                            LayoutParams.WRAP_CONTENT,
+                            LayoutParams.TYPE_APPLICATION_OVERLAY,
+                            LayoutParams.FLAG_NOT_FOCUSABLE,
+                            PixelFormat.TRANSPARENT
+                    );
+                }
+                else {
+                    toastLayoutParams = new LayoutParams(
+                            LayoutParams.WRAP_CONTENT,
+                            LayoutParams.WRAP_CONTENT,
+                            LayoutParams.TYPE_SYSTEM_ERROR,
+                            LayoutParams.FLAG_NOT_FOCUSABLE,
+                            PixelFormat.TRANSPARENT
+                    );
+                }
+                int[] location=new int[2];
+                view.getLocationOnScreen(location);
+
+                float xOff=location[0]+view.getWidth()/2-centerLayoutParams.x;
+                float yOff=location[1]+view.getHeight()/2-centerLayoutParams.y;
+                if(xOff>0)
+                {
+                    xOff-=view.getWidth()/2+message_layout.getWidth();
+                }
+                else
+                {
+                    xOff+=view.getWidth()/2;
+                }
+                tvMessage.setTextColor(0x7fffffff);
+                tvMessage.setBackgroundColor(0x00000000);
+                Toast toast=new Toast(this);
+                toast.setGravity(Gravity.CENTER,(int)xOff,(int)yOff);
+                toast.setView(message_layout);
+                toast.setDuration(Toast.LENGTH_SHORT);
+                toast.show();
+                windowManager.addView(message_layout,toastLayoutParams);
+                message.remove(0);
+            }
+        }
+    }
+
 }
