@@ -55,8 +55,9 @@ public class FloatingViewService extends Service {
     private static final int TO_UP = 3;
     private static final int TO_BOTTOM = 4;
     private static final int DIFFER = 5;//距离
-    private static final int MESSAGE_DURATION=1;
-    private static final int MESSAGE_LENGTH=20;
+    private static final int MESSAGE_DURATION = 1;
+    private static final int MESSAGE_LENGTH = 15;
+    private static final float RATIO=(float)1.75;
     private Vector message;
     private View view;// 透明窗体
     private ViewGroup virtualParent;
@@ -141,7 +142,7 @@ public class FloatingViewService extends Service {
 
     private void createFloatView() {
         statusBarHeight = 0;
-        message=new Vector();
+        message = new Vector();
 
         //获取status_bar_height资源的ID
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -358,10 +359,11 @@ public class FloatingViewService extends Service {
                 //windowManager.updateViewLayout(view, layoutParams);
                 windowManager.removeView(virtualParent);
                 virtualViewAdded = false;
-                sendMessage("It's me~");
+                sendMessage("aaaaaaaaaaaaaaaaaa");
             }
         });
     }
+
     /**
      * 添加悬浮窗或者更新悬浮窗 如果悬浮窗还没添加则添加 如果已经添加则更新其位置
      */
@@ -511,68 +513,59 @@ public class FloatingViewService extends Service {
         }
     }
 
-    private void sendMessage(String msg) {
-       /* while(msg.length()>MESSAGE_LENGTH)
-        {
-            message.add(msg.substring(0,MESSAGE_LENGTH-1));
-            msg=msg.substring(MESSAGE_LENGTH,msg.length()-1);
-        }
-        message.add(msg);*/
-        Toast.makeText(this,message.size()+"",Toast.LENGTH_SHORT).show();
-       /* while(message.size()>0)
-        {
-            Toast.makeText(this,"1111",Toast.LENGTH_SHORT).show();
-            message.clear();
-        }*/
-           /* if(viewAdded)
+    private synchronized void sendMessage(String msg) {
+        while (countStringLength(msg)> MESSAGE_LENGTH) {
+            for(int i=0;i<msg.length();i++)
             {
+                if(countStringLength(msg.substring(0,i).toString())>MESSAGE_LENGTH)
+                {
+                    message.add(msg.substring(0,i - 1));
+                    msg = msg.substring(i, msg.length() - 1);
+                    break;
+                }
+            }
+        }
+        message.add(msg);
+        while (message.size() > 0) {
+            if (viewAdded) {
+                DisplayMetrics dm = new DisplayMetrics();
+                windowManager.getDefaultDisplay().getMetrics(dm);
+
                 View message_layout = LayoutInflater.from(this).inflate(R.layout.layout_message, null);
-                TextView tvMessage =  message_layout.findViewById(R.id.message_view);
-                tvMessage.setText(message.get(0));
+                TextView tvMessage = message_layout.findViewById(R.id.message_view);
+                tvMessage.setText(message.elementAt(0).toString());
 
-                WindowManager.LayoutParams toastLayoutParams;
-                if (Build.VERSION.SDK_INT > 26) {
-                    toastLayoutParams = new LayoutParams(
-                            LayoutParams.WRAP_CONTENT,
-                            LayoutParams.WRAP_CONTENT,
-                            LayoutParams.TYPE_APPLICATION_OVERLAY,
-                            LayoutParams.FLAG_NOT_FOCUSABLE,
-                            PixelFormat.TRANSPARENT
-                    );
-                }
-                else {
-                    toastLayoutParams = new LayoutParams(
-                            LayoutParams.WRAP_CONTENT,
-                            LayoutParams.WRAP_CONTENT,
-                            LayoutParams.TYPE_SYSTEM_ERROR,
-                            LayoutParams.FLAG_NOT_FOCUSABLE,
-                            PixelFormat.TRANSPARENT
-                    );
-                }
-                int[] location=new int[2];
-                view.getLocationOnScreen(location);
 
-                float xOff=location[0]+view.getWidth()/2-centerLayoutParams.x;
-                float yOff=location[1]+view.getHeight()/2-centerLayoutParams.y;
-                if(xOff>0)
-                {
-                    xOff-=view.getWidth()/2+message_layout.getWidth();
+                float xOff = layoutParams.x + view.getWidth() / 2;
+                float yOff = layoutParams.y;
+
+                float p=((float)1)/RATIO;
+                if (xOff > dm.widthPixels / 2) {
+                    xOff =xOff- view.getWidth() / 2 - p*countStringLength(message.elementAt(0).toString())* tvMessage.getTextSize();
+                } else {
+                    xOff += view.getWidth() / 2;
                 }
-                else
-                {
-                    xOff+=view.getWidth()/2;
-                }
-                tvMessage.setTextColor(0x7fffffff);
-                tvMessage.setBackgroundColor(0x00000000);
-                Toast toast=new Toast(this);
-                toast.setGravity(Gravity.CENTER,(int)xOff,(int)yOff);
+                Toast toast = new Toast(this);
+                toast.setGravity(Gravity.LEFT | Gravity.TOP, (int) xOff, (int) yOff);
                 toast.setView(message_layout);
                 toast.setDuration(Toast.LENGTH_SHORT);
                 toast.show();
-                windowManager.addView(message_layout,toastLayoutParams);
                 message.remove(0);
             }
-        }*/
+        }
     }
 
+    public float countStringLength(String str) {
+
+        float count = 0;
+        for (int i = 0; i < str.length(); i++) {
+            char item = str.charAt(i);
+            if (item < 128) {
+                count = count + 1;
+            } else {
+                count =RATIO;
+            }
+        }
+        return count;
+    }
 }

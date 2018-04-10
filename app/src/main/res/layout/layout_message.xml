@@ -7,7 +7,10 @@
     <TextView
         android:id="@+id/message_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"/>
+        android:singleLine="true"
+        android:textColor="#7f000000"
+        android:textSize="20dp"
+        android:gravity="left"
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>
