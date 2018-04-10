@@ -13,7 +13,9 @@ import android.widget.TextView;
 import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.component.TimePickerDialog;
 
-public class ReminderConfigActivity extends AppCompatActivity implements TimePickerDialog.TimePickerDialogInterface {
+import butterknife.ButterKnife;
+
+public class ReminderConfigActivity extends BaseActivity implements TimePickerDialog.TimePickerDialogInterface {
     // 要存储的文件名
     private static final String FILENAME = "filename";
     private TimePickerDialog mTimePickerDialog;
@@ -26,6 +28,8 @@ public class ReminderConfigActivity extends AppCompatActivity implements TimePic
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.reminder);
+        ButterKnife.bind(this);
+
         mTimePickerDialog = new TimePickerDialog(ReminderConfigActivity.this);
 
         toolbar = findViewById(R.id.toolbar);

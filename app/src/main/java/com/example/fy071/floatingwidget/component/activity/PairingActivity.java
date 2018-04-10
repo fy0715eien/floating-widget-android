@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.fy071.floatingwidget.R;
@@ -22,6 +23,8 @@ import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.adapters.ItemAdapter;
 import com.mikepenz.fastadapter.listeners.OnClickListener;
+import com.mikepenz.materialize.Materialize;
+import com.mikepenz.materialize.MaterializeBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,29 +36,41 @@ import butterknife.OnClick;
 
 import static com.mikepenz.fastadapter.adapters.ItemAdapter.items;
 
-public class PairingActivity extends AppCompatActivity {
+public class PairingActivity extends BaseActivity {
     private static final int REQUEST_ENABLE_BT = 1;
 
     private BluetoothAdapter bluetoothAdapter = null;
 
-    private BluetoothService bluetoothService = null;
+    private BluetoothDeviceItem bluetoothService = null;
 
     private static final String TAG = "PairingActivity";
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
+    @BindView(R.id.bt_paired_devices)
+    TextView pairedDevicesTextView;
+
     @BindView(R.id.recycler_view_devices)
     RecyclerView recyclerView;
-    private ItemAdapter<BluetoothDeviceItem> itemAdapter;
+
     @BindView(R.id.fab_search)
     FloatingActionButton floatingActionButton;
-    //save our FastAdapter
+
     private FastAdapter<BluetoothDeviceItem> fastAdapter;
+
+    private ItemAdapter<BluetoothDeviceItem> itemAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pairing);
-        initToolbar();
 
         ButterKnife.bind(this);
+
+        initToolbar();
+
+        pairedDevicesTextView.setVisibility(View.INVISIBLE);
 
         itemAdapter = items();
 
@@ -82,6 +97,9 @@ public class PairingActivity extends AppCompatActivity {
 
     @OnClick(R.id.fab_search)
     void search() {
+        //每次搜索前清空列表
+        itemAdapter.clear();
+
         //获取配对过设备
         Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
 
@@ -91,12 +109,11 @@ public class PairingActivity extends AppCompatActivity {
             for (BluetoothDevice device : pairedDevices) {
                 list.add(new BluetoothDeviceItem()
                         .withName(device.getName())
+                        .withBluetoothClass(device.getBluetoothClass())
                         .withAddress(device.getAddress())
                 );
-                Log.d(TAG, "search: " + list);
-                Log.d(TAG, "search: " + device.getName());
-                Log.d(TAG, "search: " + device.getAddress());
             }
+            pairedDevicesTextView.setVisibility(View.VISIBLE);
             itemAdapter.add(list);
         }
     }
@@ -176,7 +193,6 @@ public class PairingActivity extends AppCompatActivity {
 
 
     private void initToolbar() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.drawer_item_pairing);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

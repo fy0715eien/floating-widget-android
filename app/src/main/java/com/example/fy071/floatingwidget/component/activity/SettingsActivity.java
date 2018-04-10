@@ -11,8 +11,14 @@ import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.component.fragment.SettingsFragment;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
 
-public class SettingsActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class SettingsActivity extends BaseActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
+
     SharedPreferences sharedPreferences;
     SharedPreferences defaultSharedPreferences;
 
@@ -20,7 +26,7 @@ public class SettingsActivity extends AppCompatActivity implements SharedPrefere
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-
+        ButterKnife.bind(this);
         initToolbar();
 
         getFragmentManager().beginTransaction()
@@ -54,7 +60,6 @@ public class SettingsActivity extends AppCompatActivity implements SharedPrefere
     }
 
     private void initToolbar() {
-        toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.drawer_item_settings);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

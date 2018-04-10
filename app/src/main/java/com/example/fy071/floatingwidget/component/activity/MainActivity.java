@@ -14,18 +14,24 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements
-        Drawer.OnDrawerItemClickListener,
-        Drawer.OnDrawerListener {
+
+public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemClickListener, Drawer.OnDrawerListener {
     public static final long DRAWER_HOME = 1L;
     public static final long DRAWER_REMINDER = 2L;
     public static final long DRAWER_PAIRING = 3L;
     public static final long DRAWER_SETTINGS = 4L;
     public static final long DRAWER_ABOUT = 5L;
+
     private static final String TAG = "MainActivity";
-    Intent intent;
+
+    private Intent intent;
+
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
+
     Drawer drawer;
 
     @Override
@@ -33,7 +39,8 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar = findViewById(R.id.toolbar);
+        ButterKnife.bind(this);
+
         toolbar.setTitle(R.string.drawer_item_home);
 
         drawer = new DrawerBuilder()
@@ -104,32 +111,6 @@ public class MainActivity extends AppCompatActivity implements
             drawer.closeDrawer();
         } else {
             super.onBackPressed();
-            startWidget();
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        startWidget();
-    }
-
-    //用户离开当前应用时(点击Home键或多任务键)开启Service
-    @Override
-    protected void onUserLeaveHint() {
-        super.onUserLeaveHint();
-        startWidget();
-    }
-
-    /*Enable Widget开关开启时调用本方法启动Service
-    关闭时调用本方法不开启
-     */
-    private void startWidget() {
-        Intent intent = new Intent(this, FloatingViewService.class);
-        if (PreferenceHelper.widgetEnabled) {
-            startService(intent);
-        } else {
-            stopService(intent);
         }
     }
 

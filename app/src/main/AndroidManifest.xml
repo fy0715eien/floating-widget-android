@@ -18,10 +18,10 @@
             android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".component.activity.ReminderConfigActivity"
             android:launchMode="singleInstance" />
@@ -58,9 +58,9 @@
         <service
             android:name=".component.service.BluetoothService"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"></service>
 
-        </service>
+        <activity android:name=".component.activity.BaseActivity"></activity>
     </application>
 
 </manifest>

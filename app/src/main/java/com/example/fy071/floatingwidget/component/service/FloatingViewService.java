@@ -44,27 +44,45 @@ public class FloatingViewService extends WeChatNotification {
     public static final int BUTTON_REMINDER = 0;
     public static final int BUTTON_SETTINGS = 1;
     public static final int BUTTON_CLOSE = 2;
+
     private static final String TAG = "FloatingViewService";
+
     private static final int TO_LEFT = 1;
     private static final int TO_RIGHT = 2;
     private static final int TO_UP = 3;
     private static final int TO_BOTTOM = 4;
     private static final int DIFFER = 5;//距离
+
     private View view;// 透明窗体
+
     private ViewGroup virtualParent;
+
     private ImageView petModel;
+
     private ImageView virtualPetModel;
+
     private View menuView;// 菜单窗体
+
     private int statusBarHeight;
+
     private CircleMenuView circleMenuView;
-    private static final int TO_SIDE = 100;//距离，判断是否需要贴边,单位为px不是dp
+
+    private static final int TO_SIDE = 100;//距离，判断是否需要贴边,单位为dp
+
     private boolean viewAdded = false;// 透明窗体是否已经显示
+
     private boolean circlemenuAdded = false;//环形菜单
+
     private boolean virtualViewAdded = false;//父窗口
+
     private WindowManager windowManager;
+
     private WindowManager.LayoutParams layoutParams;
+
     private WindowManager.LayoutParams virtualLayoutParams;
+
     private WindowManager.LayoutParams centerLayoutParams;
+
     private RelativeLayout.LayoutParams relativeParams;
 
     private Intent intent;
@@ -148,6 +166,7 @@ public class FloatingViewService extends WeChatNotification {
             //根据资源ID获取响应的尺寸值
             statusBarHeight = getResources().getDimensionPixelSize(resourceId);
         }
+
         setTheme(R.style.AppTheme);
         int layoutID;
         switch (PreferenceHelper.petModel) {
