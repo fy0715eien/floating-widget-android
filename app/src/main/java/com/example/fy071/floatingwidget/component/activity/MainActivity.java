@@ -9,6 +9,8 @@ import android.view.View;
 import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.component.service.FloatingViewService;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
+import com.mikepenz.aboutlibraries.Libs;
+import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
@@ -97,7 +99,10 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
         } else if (id == DRAWER_SETTINGS) {
             intent = new Intent(MainActivity.this, SettingsActivity.class);
         } else if (id == DRAWER_ABOUT) {
-            //intent=new Intent(MainActivity.this,AboutActivity.class);
+            new LibsBuilder()
+                    .withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
+                    .withActivityTitle(getResources().getString(R.string.drawer_item_about))
+                    .start(this);
         } else {
             intent = null;
         }
