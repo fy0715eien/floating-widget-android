@@ -2,6 +2,7 @@ package com.example.fy071.floatingwidget.component.activity;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -29,6 +30,8 @@ import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.adapters.ItemAdapter;
 import com.mikepenz.fastadapter.listeners.OnClickListener;
 
+import java.util.Set;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -37,8 +40,6 @@ public class PairingActivity extends BaseActivity {
     private static final int REQUEST_ENABLE_BT = 1;
 
     private BluetoothAdapter bluetoothAdapter = null;
-
-    private BluetoothClient bluetoothClient;
 
     private ItemAdapter<BluetoothDeviceItem> itemAdapter;
 
@@ -62,39 +63,16 @@ public class PairingActivity extends BaseActivity {
     void search() {
         itemAdapter.clear();
 
-        SearchRequest request = new SearchRequest.Builder()
-                .searchBluetoothLeDevice(3000)
-                .searchBluetoothClassicDevice(3000)
-                .build();
-
-        bluetoothClient.search(request, new SearchResponse() {
-            @Override
-            public void onSearchStarted() {
-
-            }
-
-            @Override
-            public void onDeviceFounded(SearchResult device) {
-                itemAdapter.add(new BluetoothDeviceItem()
-                        .withName(device.getName())
+        Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
+        if(devices.size()>0){
+            for(BluetoothDevice device:devices){
+                itemAdapter.add(
+                        new BluetoothDeviceItem().withName(device.getName())
                         .withAddress(device.getAddress())
-                        .withBluetoothClass(device.device.getBluetoothClass())
+                        .withBluetoothClass(device.getBluetoothClass())
                 );
-                Log.d(TAG, "onDeviceFounded: "+device.getName());
-                Beacon beacon = new Beacon(device.scanRecord);
-                BluetoothLog.v(String.format("beacon for %s\n%s", device.getAddress(), beacon.toString()));
             }
-
-            @Override
-            public void onSearchStopped() {
-
-            }
-
-            @Override
-            public void onSearchCanceled() {
-
-            }
-        });
+        }
     }
 
     @Override
@@ -113,9 +91,7 @@ public class PairingActivity extends BaseActivity {
             finish();
         }
 
-        bluetoothClient=new BluetoothClient(this);
-
-        itemAdapter=new ItemAdapter<>();
+        itemAdapter = new ItemAdapter<>();
 
         fastAdapter = FastAdapter.with(itemAdapter);
         fastAdapter.withSelectable(true)
@@ -155,7 +131,6 @@ public class PairingActivity extends BaseActivity {
                     // Bluetooth is now enabled, so set up a chat session
                     //setupChat();
                 } else {
-                    // User did not enable Bluetooth or an error occurred
                     Toast.makeText(this, "Bluetooth not enabled, leaving activity", Toast.LENGTH_SHORT).show();
                     finish();
                 }
@@ -174,5 +149,4 @@ public class PairingActivity extends BaseActivity {
             }
         });
     }
-
 }

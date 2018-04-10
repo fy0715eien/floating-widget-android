@@ -14,13 +14,9 @@ import com.example.fy071.floatingwidget.util.PreferenceHelper;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SettingsActivity extends BaseActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
-
+public class SettingsActivity extends BaseActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-
-    SharedPreferences sharedPreferences;
-    SharedPreferences defaultSharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,31 +28,16 @@ public class SettingsActivity extends BaseActivity implements SharedPreferences.
         getFragmentManager().beginTransaction()
                 .replace(R.id.content, new SettingsFragment())
                 .commit();
-
-        defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        sharedPreferences = getPreferences(MODE_PRIVATE);
-        PreferenceHelper.setPreferences(defaultSharedPreferences, sharedPreferences);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this);
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
-
 
     @Override
     protected void onPause() {
         super.onPause();
-        defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
-        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
-    }
-
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
-        PreferenceHelper.setPreferences(defaultSharedPreferences, sharedPreferences);
     }
 
     private void initToolbar() {

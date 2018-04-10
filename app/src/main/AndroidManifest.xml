@@ -29,7 +29,8 @@
 
         <service android:name=".component.service.FloatingViewService" />
 
-        <receiver android:name=".component.OpenBroadcastReceiver">
+        <receiver android:name=".component.OpenBroadcastReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
