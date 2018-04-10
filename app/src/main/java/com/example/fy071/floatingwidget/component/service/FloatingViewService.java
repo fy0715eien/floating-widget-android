@@ -518,7 +518,7 @@ public class FloatingViewService extends Service {
             msg=msg.substring(MESSAGE_LENGTH,msg.length()-1);
         }
         message.add(msg);*/
-        Toast.makeText(this,message.size(),Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,message.size()+"",Toast.LENGTH_SHORT).show();
        /* while(message.size()>0)
         {
             Toast.makeText(this,"1111",Toast.LENGTH_SHORT).show();

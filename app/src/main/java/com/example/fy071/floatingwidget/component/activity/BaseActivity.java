@@ -14,6 +14,7 @@ public class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+        //overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
     }
 
     @Override
@@ -31,6 +32,8 @@ public class BaseActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+        //overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
+
     }
 
     @Override
