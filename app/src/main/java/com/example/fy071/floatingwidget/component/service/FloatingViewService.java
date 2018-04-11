@@ -3,6 +3,7 @@ package com.example.fy071.floatingwidget.component.service;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -135,12 +136,15 @@ public class FloatingViewService extends Service {
     }
 
     public void startForeground(Service context) {
+
         String channelId = generateChannelId(context);
+
         Notification notification = new NotificationCompat.Builder(this, channelId)
                 .setContentText("I'm running.")
                 .setWhen(System.currentTimeMillis())
                 .setPriority(Notification.PRIORITY_MIN)
                 .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("pet")
                 .setAutoCancel(true)
                 .build();
         context.startForeground(8888, notification);
@@ -553,21 +557,21 @@ public class FloatingViewService extends Service {
             layoutParams = new LayoutParams(
                     LayoutParams.WRAP_CONTENT,
                     LayoutParams.WRAP_CONTENT,
-                    LayoutParams.TYPE_SYSTEM_ERROR,
+                    LayoutParams.TYPE_PHONE,
                     LayoutParams.FLAG_NOT_FOCUSABLE,
                     PixelFormat.TRANSPARENT
             );
             virtualLayoutParams = new LayoutParams(
                     LayoutParams.MATCH_PARENT,
                     LayoutParams.MATCH_PARENT,
-                    LayoutParams.TYPE_SYSTEM_ERROR,
+                    LayoutParams.TYPE_PHONE,
                     LayoutParams.FLAG_NOT_FOCUSABLE,
                     PixelFormat.TRANSPARENT
             );
             centerLayoutParams = new LayoutParams(
                     LayoutParams.WRAP_CONTENT,
                     LayoutParams.WRAP_CONTENT,
-                    LayoutParams.TYPE_SYSTEM_ERROR,
+                    LayoutParams.TYPE_PHONE,
                     LayoutParams.FLAG_NOT_FOCUSABLE,
                     PixelFormat.TRANSPARENT
             );
