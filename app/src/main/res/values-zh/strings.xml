@@ -16,7 +16,7 @@
     <string name="dialog_positive_button">确定</string>
     <string name="dialog_negative_button">取消</string>
 
-    <string name="paired_devices">Paired devices</string>
+    <string name="devices">Paired devices</string>
 
     <string name="pref_title_widget">挂件</string>
     <string name="pref_title_pet_profile">宠物资料</string>

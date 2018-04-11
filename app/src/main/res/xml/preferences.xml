@@ -37,11 +37,13 @@
 
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_widget"
             android:key="wechat_notification"
             android:summary="@string/pref_summary_wechat"
             android:title="@string/pref_wechat" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_widget"
             android:key="start_at_boot"
             android:title="@string/pref_start_on_boot" />
     </PreferenceCategory>
