@@ -526,7 +526,6 @@ public class FloatingViewService extends Service {
     }
 
     /**
-     * LayoutParams.TYPE_SYSTEM_ERROR：保证该悬浮窗所有View的最上层
      * LayoutParams.FLAG_NOT_FOCUSABLE:该浮动窗不会获得焦点，但可以获得拖动
      * PixelFormat.TRANSPARENT：悬浮窗透明
      */
