@@ -12,7 +12,7 @@ public class PreferenceHelper {
     public static String userName;
     public static String petModel;
     public static boolean wechatNotification;
-    public static boolean startAtBoot;
+    public static boolean startOnBoot;
 
     //其他
     public static float petLastX;
@@ -27,7 +27,7 @@ public class PreferenceHelper {
         userName = defaultSharedPreferences.getString(Key.USER_NAME, "");
         petModel = defaultSharedPreferences.getString(Key.PET_MODEL, "");
         wechatNotification = defaultSharedPreferences.getBoolean(Key.WECHAT_NOTIFICATION, false);
-        startAtBoot = defaultSharedPreferences.getBoolean(Key.START_AT_BOOT, false);
+        startOnBoot = defaultSharedPreferences.getBoolean(Key.START_AT_BOOT, false);
 
         petLastX = sharedPreferences.getFloat(Key.PET_LAST_X, 0);
         petLastY = sharedPreferences.getFloat(Key.PET_LAST_Y, 0);

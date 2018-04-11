@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="Widget">
+    <PreferenceCategory android:title="@string/pref_title_widget">
 
         <SwitchPreference
             android:defaultValue="false"
             android:key="enable_widget"
-            android:summaryOff="Disabled"
-            android:summaryOn="Enabled"
-            android:title="Enable widget" />
+            android:summaryOff="@string/pref_summary_disabled"
+            android:summaryOn="@string/pref_summary_enabled"
+            android:title="@string/pref_enable_widget" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Pet profile">
+    <PreferenceCategory android:title="@string/pref_title_pet_profile">
 
         <EditTextPreference
             android:defaultValue="Pet"
@@ -18,37 +18,33 @@
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:summary="Pet"
-            android:title="Pet name" />
+            android:title="@string/pref_pet_name" />
         <EditTextPreference
             android:defaultValue="User"
             android:key="user_name"
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:summary="User"
-            android:title="User name" />
+            android:title="@string/pref_user_name" />
         <ListPreference
-            android:defaultValue="1"
-            android:entries="@array/array_background_entries"
-            android:entryValues="@array/array_background_values"
-            android:key="background"
-            android:title="Background" />
-        <ListPreference
-            android:defaultValue="1"
+            android:defaultValue="model_1"
             android:entries="@array/array_pet_model_entries"
             android:entryValues="@array/array_pet_model_values"
             android:key="pet_model"
-            android:title="Pet model" />
+            android:title="@string/pref_pet_model" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="Widget functions">
+    <PreferenceCategory android:title="@string/pref_title_widget_functions">
 
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_widget"
             android:key="wechat_notification"
-            android:summary="Shows popup when receiving WeChat notification"
-            android:title="WeChat notification" />
+            android:summary="@string/pref_summary_wechat"
+            android:title="@string/pref_wechat" />
         <CheckBoxPreference
             android:defaultValue="false"
+            android:dependency="enable_widget"
             android:key="start_at_boot"
-            android:title="Start widget at boot" />
+            android:title="@string/pref_start_on_boot" />
     </PreferenceCategory>
 </PreferenceScreen>

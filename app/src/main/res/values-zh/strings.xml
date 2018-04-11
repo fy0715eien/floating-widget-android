@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">桌面宠物</string>
+
+    <string name="drawer_item_home">主页</string>
+    <string name="drawer_item_reminder">提醒</string>
+    <string name="drawer_item_pairing">配对</string>
+    <string name="drawer_item_settings">设置</string>
+    <string name="drawer_item_about">关于</string>
+
+    <string name="toolbar_new_reminder">新提醒</string>
+
+    <string name="reminder_time">时间</string>
+    <string name="reminder_description">描述</string>
+    <string name="reminder_save">保存</string>
+
+    <string name="dialog_positive_button">确定</string>
+    <string name="dialog_negative_button">取消</string>
+
+    <string name="devices">Paired devices</string>
+
+    <string name="pref_title_widget">挂件</string>
+    <string name="pref_title_pet_profile">宠物资料</string>
+    <string name="pref_title_widget_functions">挂件功能</string>
+
+    <string name="pref_enable_widget">启动挂件</string>
+    <string name="pref_pet_name">宠物名</string>
+    <string name="pref_user_name">用户名</string>
+    <string name="pref_pet_model">宠物模型</string>
+    <string name="pref_wechat">微信通知</string>
+    <string name="pref_start_on_boot">开机启动</string>
+
+    <string name="pref_summary_wechat">收到微信消息时弹出气泡提醒</string>
+    <string name="pref_summary_enabled">已开启</string>
+    <string name="pref_summary_disabled">已关闭</string>
+</resources>

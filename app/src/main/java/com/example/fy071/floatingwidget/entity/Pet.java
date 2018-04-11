@@ -41,7 +41,8 @@ public class Pet implements View.OnTouchListener {
         AnimationDrawable animationDrawable;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                petModel.setImageResource(R.drawable.down_anime);
+                //petModel.setImageDrawable(Drawable.createFromStream());
+                //petModel.setImageResource(R.drawable.down_anime_1);
                 animationDrawable=(AnimationDrawable)petModel.getDrawable();
                 if(!animationDrawable.isRunning()) {
                     animationDrawable.start();
@@ -59,7 +60,7 @@ public class Pet implements View.OnTouchListener {
                 v.setY(event.getRawY() + viewStartY - fingerStartY);
                 break;
             case MotionEvent.ACTION_UP:
-                this.petModel.setImageResource(R.drawable.up_anime);
+                this.petModel.setImageResource(R.drawable.up_anime_1);
                 animationDrawable=(AnimationDrawable)petModel.getDrawable();
                 if(!animationDrawable.isRunning()) {
                     animationDrawable.start();

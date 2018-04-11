@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.fy071.floatingwidget.component.HomeFragment">
+    tools:context="com.example.fy071.floatingwidget.component.fragment.HomeFragment">
 
     <ImageView
         android:layout_width="match_parent"
@@ -10,10 +10,11 @@
         android:scaleType="centerCrop"
         android:src="@drawable/background1" />
     <include
-        layout="@layout/layout_pet"
+        layout="@layout/layout_pet_1"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true" />
 
 </RelativeLayout>
