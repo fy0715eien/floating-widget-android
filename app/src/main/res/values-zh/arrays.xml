@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="array_pet_model_entries">
+        <item>模型1</item>
+        <item>模型2</item>
+        <item>模型3</item>
+    </string-array>
+    <string-array name="array_pet_model_values">
+        <item>model_1</item>
+        <item>model_2</item>
+        <item>model_3</item>
+    </string-array>
+</resources>

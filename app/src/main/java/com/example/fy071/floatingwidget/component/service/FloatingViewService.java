@@ -5,11 +5,13 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.util.DisplayMetrics;
@@ -36,6 +38,7 @@ import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.component.activity.PairingActivity;
 import com.example.fy071.floatingwidget.component.activity.ReminderConfigActivity;
 import com.example.fy071.floatingwidget.component.activity.SettingsActivity;
+import com.example.fy071.floatingwidget.util.Key;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
 import com.example.fy071.floatingwidget.util.PxDpConverter;
 import com.ramotion.circlemenu.CircleMenuView;
@@ -46,35 +49,51 @@ import java.util.Vector;
 import static java.lang.Math.abs;
 
 public class FloatingViewService extends Service {
+    private static final String TAG = "FloatingViewService";
+
     public static final int BUTTON_REMINDER = 0;
     public static final int BUTTON_SETTINGS = 1;
     public static final int BUTTON_CLOSE = 2;
-    private static final String TAG = "FloatingViewService";
+
     private static final int TO_LEFT = 1;
     private static final int TO_RIGHT = 2;
     private static final int TO_UP = 3;
     private static final int TO_BOTTOM = 4;
-    private static final int DIFFER = 5;//距离
+
+    private static final int DIFFER = 5;//判断是否为点击操作
+
+    private static final int TO_SIDE = 100;//判断是否需要贴边,单位为dp
+
     private static final int MESSAGE_DURATION = 1;
     private static final int MESSAGE_LENGTH = 15;
-    private static final float RATIO=(float)1.75;
+
+    private static final float RATIO = (float) 1.75;
+
     private Vector message;
-    private View view;// 透明窗体
+
     private ViewGroup virtualParent;
+
+    private View view;// 透明窗体
+    private View menuView;// 菜单窗体
+
     private ImageView petModel;
     private ImageView virtualPetModel;
-    private View menuView;// 菜单窗体
+
     private int statusBarHeight;
+
     private CircleMenuView circleMenuView;
-    private static final int TO_SIDE = 100;//距离，判断是否需要贴边,单位为px不是dp
+
     private boolean viewAdded = false;// 透明窗体是否已经显示
     private boolean circlemenuAdded = false;//环形菜单
     private boolean virtualViewAdded = false;//父窗口
+
     private WindowManager windowManager;
     private WindowManager.LayoutParams layoutParams;
     private WindowManager.LayoutParams virtualLayoutParams;
     private WindowManager.LayoutParams centerLayoutParams;
     private RelativeLayout.LayoutParams relativeParams;
+
+    private SharedPreferences sharedPreferences;
 
     private Intent intent;
 
@@ -86,6 +105,7 @@ public class FloatingViewService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         createFloatView();
         refresh();
         startForeground(this);
@@ -110,26 +130,6 @@ public class FloatingViewService extends Service {
         context.startForeground(8888, notification);
     }
 
-    private String generateChannelId(Service context) {
-        String channelId;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            channelId = "floating_service";
-            String channelName = getResources().getString(R.string.app_name);
-            NotificationChannel notificationChannel = new NotificationChannel(
-                    channelId,
-                    channelName,
-                    NotificationManager.IMPORTANCE_NONE
-            );
-            notificationChannel.setLightColor(Color.BLUE);
-            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-            notificationManager.createNotificationChannel(notificationChannel);
-        } else {
-            channelId = "";
-        }
-        return channelId;
-    }
-
     /**
      * 关闭悬浮窗
      */
@@ -150,9 +150,11 @@ public class FloatingViewService extends Service {
             //根据资源ID获取响应的尺寸值
             statusBarHeight = getResources().getDimensionPixelSize(resourceId);
         }
+
         setTheme(R.style.AppTheme);
+
         int layoutID;
-        switch (PreferenceHelper.petModel) {
+        switch (sharedPreferences.getString(Key.PET_MODEL, "")) {
             case "model_1":
                 layoutID = R.layout.layout_pet_1;
                 break;
@@ -177,56 +179,8 @@ public class FloatingViewService extends Service {
 
         windowManager = (WindowManager) this.getSystemService(WINDOW_SERVICE);
 
-        /*
-         * LayoutParams.TYPE_SYSTEM_ERROR：保证该悬浮窗所有View的最上层
-         * LayoutParams.FLAG_NOT_FOCUSABLE:该浮动窗不会获得焦点，但可以获得拖动
-         * PixelFormat.TRANSPARENT：悬浮窗透明
-         */
-        if (Build.VERSION.SDK_INT > 26) {
-            layoutParams = new LayoutParams(
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.TYPE_APPLICATION_OVERLAY,
-                    LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSPARENT
-            );
-            virtualLayoutParams = new LayoutParams(
-                    LayoutParams.MATCH_PARENT,
-                    LayoutParams.MATCH_PARENT,
-                    LayoutParams.TYPE_APPLICATION_OVERLAY,
-                    LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSPARENT
-            );
-            centerLayoutParams = new LayoutParams(
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.TYPE_APPLICATION_OVERLAY,
-                    LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSPARENT
-            );
-        } else {
-            layoutParams = new LayoutParams(
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.TYPE_SYSTEM_ERROR,
-                    LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSPARENT
-            );
-            virtualLayoutParams = new LayoutParams(
-                    LayoutParams.MATCH_PARENT,
-                    LayoutParams.MATCH_PARENT,
-                    LayoutParams.TYPE_SYSTEM_ERROR,
-                    LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSPARENT
-            );
-            centerLayoutParams = new LayoutParams(
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.TYPE_SYSTEM_ERROR,
-                    LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSPARENT
-            );
-        }
+        initLayoutParams();
+
         //悬浮窗开始在左上角显示
         layoutParams.gravity = Gravity.START | Gravity.TOP;
         layoutParams.windowAnimations = android.R.style.Animation_Dialog;
@@ -237,19 +191,6 @@ public class FloatingViewService extends Service {
         view.setOnTouchListener(new FloatingTouchListener());
         view.setOnClickListener(new FloatingClickListener());
         circleMenuView.setEventListener(new CircleMenuView.EventListener() {
-            public void onMenuOpenAnimationStart(@NonNull CircleMenuView view) {
-                Log.d(TAG, "onMenuOpenAnimationStart: ");
-            }
-
-            public void onMenuOpenAnimationEnd(@NonNull CircleMenuView view) {
-                Log.d(TAG, "onMenuOpenAnimationEnd: ");
-            }
-
-            @Override
-            public void onMenuCloseAnimationStart(@NonNull CircleMenuView v) {
-                Log.d("D", "onMenuCloseAnimationStart");
-            }
-
             @Override
             public void onMenuCloseAnimationEnd(@NonNull CircleMenuView v) {
                 Log.d(TAG, "onMenuCloseAnimationEnd: ");
@@ -379,7 +320,7 @@ public class FloatingViewService extends Service {
 
     private void setDownAnim() {
         int downAnimId;
-        switch (PreferenceHelper.petModel) {
+        switch (sharedPreferences.getString(Key.PET_MODEL, "")) {
             case "model_1":
                 downAnimId = R.drawable.down_anime_1;
                 break;
@@ -397,7 +338,7 @@ public class FloatingViewService extends Service {
 
     private void setInitFrame() {
         int upFrameId;
-        switch (PreferenceHelper.petModel) {
+        switch (sharedPreferences.getString(Key.PET_MODEL, "")) {
             case "model_1":
                 upFrameId = R.drawable.test1_1;
                 break;
@@ -415,7 +356,7 @@ public class FloatingViewService extends Service {
 
     private void setUpAnim() {
         int upAnimId;
-        switch (PreferenceHelper.petModel) {
+        switch (sharedPreferences.getString(Key.PET_MODEL, "")) {
             case "model_1":
                 upAnimId = R.drawable.up_anime_1;
                 break;
@@ -468,7 +409,6 @@ public class FloatingViewService extends Service {
                     ScreenStartX = event.getRawX();
                     ScreenStartY = event.getRawY();
                     break;
-
                 case MotionEvent.ACTION_MOVE:
                     refreshView(event.getRawX() - fingerStartX, event.getRawY() - fingerStartY);
                     break;
@@ -514,12 +454,10 @@ public class FloatingViewService extends Service {
     }
 
     private synchronized void sendMessage(String msg) {
-        while (countStringLength(msg)> MESSAGE_LENGTH) {
-            for(int i=0;i<msg.length();i++)
-            {
-                if(countStringLength(msg.substring(0,i).toString())>MESSAGE_LENGTH)
-                {
-                    message.add(msg.substring(0,i - 1));
+        while (countStringLength(msg) > MESSAGE_LENGTH) {
+            for (int i = 0; i < msg.length(); i++) {
+                if (countStringLength(msg.substring(0, i).toString()) > MESSAGE_LENGTH) {
+                    message.add(msg.substring(0, i - 1));
                     msg = msg.substring(i, msg.length() - 1);
                     break;
                 }
@@ -539,14 +477,14 @@ public class FloatingViewService extends Service {
                 float xOff = layoutParams.x + view.getWidth() / 2;
                 float yOff = layoutParams.y;
 
-                float p=((float)1)/RATIO;
+                float p = ((float) 1) / RATIO;
                 if (xOff > dm.widthPixels / 2) {
-                    xOff =xOff- view.getWidth() / 2 - p*countStringLength(message.elementAt(0).toString())* tvMessage.getTextSize();
+                    xOff = xOff - view.getWidth() / 2 - p * countStringLength(message.elementAt(0).toString()) * tvMessage.getTextSize();
                 } else {
                     xOff += view.getWidth() / 2;
                 }
                 Toast toast = new Toast(this);
-                toast.setGravity(Gravity.LEFT | Gravity.TOP, (int) xOff, (int) yOff);
+                toast.setGravity(Gravity.START | Gravity.TOP, (int) xOff, (int) yOff);
                 toast.setView(message_layout);
                 toast.setDuration(Toast.LENGTH_SHORT);
                 toast.show();
@@ -563,9 +501,82 @@ public class FloatingViewService extends Service {
             if (item < 128) {
                 count = count + 1;
             } else {
-                count =RATIO;
+                count = RATIO;
             }
         }
         return count;
+    }
+
+    /**
+     * LayoutParams.TYPE_SYSTEM_ERROR：保证该悬浮窗所有View的最上层
+     * LayoutParams.FLAG_NOT_FOCUSABLE:该浮动窗不会获得焦点，但可以获得拖动
+     * PixelFormat.TRANSPARENT：悬浮窗透明
+     */
+    private void initLayoutParams() {
+        if (Build.VERSION.SDK_INT > 26) {
+            layoutParams = new LayoutParams(
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSPARENT
+            );
+            virtualLayoutParams = new LayoutParams(
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSPARENT
+            );
+            centerLayoutParams = new LayoutParams(
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSPARENT
+            );
+        } else {
+            layoutParams = new LayoutParams(
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.TYPE_SYSTEM_ERROR,
+                    LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSPARENT
+            );
+            virtualLayoutParams = new LayoutParams(
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.TYPE_SYSTEM_ERROR,
+                    LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSPARENT
+            );
+            centerLayoutParams = new LayoutParams(
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.TYPE_SYSTEM_ERROR,
+                    LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSPARENT
+            );
+        }
+    }
+
+    private String generateChannelId(Service context) {
+        String channelId;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            channelId = "floating_service";
+            String channelName = getResources().getString(R.string.app_name);
+            NotificationChannel notificationChannel = new NotificationChannel(
+                    channelId,
+                    channelName,
+                    NotificationManager.IMPORTANCE_NONE
+            );
+            notificationChannel.setLightColor(Color.BLUE);
+            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(notificationChannel);
+        } else {
+            channelId = "";
+        }
+        return channelId;
     }
 }
