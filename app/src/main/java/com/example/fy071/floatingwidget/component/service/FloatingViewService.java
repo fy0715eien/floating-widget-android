@@ -10,7 +10,9 @@ import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
@@ -64,10 +66,13 @@ public class FloatingViewService extends Service {
 
     private static final int TO_SIDE = 100;//判断是否需要贴边,单位为dp
 
-    private static final int MESSAGE_DURATION = 1;
-    private static final int MESSAGE_LENGTH = 15;
+    private static final int MESSAGE_DURATION = 1000;//毫秒
 
     private static final float RATIO = (float) 1.75;
+    private Handler mHandler = new Handler(Looper.getMainLooper());
+    private Runnable checkMessage;
+    private Toast toast ;
+    private DisplayMetrics dm;
 
     private Vector message;
 
@@ -79,6 +84,8 @@ public class FloatingViewService extends Service {
     private ImageView petModel;
     private ImageView virtualPetModel;
 
+    private View message_view;
+    private TextView tvMessage;
     private int statusBarHeight;
 
     private CircleMenuView circleMenuView;
@@ -109,6 +116,15 @@ public class FloatingViewService extends Service {
         createFloatView();
         refresh();
         startForeground(this);
+        checkMessage = new Runnable() {
+
+            public void run() {
+                // TODO Auto-generated method stub
+                sendMessage();
+                mHandler.postDelayed(checkMessage, MESSAGE_DURATION*2);
+            }
+        };
+        mHandler.post(checkMessage);
     }
 
     @Override
@@ -141,9 +157,10 @@ public class FloatingViewService extends Service {
     }
 
     private void createFloatView() {
+
         statusBarHeight = 0;
         message = new Vector();
-
+        toast = new Toast(this);
         //获取status_bar_height资源的ID
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
@@ -177,8 +194,12 @@ public class FloatingViewService extends Service {
         menuView = LayoutInflater.from(this).inflate(R.layout.popup_menu, null);
         circleMenuView = menuView.findViewById(R.id.circle_menu);
 
-        windowManager = (WindowManager) this.getSystemService(WINDOW_SERVICE);
+        message_view = LayoutInflater.from(this).inflate(R.layout.layout_message, null);
+        tvMessage = message_view.findViewById(R.id.message_view);
 
+        windowManager = (WindowManager) this.getSystemService(WINDOW_SERVICE);
+        dm = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(dm);
         initLayoutParams();
 
         //悬浮窗开始在左上角显示
@@ -187,7 +208,6 @@ public class FloatingViewService extends Service {
         virtualLayoutParams.gravity = Gravity.START | Gravity.TOP;
         virtualLayoutParams.windowAnimations = android.R.style.Animation_Dialog;
         centerLayoutParams.gravity = Gravity.CENTER;
-
         view.setOnTouchListener(new FloatingTouchListener());
         view.setOnClickListener(new FloatingClickListener());
         circleMenuView.setEventListener(new CircleMenuView.EventListener() {
@@ -300,7 +320,7 @@ public class FloatingViewService extends Service {
                 //windowManager.updateViewLayout(view, layoutParams);
                 windowManager.removeView(virtualParent);
                 virtualViewAdded = false;
-                sendMessage("aaaaaaaaaaaaaaaaaa");
+                message.add("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
             }
         });
     }
@@ -398,7 +418,6 @@ public class FloatingViewService extends Service {
             int eventAction = event.getAction();
             switch (eventAction) {
                 case MotionEvent.ACTION_DOWN: // 按下事件，记录按下时手指在悬浮窗的XY坐标值
-
                     setDownAnim();
                     animationDrawable = (AnimationDrawable) petModel.getDrawable();
                     if (!animationDrawable.isRunning()) {
@@ -419,8 +438,6 @@ public class FloatingViewService extends Service {
                         animationDrawable.start();
                     }
                     setInitFrame();
-                    DisplayMetrics dm = new DisplayMetrics();
-                    windowManager.getDefaultDisplay().getMetrics(dm);
 
                     float ScreenEndX = event.getRawX();
                     float ScreenEndY = event.getRawY();
@@ -452,45 +469,42 @@ public class FloatingViewService extends Service {
             return true;
         }
     }
+    private void sendMessage() {
+            if (viewAdded&&message.size()>0) {
 
-    private synchronized void sendMessage(String msg) {
-        while (countStringLength(msg) > MESSAGE_LENGTH) {
-            for (int i = 0; i < msg.length(); i++) {
-                if (countStringLength(msg.substring(0, i).toString()) > MESSAGE_LENGTH) {
-                    message.add(msg.substring(0, i - 1));
-                    msg = msg.substring(i, msg.length() - 1);
-                    break;
-                }
-            }
-        }
-        message.add(msg);
-        while (message.size() > 0) {
-            if (viewAdded) {
-                DisplayMetrics dm = new DisplayMetrics();
-                windowManager.getDefaultDisplay().getMetrics(dm);
-
-                View message_layout = LayoutInflater.from(this).inflate(R.layout.layout_message, null);
-                TextView tvMessage = message_layout.findViewById(R.id.message_view);
                 tvMessage.setText(message.elementAt(0).toString());
-
 
                 float xOff = layoutParams.x + view.getWidth() / 2;
                 float yOff = layoutParams.y;
 
-                float p = ((float) 1) / RATIO;
                 if (xOff > dm.widthPixels / 2) {
-                    xOff = xOff - view.getWidth() / 2 - p * countStringLength(message.elementAt(0).toString()) * tvMessage.getTextSize();
+                    float tvMessageWidth=countStringLength(tvMessage.getText().toString())*tvMessage.getTextSize()/RATIO;
+                    if(tvMessageWidth>layoutParams.x)
+                        tvMessageWidth=layoutParams.x;
+                    if(tvMessageWidth>dm.widthPixels/2)
+                        tvMessageWidth=dm.widthPixels/2;
+                    tvMessage.setMaxWidth((int)tvMessageWidth);
+                    xOff = xOff - view.getWidth() / 2 -tvMessageWidth ;
                 } else {
                     xOff += view.getWidth() / 2;
+                    float tvMessageWidth=dm.widthPixels-xOff;
+                    if(tvMessageWidth>dm.widthPixels/2)
+                        tvMessageWidth=dm.widthPixels/2;
+                    tvMessage.setMaxWidth((int)tvMessageWidth);
                 }
-                Toast toast = new Toast(this);
                 toast.setGravity(Gravity.START | Gravity.TOP, (int) xOff, (int) yOff);
-                toast.setView(message_layout);
+                toast.setView(message_view);
                 toast.setDuration(Toast.LENGTH_SHORT);
-                toast.show();
                 message.remove(0);
+                toast.show();
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        toast.cancel();
+                    }
+                }, MESSAGE_DURATION);
             }
-        }
+
     }
 
     public float countStringLength(String str) {
