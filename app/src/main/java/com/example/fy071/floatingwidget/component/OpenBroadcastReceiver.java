@@ -14,18 +14,18 @@ import com.example.fy071.floatingwidget.util.Key;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
 
 public class OpenBroadcastReceiver extends BroadcastReceiver {
-    private static final String TAG = "OpenBroadcastReceiver";
+
     @Override
     public void onReceive(Context context, Intent intent) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean widgetEnabled = sharedPreferences.getBoolean(Key.ENABLE_WIDGET, false);
         boolean startOnBoot = sharedPreferences.getBoolean(Key.START_AT_BOOT, false);
-        Log.d(TAG, "onReceive: "+widgetEnabled+startOnBoot);
-        if (widgetEnabled && startOnBoot) {
+
+        if (startOnBoot) {
             Intent openService = new Intent(context, FloatingViewService.class);
-            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O){
+            //Android 8.0加入后台进程限制必须启动前台服务
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(openService);
-            }else{
+            } else {
                 context.startService(openService);
             }
         }

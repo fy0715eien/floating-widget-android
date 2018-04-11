@@ -3,7 +3,10 @@ package com.example.fy071.floatingwidget.component.activity;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -12,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,16 +62,27 @@ public class PairingActivity extends BaseActivity {
         itemAdapter.clear();
 
         Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
-        if(devices.size()>0){
-            for(BluetoothDevice device:devices){
-                itemAdapter.add(
-                        new BluetoothDeviceItem().withName(device.getName())
-                        .withAddress(device.getAddress())
-                        .withBluetoothClass(device.getBluetoothClass())
-                );
+        if (devices.size() > 0) {
+            for (BluetoothDevice device : devices) {
+                BluetoothDeviceItem bluetoothDeviceItem =
+                        new BluetoothDeviceItem()
+                                .withName(device.getName())
+                                .withAddress(device.getAddress())
+                                .withBluetoothClass(device.getBluetoothClass());
+                itemAdapter.add(bluetoothDeviceItem);
             }
         }
+
+        if (bluetoothAdapter.isDiscovering()) {
+            bluetoothAdapter.cancelDiscovery();
+        }
+
+        bluetoothAdapter.startDiscovery();
+        progressBar.setVisibility(View.VISIBLE);
     }
+
+    @BindView(R.id.scan_progress_bar)
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +107,7 @@ public class PairingActivity extends BaseActivity {
                 .withOnClickListener(new OnClickListener<BluetoothDeviceItem>() {
                     @Override
                     public boolean onClick(@Nullable View v, IAdapter<BluetoothDeviceItem> adapter, BluetoothDeviceItem item, int position) {
+                        String MAC = item.address.toString();
                         return false;
                     }
                 });
@@ -99,10 +115,17 @@ public class PairingActivity extends BaseActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(fastAdapter);
+
+        // 注册广播接收器
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        this.registerReceiver(receiver, filter);
+
+        filter=new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        this.registerReceiver(receiver,filter);
     }
 
     @Override
-    public void onStart() {
+    protected void onStart() {
         super.onStart();
         if (!bluetoothAdapter.isEnabled()) {
             Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -111,15 +134,25 @@ public class PairingActivity extends BaseActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        bluetoothAdapter.cancelDiscovery();//确保不继续搜索
+        this.unregisterReceiver(receiver);
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case REQUEST_ENABLE_BT:
                 if (resultCode == Activity.RESULT_OK) {
+
                 } else {
                     Toast.makeText(this, "Bluetooth not enabled, leaving activity", Toast.LENGTH_SHORT).show();
                     finish();
                 }
+                break;
+            default:
         }
     }
 
@@ -135,4 +168,29 @@ public class PairingActivity extends BaseActivity {
             }
         });
     }
+
+    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if (action != null) {
+                switch (action) {
+                    case BluetoothAdapter.ACTION_DISCOVERY_FINISHED:
+                        progressBar.setVisibility(View.INVISIBLE);
+                        break;
+
+                    case BluetoothDevice.ACTION_FOUND:
+                        BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                        if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
+                            BluetoothDeviceItem bluetoothDeviceItem = new BluetoothDeviceItem().withName(device.getName())
+                                    .withAddress(device.getAddress())
+                                    .withBluetoothClass(device.getBluetoothClass());
+                            itemAdapter.add(bluetoothDeviceItem);
+                        }
+                        break;
+
+                    default:
+                }
+            }
+        }
+    };
 }
