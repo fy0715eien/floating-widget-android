@@ -102,7 +102,7 @@ public class WeChatNotification extends AccessibilityService {
 
                             //获取到宠物位置后再改变位置
                             newtoast.toast.setGravity(Gravity.LEFT, 50, 0);
-                            newtoast.toast.makeText(this, ChatName + "发了一条" + ChatRecord + "的语音", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, ChatName + "发了一条" + ChatRecord + "的语音", Toast.LENGTH_SHORT).show();
 
                             Log.e("WeChatLog", ChatName + "发了一条" + ChatRecord + "的语音");
                         } else {
@@ -113,7 +113,7 @@ public class WeChatNotification extends AccessibilityService {
 
                                 //获取到宠物位置后再改变位置
                                 newtoast.toast.setGravity(Gravity.LEFT, 50, 0);
-                                newtoast.toast.makeText(this, ChatName + "：" + ChatRecord, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, ChatName + "：" + ChatRecord, Toast.LENGTH_SHORT).show();
 
 
                             }
@@ -131,7 +131,7 @@ public class WeChatNotification extends AccessibilityService {
 
                 //获取到宠物位置后再改变位置
                 newtoast.toast.setGravity(Gravity.LEFT, 50, 0);
-                newtoast.toast.makeText(this, ChatName + "发的是表情", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, ChatName + "发的是表情", Toast.LENGTH_SHORT).show();
 
                 Log.e("WeChatLog", ChatName + "发的是表情");
 
@@ -149,7 +149,7 @@ public class WeChatNotification extends AccessibilityService {
 
                             //获取到宠物位置后再改变位置
                             newtoast.toast.setGravity(Gravity.LEFT, 50, 0);
-                            newtoast.toast.makeText(this, ChatName + "发的是图片", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, ChatName + "发的是图片", Toast.LENGTH_SHORT).show();
 
                             Log.e("WeChatLog", ChatName + "发的是图片");
                         }
@@ -169,7 +169,7 @@ public class WeChatNotification extends AccessibilityService {
 
                         //获取到宠物位置后再改变位置
                         newtoast.toast.setGravity(Gravity.LEFT, 50, 0);
-                        newtoast.toast.makeText(this, ChatName + "发了一段" + nodeChild.getText().toString() + "的小视频", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, ChatName + "发了一段" + nodeChild.getText().toString() + "的小视频", Toast.LENGTH_SHORT).show();
 
                         Log.e("WeChatLog", "发了一段" + nodeChild.getText().toString() + "的小视频");
                     }

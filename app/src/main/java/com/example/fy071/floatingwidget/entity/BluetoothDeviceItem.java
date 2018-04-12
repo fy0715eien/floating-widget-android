@@ -31,8 +31,8 @@ public class BluetoothDeviceItem extends AbstractItem<BluetoothDeviceItem, Bluet
         return this;
     }
 
-    public BluetoothDeviceItem withAddress(String Address){
-        this.address=new StringHolder(Address);
+    public BluetoothDeviceItem withAddress(String Address) {
+        this.address = new StringHolder(Address);
         return this;
     }
 
@@ -61,6 +61,9 @@ public class BluetoothDeviceItem extends AbstractItem<BluetoothDeviceItem, Bluet
         @BindView(R.id.bt_item_name)
         TextView name;
 
+        @BindView(R.id.bt_item_address)
+        TextView address;
+
         ViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
@@ -69,6 +72,19 @@ public class BluetoothDeviceItem extends AbstractItem<BluetoothDeviceItem, Bluet
 
         @Override
         public void bindView(@NonNull BluetoothDeviceItem item, @NonNull List<Object> payloads) {
+            setIcon(item);
+            StringHolder.applyTo(item.name, name);
+            StringHolder.applyTo(item.address, address);
+        }
+
+        @Override
+        public void unbindView(@NonNull BluetoothDeviceItem item) {
+            bluetoothClass.setImageDrawable(null);
+            name.setText(null);
+            address.setText(null);
+        }
+
+        private void setIcon(BluetoothDeviceItem item) {
             switch (item.bluetoothClass.getDeviceClass()) {
                 case BluetoothClass.Device.AUDIO_VIDEO_CAMCORDER:
                 case BluetoothClass.Device.AUDIO_VIDEO_CAR_AUDIO:
@@ -132,16 +148,9 @@ public class BluetoothDeviceItem extends AbstractItem<BluetoothDeviceItem, Bluet
                 case BluetoothClass.Device.WEARABLE_WRIST_WATCH:
                     bluetoothClass.setImageResource(R.drawable.ic_watch_black_24dp);
                     break;
-                    default:
-                        bluetoothClass.setImageResource(R.drawable.ic_bluetooth_black_24dp);
+                default:
+                    bluetoothClass.setImageResource(R.drawable.ic_bluetooth_black_24dp);
             }
-            StringHolder.applyTo(item.name, name);
-        }
-
-        @Override
-        public void unbindView(@NonNull BluetoothDeviceItem item) {
-            bluetoothClass.setImageDrawable(null);
-            name.setText(null);
         }
     }
 }
