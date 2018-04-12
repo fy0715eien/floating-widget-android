@@ -35,7 +35,7 @@ import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.component.activity.PairingActivity;
 import com.example.fy071.floatingwidget.component.activity.ReminderConfigActivity;
 import com.example.fy071.floatingwidget.component.activity.SettingsActivity;
-import com.example.fy071.floatingwidget.util.AnotherWeChatNotification;
+
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
 import com.example.fy071.floatingwidget.util.PxDpConverter;
 import com.example.fy071.floatingwidget.util.ToastUtil;
@@ -46,7 +46,7 @@ import java.util.List;
 
 import static java.lang.Math.abs;
 
-public class FloatingViewService extends AnotherWeChatNotification {
+public class FloatingViewService extends WeChatNotification {
     public static final int BUTTON_REMINDER = 0;
     public static final int BUTTON_SETTINGS = 1;
     public static final int BUTTON_CLOSE = 2;
@@ -521,21 +521,21 @@ public class FloatingViewService extends AnotherWeChatNotification {
         }
     }
 
-    @Override
+    //@Override
     public void onAccessibilityEvent(AccessibilityEvent event) {
         int eventType = event.getEventType();
         switch (eventType) {
             //每次在聊天界面中有新消息到来时都出触发该事件
             case AccessibilityEvent.TYPE_VIEW_SCROLLED:
                 //获取当前聊天页面的根布局
-                AccessibilityNodeInfo rootNode = getRootInActiveWindow();
+              //  AccessibilityNodeInfo rootNode = getRootInActiveWindow();
                 //获取聊天信息
-                getWeChatLog(rootNode);
-                String cn=new String(ChatName);
-                String cr=new String(ChatRecord);
-                String msg=cn+":"+cr;
-                sendMessage(msg);
-                break;
+               // getWeChatLog(rootNode);
+               // String cn=new String(ChatName);
+              //  String cr=new String(ChatRecord);
+             //   String msg=cn+":"+cr;
+          //      sendMessage(msg);
+             //   break;
         }
     }
     private synchronized void sendMessage(String msg)
