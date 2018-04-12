@@ -8,13 +8,14 @@ import android.service.notification.StatusBarNotification;
 
 
 public class WeChatNotification extends NotificationListenerService {
-
+    private static final String TAG = "WeChatNotification";
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
+        //不是微信的通知过滤掉
         if (!"com.tencent.mm".equals(sbn.getPackageName())) {
             return;
-        } //不是微信的通知过滤掉
+        }
         Notification notification = sbn.getNotification();
         if (notification == null) {
             return;
