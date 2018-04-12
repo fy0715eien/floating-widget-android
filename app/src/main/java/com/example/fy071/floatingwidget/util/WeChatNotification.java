@@ -7,7 +7,6 @@ import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 
 
-
 public class WeChatNotification extends NotificationListenerService {
 
 
@@ -29,6 +28,7 @@ public class WeChatNotification extends NotificationListenerService {
 
         }
     }
+
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn) {
 

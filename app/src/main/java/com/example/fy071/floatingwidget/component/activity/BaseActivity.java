@@ -2,16 +2,12 @@ package com.example.fy071.floatingwidget.component.activity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 
-import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.component.service.FloatingViewService;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
-
-import static com.example.fy071.floatingwidget.util.PreferenceHelper.defaultSharedPreferences;
-import static com.example.fy071.floatingwidget.util.PreferenceHelper.sharedPreferences;
 
 public class BaseActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -49,7 +45,6 @@ public class BaseActivity extends AppCompatActivity implements SharedPreferences
         defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
     }
-
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sp, String key) {

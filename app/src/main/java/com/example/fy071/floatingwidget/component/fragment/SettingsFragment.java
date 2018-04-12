@@ -1,6 +1,7 @@
 package com.example.fy071.floatingwidget.component.fragment;
 
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,7 +13,6 @@ import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
 import android.provider.Settings;
 import android.util.Log;
@@ -126,7 +126,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
             switchPreference.setChecked(false);
             dialog.cancel();
         } else if (which == BUTTON_POSITIVE) {
-            Intent intent = new Intent(
+            @SuppressLint("InlinedApi") Intent intent = new Intent(
                     Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                     Uri.parse("package:" + getActivity().getPackageName())
             );
