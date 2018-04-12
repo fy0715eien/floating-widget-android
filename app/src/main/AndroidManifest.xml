@@ -40,17 +40,20 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="com.example.fy071.floatingwidget.util.WeChatNotification"
-            android:label="@string/app_name"
-            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+        <service
+            android:name=".util.WeChatNotification"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
-                <action android:name="android.service.notification.NotificationListenerService" />
+                <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
+
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/wechatotification_config" />
         </service>
-<service android:name=".util.RandomDialog"
-    android:enabled="true"
-    android:exported="true"
-    ></service>
+
         <activity
             android:name=".component.activity.SettingsActivity"
             android:launchMode="singleInstance" />
