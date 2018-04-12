@@ -45,7 +45,7 @@ public class ToastUtil {
     public ToastUtil setToastColor(int messageColor, int backgroundColor) {
         View view = toast.getView();
         if (view != null) {
-            TextView message = ((TextView) view.findViewById(android.R.id.message));
+            TextView message = view.findViewById(android.R.id.message);
             message.setBackgroundColor(backgroundColor);
             message.setTextColor(messageColor);
         }
@@ -58,7 +58,7 @@ public class ToastUtil {
     public ToastUtil setToastBackground(int messageColor, int background) {
         View view = toast.getView();
         if (view != null) {
-            TextView message = ((TextView) view.findViewById(android.R.id.message));
+            TextView message = view.findViewById(android.R.id.message);
             message.setBackgroundResource(background);
             message.setTextColor(messageColor);
         }

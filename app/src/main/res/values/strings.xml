@@ -32,4 +32,10 @@
     <string name="pref_summary_wechat">Shows popups when receiving new WeChat messages</string>
     <string name="pref_summary_enabled">Enabled</string>
     <string name="pref_summary_disabled">Disabled</string>
+
+    <string name="dialog_title_permission_location">Permission needed</string>
+    <string name="dialog_message_permission_location">Application needs location access to scan Bluetooth Low Energy (BLE) devices</string>
+
+    <string name="dialog_title_permission_overlay">Special permission needed</string>
+    <string name="dialog_message_permission_overlay">Please grant permission for this app in the next page</string>
 </resources>
