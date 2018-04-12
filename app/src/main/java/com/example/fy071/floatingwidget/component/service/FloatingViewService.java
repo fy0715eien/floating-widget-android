@@ -11,10 +11,12 @@ import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.service.notification.StatusBarNotification;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.util.DisplayMetrics;
@@ -44,6 +46,7 @@ import com.example.fy071.floatingwidget.component.activity.SettingsActivity;
 import com.example.fy071.floatingwidget.util.Key;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
 import com.example.fy071.floatingwidget.util.PxDpConverter;
+import com.example.fy071.floatingwidget.util.WeChatNotification;
 import com.ramotion.circlemenu.CircleMenuView;
 
 import java.util.List;
@@ -51,7 +54,7 @@ import java.util.Vector;
 
 import static java.lang.Math.abs;
 
-public class FloatingViewService extends Service {
+public class FloatingViewService extends WeChatNotification {
     private static final String TAG = "FloatingViewService";
 
     public static final int BUTTON_REMINDER = 0;
@@ -249,15 +252,6 @@ public class FloatingViewService extends Service {
         refresh();
     }
 
-    private int getMin(float left, float right, float up, float bottom) {
-        if (left <= right && left <= up && left <= bottom)
-            return TO_LEFT;
-        if (right <= up && right <= bottom)
-            return TO_RIGHT;
-        if (up <= bottom)
-            return TO_UP;
-        return TO_BOTTOM;
-    }
 
     /**
      * 刷新悬浮窗
@@ -526,6 +520,7 @@ public class FloatingViewService extends Service {
     }
 
     /**
+     * LayoutParams.TYPE_PHONE：保证该悬浮窗所有View的最上层
      * LayoutParams.FLAG_NOT_FOCUSABLE:该浮动窗不会获得焦点，但可以获得拖动
      * PixelFormat.TRANSPARENT：悬浮窗透明
      */
@@ -595,5 +590,24 @@ public class FloatingViewService extends Service {
             channelId = "";
         }
         return channelId;
+    }
+
+    @Override
+    public void onNotificationPosted(StatusBarNotification sbn) {
+        if (!"com.tencent.mm".equals(sbn.getPackageName())) {
+            return;
+        } //不是微信的通知过滤掉
+        Notification notification = sbn.getNotification();
+        if (notification == null) {
+            return;
+        }
+        Bundle extras = notification.extras;
+        if (extras != null) {
+            //获取标题
+            String title = extras.getString(Notification.EXTRA_TITLE, "");
+            // 获取通知内容
+            String content = extras.getString(Notification.EXTRA_TEXT, "");
+            message.add(content);
+        }
     }
 }
