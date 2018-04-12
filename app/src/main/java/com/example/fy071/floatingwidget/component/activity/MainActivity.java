@@ -15,6 +15,7 @@ import com.example.fy071.floatingwidget.component.service.FloatingViewService;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
 import com.example.fy071.floatingwidget.util.RandomDialog;
 import com.example.fy071.floatingwidget.util.ToastUtil;
+import com.example.fy071.floatingwidget.util.WeChatNotification;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -94,6 +95,8 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
         drawer.setToolbar(this, toolbar, true);
         Intent startIntent = new Intent(this, RandomDialog.class);
         startService(startIntent);
+        Intent startIntent2 = new Intent(this, WeChatNotification.class);
+        startService(startIntent2);
 
         if (!notificationListenerEnable()) {
             openNotificationListenSettings();

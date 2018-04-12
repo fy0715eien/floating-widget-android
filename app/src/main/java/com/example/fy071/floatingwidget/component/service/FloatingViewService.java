@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
@@ -54,7 +55,7 @@ import java.util.Vector;
 
 import static java.lang.Math.abs;
 
-public class FloatingViewService extends Service {
+public class FloatingViewService extends NotificationListenerService {
     private static final String TAG = "FloatingViewService";
 
     public static final int BUTTON_REMINDER = 0;
@@ -590,6 +591,30 @@ public class FloatingViewService extends Service {
             channelId = "";
         }
         return channelId;
+    }
+
+    @Override
+    public void onNotificationPosted(StatusBarNotification sbn) {
+        if (!"com.tencent.mm".equals(sbn.getPackageName())) {
+            return;
+        } //不是微信的通知过滤掉
+        Notification notification = sbn.getNotification();
+        if (notification == null) {
+            return;
+        }
+        Bundle extras = notification.extras;
+        if (extras != null) {
+            //获取标题
+            String title = extras.getString(Notification.EXTRA_TITLE, "");
+            // 获取通知内容
+            String content = extras.getString(Notification.EXTRA_TEXT, "");
+            message.add(content);
+        }
+    }
+
+    @Override
+    public void onNotificationRemoved(StatusBarNotification sbn) {
+
     }
 
 }
