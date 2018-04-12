@@ -2,7 +2,6 @@ package com.example.fy071.floatingwidget.component.activity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -66,7 +65,7 @@ public class ReminderConfigActivity extends BaseActivity implements TimePickerDi
     //时间选择器----------确定
     @Override
     public void positiveListener() {
-        TextView reminder_time = (TextView) findViewById(R.id.reminder_time);
+        TextView reminder_time = findViewById(R.id.reminder_time);
         int year = mTimePickerDialog.getYear();
         int month = mTimePickerDialog.getMonth();
         int day = mTimePickerDialog.getDay();

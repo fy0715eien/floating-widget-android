@@ -3,6 +3,8 @@
     package="com.example.fy071.floatingwidget">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
@@ -26,9 +28,13 @@
             android:name=".component.activity.ReminderConfigActivity"
             android:launchMode="singleInstance" />
 
-        <service android:name=".component.service.FloatingViewService" />
+        <service
+            android:name=".component.service.FloatingViewService"
+            android:enabled="true" />
 
-        <receiver android:name=".component.OpenBroadcastReceiver">
+        <receiver
+            android:name=".component.OpenBroadcastReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
@@ -51,11 +57,6 @@
         <activity
             android:name=".component.activity.PairingActivity"
             android:launchMode="singleInstance" />
-
-        <service
-            android:name=".component.service.BluetoothService"
-            android:enabled="true"
-            android:exported="true"></service>
 
         <activity android:name=".component.activity.BaseActivity"></activity>
     </application>

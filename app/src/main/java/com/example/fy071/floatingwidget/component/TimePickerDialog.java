@@ -42,9 +42,9 @@ public class TimePickerDialog {
     private View initDateAndTimePicker() {
         View inflate = LayoutInflater.from(mContext).inflate(
                 R.layout.dateandtimepicker_layout, null);
-        mTimePicker = (TimePicker) inflate
+        mTimePicker = inflate
                 .findViewById(R.id.timePicker1);
-        mDatePicker = (DatePicker) inflate
+        mDatePicker = inflate
                 .findViewById(R.id.datePicker1);
         mTimePicker.setIs24HourView(true);
         resizePikcer(mTimePicker);
@@ -193,8 +193,9 @@ public class TimePickerDialog {
 
 
     public interface TimePickerDialogInterface {
-        public void positiveListener();
-        public void negativeListener();
+        void positiveListener();
+
+        void negativeListener();
     }
 
 }

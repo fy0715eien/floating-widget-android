@@ -12,6 +12,7 @@ import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
 import android.provider.Settings;
 import android.util.Log;
@@ -25,9 +26,7 @@ import static android.content.DialogInterface.BUTTON_NEGATIVE;
 import static android.content.DialogInterface.BUTTON_POSITIVE;
 
 
-public class SettingsFragment extends PreferenceFragment implements
-        Preference.OnPreferenceChangeListener,
-        DialogInterface.OnClickListener {
+public class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener, DialogInterface.OnClickListener {
     private static final String TAG = "SettingsFragment";
     SwitchPreference switchPreference;
     EditTextPreference petName, userName;
@@ -47,6 +46,7 @@ public class SettingsFragment extends PreferenceFragment implements
         userName = (EditTextPreference) findPreference(Key.USER_NAME);
         petModel = (ListPreference) findPreference(Key.PET_MODEL);
         wechatNotification = (CheckBoxPreference) findPreference(Key.WECHAT_NOTIFICATION);
+        startAtBoot = (CheckBoxPreference) findPreference(Key.START_AT_BOOT);
 
         switchPreference.setOnPreferenceChangeListener(this);
         petName.setOnPreferenceChangeListener(this);
@@ -59,6 +59,10 @@ public class SettingsFragment extends PreferenceFragment implements
         userName.setSummary(PreferenceHelper.userName);
         Log.d(TAG, "onCreate: " + petModel.getEntry());
         petModel.setSummary(petModel.getEntry());
+
+        if (!PreferenceHelper.widgetEnabled) {
+            resetWidgetFunctions();
+        }
     }
 
 
@@ -84,6 +88,8 @@ public class SettingsFragment extends PreferenceFragment implements
             case Key.ENABLE_WIDGET:
                 if (newValue.equals(true)) {
                     checkPermission();
+                } else {
+                    resetWidgetFunctions();
                 }
                 break;
             case Key.PET_NAME:
@@ -141,13 +147,8 @@ public class SettingsFragment extends PreferenceFragment implements
         }
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
+    private void resetWidgetFunctions() {
+        wechatNotification.setChecked(false);
+        startAtBoot.setChecked(false);
     }
 }
