@@ -41,7 +41,7 @@
         </receiver>
 
         <service
-            android:name="com.example.fy071.floatingwidget.util.WeChatNotification"
+            android:name=".component.service.WeChatNotificationListenerService"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
@@ -49,11 +49,9 @@
             </intent-filter>
         </service>
         <service
-            android:name=".util.RandomDialog"
+            android:name=".component.service.RandomDialogService"
             android:enabled="true"
-            android:exported="true">
-
-        </service>
+            android:exported="true"></service>
 
         <activity
             android:name=".component.activity.SettingsActivity"
@@ -61,10 +59,12 @@
         <activity
             android:name=".component.activity.PairingActivity"
             android:launchMode="singleInstance" />
+        <activity android:name=".component.activity.BaseActivity"></activity>
 
-        <activity android:name=".component.activity.BaseActivity">
-
-        </activity>
+        <service
+            android:name=".component.service.NotificationListenerMonitorService"
+            android:enabled="true"
+            android:exported="false"></service>
     </application>
 
 </manifest>

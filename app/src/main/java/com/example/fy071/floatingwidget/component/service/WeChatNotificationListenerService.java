@@ -1,43 +1,23 @@
-package com.example.fy071.floatingwidget.util;
+package com.example.fy071.floatingwidget.component.service;
 
 
 import android.app.Notification;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
-import com.example.fy071.floatingwidget.component.service.FloatingViewService;
-
-
-public class WeChatNotification extends NotificationListenerService {
+public class WeChatNotificationListenerService extends NotificationListenerService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         ComponentName componentName = new ComponentName(this, FloatingViewService.class);
-        if (Build.VERSION.SDK_INT >= 24) {
-            requestRebind(componentName);
-        } else {
-            toggleNotificationListenerService(componentName);
-        }
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private void toggleNotificationListenerService(ComponentName componentName) {
-        PackageManager pm = getPackageManager();
-        pm.setComponentEnabledSetting(componentName,
-                PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-                PackageManager.DONT_KILL_APP);
-        pm.setComponentEnabledSetting(componentName,
-                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                PackageManager.DONT_KILL_APP);
-    }
-
-    private static final String TAG = "WeChatNotification";
+    private static final String TAG = "WeChatListenerService";
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
