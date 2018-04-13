@@ -33,7 +33,7 @@
             android:enabled="true" />
 
         <receiver
-            android:name=".component.OpenBroadcastReceiver"
+            android:name=".component.broadcastreceiver.OpenBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -51,7 +51,7 @@
         <service
             android:name=".component.service.RandomDialogService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <activity
             android:name=".component.activity.SettingsActivity"
@@ -59,12 +59,14 @@
         <activity
             android:name=".component.activity.PairingActivity"
             android:launchMode="singleInstance" />
-        <activity android:name=".component.activity.BaseActivity"></activity>
+        <activity android:name=".component.activity.BaseActivity" />
 
         <service
             android:name=".component.service.NotificationListenerMonitorService"
             android:enabled="true"
-            android:exported="false"></service>
+            android:exported="false" />
+
+        <activity android:name=".component.activity.ConnectedActivity"></activity>
     </application>
 
 </manifest>

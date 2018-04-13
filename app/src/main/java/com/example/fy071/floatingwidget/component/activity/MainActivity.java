@@ -2,14 +2,10 @@ package com.example.fy071.floatingwidget.component.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.example.fy071.floatingwidget.R;
-import com.example.fy071.floatingwidget.component.service.NotificationListenerMonitorService;
-import com.example.fy071.floatingwidget.component.service.RandomDialogService;
-import com.example.fy071.floatingwidget.component.service.WeChatNotificationListenerService;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.materialdrawer.Drawer;
@@ -86,18 +82,6 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
         //为工具栏加入打开抽屉的按钮
         drawer.setToolbar(this, toolbar, true);
 
-        Intent serviceIntent = new Intent(this, RandomDialogService.class);
-        startService(serviceIntent);
-
-        serviceIntent = new Intent(this, NotificationListenerMonitorService.class);
-        startService(serviceIntent);
-
-        serviceIntent = new Intent(this, WeChatNotificationListenerService.class);
-        startService(serviceIntent);
-
-        if (!notificationListenerEnable()) {
-            openNotificationListenSettings();
-        }
     }
 
     @Override
@@ -151,27 +135,5 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
         //required ride method
     }
 
-    public boolean notificationListenerEnable() {
-        boolean enable = false;
-        String packageName = getPackageName();
-        String flat = Settings.Secure.getString(getContentResolver(), "enabled_notification_listeners");
-        if (flat != null) {
-            enable = flat.contains(packageName);
-        }
-        return enable;
-    }
 
-    public void openNotificationListenSettings() {
-        try {
-            Intent intent;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
-                intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
-            } else {
-                intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-            }
-            startActivity(intent);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

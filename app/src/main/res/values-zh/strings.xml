@@ -16,7 +16,7 @@
     <string name="dialog_positive_button">确定</string>
     <string name="dialog_negative_button">取消</string>
 
-    <string name="devices">Paired devices</string>
+    <string name="devices">设备</string>
 
     <string name="pref_title_widget">挂件</string>
     <string name="pref_title_pet_profile">宠物资料</string>
@@ -32,4 +32,11 @@
     <string name="pref_summary_wechat">收到微信消息时弹出气泡提醒</string>
     <string name="pref_summary_enabled">已开启</string>
     <string name="pref_summary_disabled">已关闭</string>
+    <string name="pref_random_dialog">随机弹窗</string>
+    <string name="pref_summary_random_dialog">宠物将随机自言自语</string>
+    <string name="dialog_title_permission_location">需要权限</string>
+    <string name="dialog_message_permission_location">应用程序需要位置访问权限来扫描低功耗蓝牙（BLE）设备</string>
+    <string name="dialog_title_permission_overlay">需要特殊权限</string>
+    <string name="dialog_message_permission_overlay">请在下个页面为本应用程序提供权限</string>
+    <string name="pref_summary_start_on_boot">挂件将会在系统启动完毕时启动</string>
 </resources>
