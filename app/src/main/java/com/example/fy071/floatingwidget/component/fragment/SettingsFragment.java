@@ -22,21 +22,18 @@ import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.util.Key;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
 
-import static android.content.DialogInterface.BUTTON_NEGATIVE;
-import static android.content.DialogInterface.BUTTON_POSITIVE;
 
-
-public class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener, DialogInterface.OnClickListener {
+public class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener {
     private static final String TAG = "SettingsFragment";
 
     public static final int DRAW_OVER_OTHER_APP_PERMISSION = 0;
-    public static final int NOTIFICATION_ACCESS = 1;
+    public static final int NOTIFICATION_ACCESS_PERMISSION = 1;
 
     SwitchPreference switchPreference;
     EditTextPreference petName;
     EditTextPreference userName;
     ListPreference petModel;
-    CheckBoxPreference wechatNotification;
+    CheckBoxPreference weChatNotification;
     CheckBoxPreference startAtBoot;
     CheckBoxPreference randomDialog;
 
@@ -52,7 +49,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         petName = (EditTextPreference) findPreference(Key.PET_NAME);
         userName = (EditTextPreference) findPreference(Key.USER_NAME);
         petModel = (ListPreference) findPreference(Key.PET_MODEL);
-        wechatNotification = (CheckBoxPreference) findPreference(Key.WECHAT_NOTIFICATION);
+        weChatNotification = (CheckBoxPreference) findPreference(Key.WECHAT_NOTIFICATION);
         startAtBoot = (CheckBoxPreference) findPreference(Key.START_AT_BOOT);
         randomDialog = (CheckBoxPreference) findPreference(Key.RANDOM_DIALOG);
 
@@ -60,8 +57,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         petName.setOnPreferenceChangeListener(this);
         userName.setOnPreferenceChangeListener(this);
         petModel.setOnPreferenceChangeListener(this);
-        wechatNotification.setOnPreferenceChangeListener(this);
-        randomDialog.setOnPreferenceChangeListener(this);
+        weChatNotification.setOnPreferenceChangeListener(this);
 
         //设置Summary以显示上次设置内容
         petName.setSummary(PreferenceHelper.petName);
@@ -129,7 +125,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
                 preference.setSummary(entries[index]);
             case Key.WECHAT_NOTIFICATION:
                 if (newValue.equals(true)) {
-                    if (!notificationListenerEnable()) {
+                    if (!isNotificationListenerEnable()) {
                         new AlertDialog.Builder(getActivity())
                                 .setTitle(R.string.dialog_title_permission_notification)
                                 .setMessage(R.string.dialog_message_permission_notification)
@@ -142,7 +138,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
                                 .setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        wechatNotification.setChecked(false);
+                                        weChatNotification.setChecked(false);
                                     }
                                 })
                                 .show();
@@ -160,17 +156,6 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
 
     }
 
-
-    @Override
-    public void onClick(DialogInterface dialog, int which) {
-        if (which == BUTTON_NEGATIVE) {
-
-        } else if (which == BUTTON_POSITIVE) {
-
-        }
-    }
-
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -181,21 +166,21 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
                     switchPreference.setChecked(false);
                 }
                 break;
-            case NOTIFICATION_ACCESS:
-                if (!notificationListenerEnable()) {
+            case NOTIFICATION_ACCESS_PERMISSION:
+                if (!isNotificationListenerEnable()) {
                     Toast.makeText(getActivity(), "Permission not available", Toast.LENGTH_SHORT).show();
-                    wechatNotification.setChecked(false);
+                    weChatNotification.setChecked(false);
                 }
         }
     }
 
     private void resetWidgetFunctions() {
-        wechatNotification.setChecked(false);
+        weChatNotification.setChecked(false);
         startAtBoot.setChecked(false);
         randomDialog.setChecked(false);
     }
 
-    private boolean notificationListenerEnable() {
+    private boolean isNotificationListenerEnable() {
         boolean enable = false;
         String packageName = getActivity().getPackageName();
         String flat = Settings.Secure.getString(getActivity().getContentResolver(), "enabled_notification_listeners");
@@ -213,7 +198,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
             } else {
                 intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
             }
-            startActivityForResult(intent, NOTIFICATION_ACCESS);
+            startActivityForResult(intent, NOTIFICATION_ACCESS_PERMISSION);
         } catch (Exception e) {
             e.printStackTrace();
         }

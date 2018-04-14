@@ -100,12 +100,14 @@ public class PairingActivity extends BaseActivity {
             }
         }
 
+        // 停止一切运行中的搜索
         if (bluetoothAdapter.isDiscovering()) {
             bluetoothAdapter.cancelDiscovery();
-            scanLeDevice(false);
+            scanDevice(false);
         }
 
-        scanLeDevice(true);
+        //
+        scanDevice(true);
         progressBar.setVisibility(View.VISIBLE);
     }
 
@@ -123,7 +125,9 @@ public class PairingActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         bluetoothAdapter.cancelDiscovery();//确保不继续搜索
-        bluetoothConnectService.cancelAll();
+        if (bluetoothConnectService != null) {
+            bluetoothConnectService.cancelAll();
+        }
         this.unregisterReceiver(receiver);
     }
 
@@ -139,7 +143,7 @@ public class PairingActivity extends BaseActivity {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         //如果为null则本设备不支持蓝牙
         if (bluetoothAdapter == null) {
-            Toast.makeText(this, "Bluetooth is not available on this device", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Bluetooth is not available on this device, leaving activity", Toast.LENGTH_LONG).show();
             finish();
         }
 
@@ -177,8 +181,9 @@ public class PairingActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case REQUEST_ENABLE_BT:
+                // 如果蓝牙开启则进入位置权限获取
                 if (resultCode == Activity.RESULT_OK) {
-
+                    requestLocationPermission();
                 } else {
                     Toast.makeText(this, "Bluetooth not enabled, leaving activity", Toast.LENGTH_SHORT).show();
                     finish();
@@ -210,18 +215,21 @@ public class PairingActivity extends BaseActivity {
         });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
+    private void requestBluetoothEnable() {
         if (!bluetoothAdapter.isEnabled()) {
             Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(intent, REQUEST_ENABLE_BT);
         }
+    }
 
+    private void requestLocationPermission() {
         if (Build.VERSION.SDK_INT >= 23) {
             int locationPermission = checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
+            // 如果无位置权限
             if (locationPermission == PackageManager.PERMISSION_DENIED) {
+                // 如果需要解释为何需要权限
                 if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                    // 弹出对话框
                     new AlertDialog.Builder(this)
                             .setTitle(R.string.dialog_title_permission_location)
                             .setMessage(R.string.dialog_message_permission_location)
@@ -229,18 +237,26 @@ public class PairingActivity extends BaseActivity {
                                 @SuppressLint("NewApi")
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                                    // 点击确认则弹出获取位置权限的对话框
+                                    requestPermissions(
+                                            new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                                             REQUEST_ACCESS_COARSE_LOCATION);
                                 }
                             })
                             .show();
                 } else {
-                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                    requestPermissions(
+                            new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                             REQUEST_ACCESS_COARSE_LOCATION);
                 }
             }
         }
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        requestBluetoothEnable();
     }
 
     @Override
@@ -258,14 +274,16 @@ public class PairingActivity extends BaseActivity {
         }
     }
 
-    private void scanLeDevice(final boolean enable) {
+    private void scanDevice(final boolean enable) {
         if (Build.VERSION.SDK_INT >= 18) {
             if (enable) {
                 bleSearchHandler.postDelayed(new Runnable() {
                     @SuppressLint("NewApi")
                     @Override
                     public void run() {
+                        // 停止BLE扫描
                         bluetoothAdapter.stopLeScan(leScanCallback);
+                        // 开始传统扫描
                         bluetoothAdapter.startDiscovery();
                     }
                 }, SCAN_PERIOD);
