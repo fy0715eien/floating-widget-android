@@ -4,7 +4,10 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
@@ -42,6 +45,7 @@ import com.example.fy071.floatingwidget.component.activity.PairingActivity;
 import com.example.fy071.floatingwidget.component.activity.ReminderConfigActivity;
 import com.example.fy071.floatingwidget.component.activity.SettingsActivity;
 import com.example.fy071.floatingwidget.util.Key;
+import com.example.fy071.floatingwidget.util.MyReceiver;
 import com.example.fy071.floatingwidget.util.PxDpConverter;
 import com.ramotion.circlemenu.CircleMenuView;
 
@@ -49,7 +53,7 @@ import java.util.Vector;
 
 import static java.lang.Math.abs;
 
-public class FloatingViewService extends NotificationListenerService {
+public class FloatingViewService extends Service {
     private static final String TAG = "FloatingViewService";
 
     public static final int BUTTON_REMINDER = 0;
@@ -70,10 +74,9 @@ public class FloatingViewService extends NotificationListenerService {
     private static final float RATIO = (float) 1.75;
     private Handler mHandler = new Handler(Looper.getMainLooper());
     private Runnable checkMessage;
-    private Toast toast ;
+    private Toast toast;
     private DisplayMetrics dm;
 
-    private Vector message;
 
     private ViewGroup virtualParent;
 
@@ -102,6 +105,7 @@ public class FloatingViewService extends NotificationListenerService {
     private SharedPreferences sharedPreferences;
 
     private Intent intent;
+    private MyReceiver mReciver;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -112,6 +116,12 @@ public class FloatingViewService extends NotificationListenerService {
     public void onCreate() {
         super.onCreate();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        mReciver = new MyReceiver();
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("com.wechat.message");
+        registerReceiver(mReciver, intentFilter);
+
         createFloatView();
         refresh();
         startForeground(this);
@@ -120,7 +130,7 @@ public class FloatingViewService extends NotificationListenerService {
             public void run() {
                 // TODO Auto-generated method stub
                 sendMessage();
-                mHandler.postDelayed(checkMessage, MESSAGE_DURATION*2);
+                mHandler.postDelayed(checkMessage, MESSAGE_DURATION * 2);
             }
         };
         mHandler.post(checkMessage);
@@ -161,7 +171,6 @@ public class FloatingViewService extends NotificationListenerService {
     private void createFloatView() {
 
         statusBarHeight = 0;
-        message = new Vector();
         toast = new Toast(this);
         //获取status_bar_height资源的ID
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -313,7 +322,6 @@ public class FloatingViewService extends NotificationListenerService {
                 //windowManager.updateViewLayout(view, layoutParams);
                 windowManager.removeView(virtualParent);
                 virtualViewAdded = false;
-                message.add("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
             }
         });
     }
@@ -462,41 +470,42 @@ public class FloatingViewService extends NotificationListenerService {
             return true;
         }
     }
+
     private void sendMessage() {
-            if (viewAdded&&message.size()>0) {
+        if (viewAdded && mReciver.message.size() > 0) {
 
-                tvMessage.setText(message.elementAt(0).toString());
+            tvMessage.setText(mReciver.message.elementAt(0).toString());
 
-                float xOff = layoutParams.x + view.getWidth() / 2;
-                float yOff = layoutParams.y;
+            float xOff = layoutParams.x + view.getWidth() / 2;
+            float yOff = layoutParams.y;
 
-                if (xOff > dm.widthPixels / 2) {
-                    float tvMessageWidth=countStringLength(tvMessage.getText().toString())*tvMessage.getTextSize()/RATIO;
-                    if(tvMessageWidth>layoutParams.x)
-                        tvMessageWidth=layoutParams.x;
-                    if(tvMessageWidth>dm.widthPixels/2)
-                        tvMessageWidth=dm.widthPixels/2;
-                    tvMessage.setMaxWidth((int)tvMessageWidth);
-                    xOff = xOff - view.getWidth() / 2 -tvMessageWidth ;
-                } else {
-                    xOff += view.getWidth() / 2;
-                    float tvMessageWidth=dm.widthPixels-xOff;
-                    if(tvMessageWidth>dm.widthPixels/2)
-                        tvMessageWidth=dm.widthPixels/2;
-                    tvMessage.setMaxWidth((int)tvMessageWidth);
-                }
-                toast.setGravity(Gravity.START | Gravity.TOP, (int) xOff, (int) yOff);
-                toast.setView(message_view);
-                toast.setDuration(Toast.LENGTH_SHORT);
-                message.remove(0);
-                toast.show();
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        toast.cancel();
-                    }
-                }, MESSAGE_DURATION);
+            if (xOff > dm.widthPixels / 2) {
+                float tvMessageWidth = countStringLength(tvMessage.getText().toString()) * tvMessage.getTextSize() / RATIO;
+                if (tvMessageWidth > layoutParams.x)
+                    tvMessageWidth = layoutParams.x;
+                if (tvMessageWidth > dm.widthPixels / 2)
+                    tvMessageWidth = dm.widthPixels / 2;
+                tvMessage.setMaxWidth((int) tvMessageWidth);
+                xOff = xOff - view.getWidth() / 2 - tvMessageWidth;
+            } else {
+                xOff += view.getWidth() / 2;
+                float tvMessageWidth = dm.widthPixels - xOff;
+                if (tvMessageWidth > dm.widthPixels / 2)
+                    tvMessageWidth = dm.widthPixels / 2;
+                tvMessage.setMaxWidth((int) tvMessageWidth);
             }
+            toast.setGravity(Gravity.START | Gravity.TOP, (int) xOff, (int) yOff);
+            toast.setView(message_view);
+            toast.setDuration(Toast.LENGTH_SHORT);
+            mReciver.message.remove(0);
+            toast.show();
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    toast.cancel();
+                }
+            }, MESSAGE_DURATION);
+        }
 
     }
 
@@ -585,30 +594,6 @@ public class FloatingViewService extends NotificationListenerService {
             channelId = "";
         }
         return channelId;
-    }
-
-    @Override
-    public void onNotificationPosted(StatusBarNotification sbn) {
-        if (!"com.tencent.mm".equals(sbn.getPackageName())) {
-            return;
-        } //不是微信的通知过滤掉
-        Notification notification = sbn.getNotification();
-        if (notification == null) {
-            return;
-        }
-        Bundle extras = notification.extras;
-        if (extras != null) {
-            //获取标题
-            String title = extras.getString(Notification.EXTRA_TITLE, "");
-            // 获取通知内容
-            String content = extras.getString(Notification.EXTRA_TEXT, "");
-            message.add(content);
-        }
-    }
-
-    @Override
-    public void onNotificationRemoved(StatusBarNotification sbn) {
-
     }
 
 }

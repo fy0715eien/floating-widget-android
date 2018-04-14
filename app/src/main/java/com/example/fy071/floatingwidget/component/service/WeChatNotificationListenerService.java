@@ -2,6 +2,7 @@ package com.example.fy071.floatingwidget.component.service;
 
 
 import android.app.Notification;
+import android.content.Intent;
 import android.os.Bundle;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
@@ -33,6 +34,13 @@ public class WeChatNotificationListenerService extends NotificationListenerServi
             Log.w(TAG, "onNotificationPosted: " + title);
             Log.w(TAG, "onNotificationPosted: " + content);
             System.out.print(content);
+
+            Intent intent=new Intent();
+            //与清单文件的receiver的anction对应
+            intent.setAction("com.wechat.message");
+            intent.putExtra("content",content);
+            //发送广播
+            sendBroadcast(intent);
         }
     }
 

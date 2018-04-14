@@ -40,6 +40,12 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".util.MyReceiver"
+            android:enabled="true"
+            android:exported="true">
+        </receiver>
+
         <service
             android:name=".component.service.WeChatNotificationListenerService"
             android:label="@string/app_name"
