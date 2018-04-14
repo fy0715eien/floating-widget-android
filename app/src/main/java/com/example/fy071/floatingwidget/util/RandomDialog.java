@@ -1,7 +1,9 @@
 package com.example.fy071.floatingwidget.util;
 
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -32,14 +34,18 @@ public class RandomDialog extends Service {
              final int num = random.nextInt(max) % (max - min + 1) + min;
              Handler handler = new Handler(Looper.getMainLooper());
                      handler.post(new Runnable() {
-                         @Override
-                         public void run() {
-                             //放在UI线程弹Toast
-                             Toast.makeText(RandomDialog.this, dialog[num], Toast.LENGTH_LONG).show();
-                         }
-                     });
+                                      @Override
+                                      public void run() {
+                                          //放在UI线程弹Toast
+                                          Toast.makeText(RandomDialog.this, dialog[num], Toast.LENGTH_LONG).show();
+
+                                      }
+
+                                  });
          }
-       };
+     };
+
+
        timer.schedule(task, 1000, 30000);
 
         return super.onStartCommand(intent, flags, startId);
