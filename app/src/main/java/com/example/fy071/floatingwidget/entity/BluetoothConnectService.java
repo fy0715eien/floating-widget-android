@@ -8,6 +8,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.example.fy071.floatingwidget.util.Key;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -109,34 +111,25 @@ public class BluetoothConnectService {
     发送数据，两组int
     需要发送数据直接调用这个方法
     */
-    public synchronized void sendData(int[] pos) {
+    public synchronized void sendData(int x, int y) {
         //检查连接
         if (connectedThread == null) {
-            //TODO NO_CONNECTION
-        }
-        //检查传入数组长度
-        if (pos.length < 2) {
-            //TODO SET_TOO_SHORT
+            return;
         }
         //int转byte[]
         byte[] data = new byte[8];
 
-        data[0] = (byte) ((pos[0] >>> 24) & 0xff);
-        data[1] = (byte) ((pos[0] >>> 16) & 0xff);
-        data[2] = (byte) ((pos[0] >>> 8) & 0xff);
-        data[3] = (byte) ((pos[0]) & 0xff);
+        data[0] = (byte) ((x >>> 24) & 0xff);
+        data[1] = (byte) ((x >>> 16) & 0xff);
+        data[2] = (byte) ((x >>> 8) & 0xff);
+        data[3] = (byte) ((x) & 0xff);
 
-        data[4] = (byte) ((pos[1] >>> 24) & 0xff);
-        data[5] = (byte) ((pos[2] >>> 16) & 0xff);
-        data[6] = (byte) ((pos[3] >>> 8) & 0xff);
-        data[7] = (byte) ((pos[4]) & 0xff);
+        data[4] = (byte) ((y >>> 24) & 0xff);
+        data[5] = (byte) ((y >>> 16) & 0xff);
+        data[6] = (byte) ((y >>> 8) & 0xff);
+        data[7] = (byte) ((y) & 0xff);
 
-        //调用write发送数据
-        try {
-            connectedThread.write(data);
-        } catch (NullPointerException e) {
-            //TODO NPE
-        }
+        connectedThread.write(data);
     }
 
     //接收数据
@@ -285,6 +278,9 @@ public class BluetoothConnectService {
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
             Log.d(TAG, "ConnectedThread: connected");
+
+            handler.sendEmptyMessage(Key.MESSAGE_WHAT_PAIRED);
+
             // Get the input and output streams, using temp objects because
             // member streams are final
             try {

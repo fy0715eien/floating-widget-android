@@ -17,4 +17,5 @@ public class Key {
     public static final String PET_LAST_X = "pet_last_x";
     public static final String PET_LAST_Y = "pet_last_y";
 
+    public static final int MESSAGE_WHAT_PAIRED = 1;
 }

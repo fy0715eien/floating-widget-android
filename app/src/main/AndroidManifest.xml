@@ -41,10 +41,8 @@
         </receiver>
 
         <receiver
-            android:name=".util.MyReceiver"
-            android:enabled="true"
-            android:exported="true">
-        </receiver>
+            android:name=".component.broadcastreceiver.WeChatMessageReceiver"
+            android:enabled="true" />
 
         <service
             android:name=".component.service.WeChatNotificationListenerService"
@@ -54,10 +52,10 @@
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
+
         <service
             android:name=".component.service.RandomDialogService"
-            android:enabled="true"
-            android:exported="true" />
+            android:enabled="true" />
 
         <activity
             android:name=".component.activity.SettingsActivity"

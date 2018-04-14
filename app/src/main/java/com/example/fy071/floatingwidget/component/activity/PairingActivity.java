@@ -49,7 +49,9 @@ public class PairingActivity extends BaseActivity {
     private static final int REQUEST_ACCESS_COARSE_LOCATION = 2;
 
     private static final int SCAN_PERIOD = 12000;
+
     private final PairingActivity.MyHandler handler = new PairingActivity.MyHandler(this);
+
     BluetoothConnectService bluetoothConnectService;
 
     private static final String TAG = "PairingActivity";
@@ -114,7 +116,6 @@ public class PairingActivity extends BaseActivity {
         }
     };
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -135,13 +136,14 @@ public class PairingActivity extends BaseActivity {
         itemAdapter = new ItemAdapter<>();
 
         FastAdapter<BluetoothDeviceItem> fastAdapter = FastAdapter.with(itemAdapter);
-        fastAdapter.withSelectable(true)
+        fastAdapter
+                .withSelectable(true)
                 .withOnClickListener(new OnClickListener<BluetoothDeviceItem>() {
                     @Override
                     public boolean onClick(@Nullable View v, IAdapter<BluetoothDeviceItem> adapter, BluetoothDeviceItem item, int position) {
-                        Intent intent = new Intent(PairingActivity.this, ConnectedActivity.class);
-                        intent.putExtra("device", item.bluetoothDevice);
-                        startActivity(intent);
+                        bluetoothConnectService.connectServer(item.bluetoothDevice);
+                        Toast.makeText(PairingActivity.this, "Connecting", Toast.LENGTH_SHORT).show();
+
                         return false;
                     }
                 });
@@ -160,7 +162,6 @@ public class PairingActivity extends BaseActivity {
         bleSearchHandler = new Handler();
     }
 
-
     @Override
     protected void onStart() {
         super.onStart();
@@ -172,6 +173,7 @@ public class PairingActivity extends BaseActivity {
         super.onResume();
         if (bluetoothAdapter.isEnabled()) {
             bluetoothConnectService = BluetoothConnectService.getInstance();
+            bluetoothConnectService.setHandler(handler);
             bluetoothConnectService.startServer();
         }
     }
@@ -324,6 +326,7 @@ public class PairingActivity extends BaseActivity {
         public void handleMessage(Message msg) {
             PairingActivity activity = mActivity.get();
             if (activity != null) {
+                Toast.makeText(activity, "Connected", Toast.LENGTH_SHORT).show();
                 activity.start();
             }
         }

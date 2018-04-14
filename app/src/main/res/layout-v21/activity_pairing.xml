@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".component.activity.PairingActivity">
 
+    <include layout="@layout/layout_toolbar" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

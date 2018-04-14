@@ -1,6 +1,5 @@
 package com.example.fy071.floatingwidget.entity;
 
-import android.content.SharedPreferences;
 import android.graphics.drawable.AnimationDrawable;
 import android.view.MotionEvent;
 import android.view.View;
@@ -8,15 +7,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.example.fy071.floatingwidget.R;
-import com.example.fy071.floatingwidget.util.Key;
-import com.example.fy071.floatingwidget.util.PreferenceHelper;
 
 /**
  * Created by fy071 on 2018/3/17.
  */
 
 public class Pet implements View.OnTouchListener {
-    public ImageView background;
     private FrameLayout frameLayout;
     private ImageView petModel;
     private float fingerStartX, fingerStartY, viewStartX, viewStartY;
@@ -28,8 +24,6 @@ public class Pet implements View.OnTouchListener {
 
     public void addSelfToView(View view) {
         this.frameLayout = view.findViewById(R.id.layout_pet);
-        this.frameLayout.setX(PreferenceHelper.petLastX);
-        this.frameLayout.setY(PreferenceHelper.petLastY);
         this.frameLayout.setOnTouchListener(this);
 
         this.petModel = this.frameLayout.findViewById(R.id.imageView_pet);
@@ -65,11 +59,6 @@ public class Pet implements View.OnTouchListener {
                 if(!animationDrawable.isRunning()) {
                     animationDrawable.start();
                 }
-                //写入最后坐标
-                SharedPreferences.Editor editor = PreferenceHelper.sharedPreferences.edit();
-                editor.putFloat(Key.PET_LAST_X, v.getX());
-                editor.putFloat(Key.PET_LAST_Y, v.getY());
-                editor.apply();
                 break;
         }
         return true;

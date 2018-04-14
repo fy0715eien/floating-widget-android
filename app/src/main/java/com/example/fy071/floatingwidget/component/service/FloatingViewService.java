@@ -4,8 +4,6 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -13,13 +11,10 @@ import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.service.notification.NotificationListenerService;
-import android.service.notification.StatusBarNotification;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.util.DisplayMetrics;
@@ -44,12 +39,10 @@ import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.component.activity.PairingActivity;
 import com.example.fy071.floatingwidget.component.activity.ReminderConfigActivity;
 import com.example.fy071.floatingwidget.component.activity.SettingsActivity;
+import com.example.fy071.floatingwidget.component.broadcastreceiver.WeChatMessageReceiver;
 import com.example.fy071.floatingwidget.util.Key;
-import com.example.fy071.floatingwidget.util.MyReceiver;
 import com.example.fy071.floatingwidget.util.PxDpConverter;
 import com.ramotion.circlemenu.CircleMenuView;
-
-import java.util.Vector;
 
 import static java.lang.Math.abs;
 
@@ -105,7 +98,7 @@ public class FloatingViewService extends Service {
     private SharedPreferences sharedPreferences;
 
     private Intent intent;
-    private MyReceiver mReciver;
+    private WeChatMessageReceiver mReciver;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -116,7 +109,7 @@ public class FloatingViewService extends Service {
     public void onCreate() {
         super.onCreate();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        mReciver = new MyReceiver();
+        mReciver = new WeChatMessageReceiver();
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("com.wechat.message");
