@@ -1,6 +1,7 @@
 package com.example.fy071.floatingwidget.component.fragment;
 
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,7 +13,6 @@ import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
 import android.provider.Settings;
 import android.util.Log;
@@ -28,10 +28,17 @@ import static android.content.DialogInterface.BUTTON_POSITIVE;
 
 public class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener, DialogInterface.OnClickListener {
     private static final String TAG = "SettingsFragment";
+
+    public static final int DRAW_OVER_OTHER_APP_PERMISSION = 0;
+    public static final int NOTIFICATION_ACCESS = 1;
+
     SwitchPreference switchPreference;
-    EditTextPreference petName, userName;
+    EditTextPreference petName;
+    EditTextPreference userName;
     ListPreference petModel;
-    CheckBoxPreference wechatNotification, startAtBoot;
+    CheckBoxPreference wechatNotification;
+    CheckBoxPreference startAtBoot;
+    CheckBoxPreference randomDialog;
 
     public SettingsFragment() {
     }
@@ -47,12 +54,14 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         petModel = (ListPreference) findPreference(Key.PET_MODEL);
         wechatNotification = (CheckBoxPreference) findPreference(Key.WECHAT_NOTIFICATION);
         startAtBoot = (CheckBoxPreference) findPreference(Key.START_AT_BOOT);
+        randomDialog = (CheckBoxPreference) findPreference(Key.RANDOM_DIALOG);
 
         switchPreference.setOnPreferenceChangeListener(this);
         petName.setOnPreferenceChangeListener(this);
         userName.setOnPreferenceChangeListener(this);
         petModel.setOnPreferenceChangeListener(this);
         wechatNotification.setOnPreferenceChangeListener(this);
+        randomDialog.setOnPreferenceChangeListener(this);
 
         //设置Summary以显示上次设置内容
         petName.setSummary(PreferenceHelper.petName);
@@ -69,17 +78,33 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
     private void checkPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getActivity())) {
             new AlertDialog.Builder(getActivity())
-                    .setTitle("Special permission required")
-                    .setMessage("Please grant permission for this app in the next page")
-                    .setNegativeButton("Cancel", this)
-                    .setPositiveButton("OK", this)
+                    .setTitle(R.string.dialog_title_permission_overlay)
+                    .setMessage(R.string.dialog_message_permission_overlay)
+                    .setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Toast.makeText(getActivity(), "Permission not available", Toast.LENGTH_SHORT).show();
+                            switchPreference.setChecked(false);
+                            dialog.cancel();
+                        }
+                    })
+                    .setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            @SuppressLint("InlinedApi") Intent intent = new Intent(
+                                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                    Uri.parse("package:" + getActivity().getPackageName())
+                            );
+                            startActivityForResult(intent, DRAW_OVER_OTHER_APP_PERMISSION);
+                        }
+                    })
                     .show();
         }
     }
 
 
     @Override
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
+    public boolean onPreferenceChange(final Preference preference, Object newValue) {
         final String key = preference.getKey();
         switch (key) {
             //启用Enable widget开关时
@@ -104,7 +129,24 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
                 preference.setSummary(entries[index]);
             case Key.WECHAT_NOTIFICATION:
                 if (newValue.equals(true)) {
-                    // TODO: 2018/3/26 check permission & require permission
+                    if (!notificationListenerEnable()) {
+                        new AlertDialog.Builder(getActivity())
+                                .setTitle(R.string.dialog_title_permission_notification)
+                                .setMessage(R.string.dialog_message_permission_notification)
+                                .setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        openNotificationListenSettings();
+                                    }
+                                })
+                                .setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        wechatNotification.setChecked(false);
+                                    }
+                                })
+                                .show();
+                    }
                 }
             default:
         }
@@ -122,15 +164,9 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
     @Override
     public void onClick(DialogInterface dialog, int which) {
         if (which == BUTTON_NEGATIVE) {
-            Toast.makeText(getActivity(), "Permission not available", Toast.LENGTH_SHORT).show();
-            switchPreference.setChecked(false);
-            dialog.cancel();
+
         } else if (which == BUTTON_POSITIVE) {
-            Intent intent = new Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getActivity().getPackageName())
-            );
-            startActivityForResult(intent, Key.DRAW_OVER_OTHER_APP_PERMISSION);
+
         }
     }
 
@@ -139,10 +175,16 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case Key.DRAW_OVER_OTHER_APP_PERMISSION:
+            case DRAW_OVER_OTHER_APP_PERMISSION:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getActivity())) {
                     Toast.makeText(getActivity(), "Permission not available", Toast.LENGTH_SHORT).show();
                     switchPreference.setChecked(false);
+                }
+                break;
+            case NOTIFICATION_ACCESS:
+                if (!notificationListenerEnable()) {
+                    Toast.makeText(getActivity(), "Permission not available", Toast.LENGTH_SHORT).show();
+                    wechatNotification.setChecked(false);
                 }
         }
     }
@@ -150,5 +192,30 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
     private void resetWidgetFunctions() {
         wechatNotification.setChecked(false);
         startAtBoot.setChecked(false);
+        randomDialog.setChecked(false);
+    }
+
+    private boolean notificationListenerEnable() {
+        boolean enable = false;
+        String packageName = getActivity().getPackageName();
+        String flat = Settings.Secure.getString(getActivity().getContentResolver(), "enabled_notification_listeners");
+        if (flat != null) {
+            enable = flat.contains(packageName);
+        }
+        return enable;
+    }
+
+    private void openNotificationListenSettings() {
+        try {
+            Intent intent;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
+                intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
+            } else {
+                intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
+            }
+            startActivityForResult(intent, NOTIFICATION_ACCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

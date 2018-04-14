@@ -28,14 +28,20 @@
     <string name="pref_pet_model">Pet model</string>
     <string name="pref_wechat">WeChat notification</string>
     <string name="pref_start_on_boot">Start on boot</string>
+    <string name="pref_random_dialog">Random dialog</string>
 
     <string name="pref_summary_wechat">Shows popups when receiving new WeChat messages</string>
     <string name="pref_summary_enabled">Enabled</string>
     <string name="pref_summary_disabled">Disabled</string>
+    <string name="pref_summary_start_on_boot">Your pet will start when boot is completed</string>
+    <string name="pref_summary_random_dialog">Make your pet speaks randomly</string>
 
     <string name="dialog_title_permission_location">Permission needed</string>
     <string name="dialog_message_permission_location">Application needs location access to scan Bluetooth Low Energy (BLE) devices</string>
 
     <string name="dialog_title_permission_overlay">Special permission needed</string>
     <string name="dialog_message_permission_overlay">Please grant permission for this app in the next page</string>
+
+    <string name="dialog_title_permission_notification">Notification access needed</string>
+    <string name="dialog_message_permission_notification">Application needs notification access to get WeChat notifications</string>
 </resources>

@@ -5,10 +5,18 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Looper;
+import android.preference.PreferenceManager;
+import android.service.notification.NotificationListenerService;
+import android.service.notification.StatusBarNotification;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.util.DisplayMetrics;
@@ -21,8 +29,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
-import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
@@ -35,66 +41,90 @@ import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.component.activity.PairingActivity;
 import com.example.fy071.floatingwidget.component.activity.ReminderConfigActivity;
 import com.example.fy071.floatingwidget.component.activity.SettingsActivity;
-
-import com.example.fy071.floatingwidget.util.PreferenceHelper;
+import com.example.fy071.floatingwidget.util.Key;
 import com.example.fy071.floatingwidget.util.PxDpConverter;
-import com.example.fy071.floatingwidget.util.ToastUtil;
-import com.example.fy071.floatingwidget.util.WeChatNotification;
 import com.ramotion.circlemenu.CircleMenuView;
 
-import java.util.List;
+import java.util.Vector;
 
 import static java.lang.Math.abs;
 
-public class FloatingViewService extends WeChatNotification {
+public class FloatingViewService extends NotificationListenerService {
+    private static final String TAG = "FloatingViewService";
+
     public static final int BUTTON_REMINDER = 0;
     public static final int BUTTON_SETTINGS = 1;
     public static final int BUTTON_CLOSE = 2;
-    private static final String TAG = "FloatingViewService";
+
     private static final int TO_LEFT = 1;
     private static final int TO_RIGHT = 2;
     private static final int TO_UP = 3;
     private static final int TO_BOTTOM = 4;
-    private static final int DIFFER = 5;//距离
-    private static final int MESSAGE_DURATION=1;
-    private static final int MESSAGE_LENGTH=20;
-    private List<String> message;
-    private ToastUtil mToast;
-    private View view;// 透明窗体
+
+    private static final int DIFFER = 5;//判断是否为点击操作
+
+    private static final int TO_SIDE = 100;//判断是否需要贴边,单位为dp
+
+    private static final int MESSAGE_DURATION = 1000;//毫秒
+
+    private static final float RATIO = (float) 1.75;
+    private Handler mHandler = new Handler(Looper.getMainLooper());
+    private Runnable checkMessage;
+    private Toast toast ;
+    private DisplayMetrics dm;
+
+    private Vector message;
+
     private ViewGroup virtualParent;
+
+    private View view;// 透明窗体
+    private View menuView;// 菜单窗体
+
     private ImageView petModel;
     private ImageView virtualPetModel;
-    private View menuView;// 菜单窗体
+
+    private View message_view;
+    private TextView tvMessage;
     private int statusBarHeight;
+
     private CircleMenuView circleMenuView;
-    private static final int TO_SIDE = 100;//距离，判断是否需要贴边,单位为px不是dp
+
     private boolean viewAdded = false;// 透明窗体是否已经显示
     private boolean circlemenuAdded = false;//环形菜单
     private boolean virtualViewAdded = false;//父窗口
+
     private WindowManager windowManager;
     private WindowManager.LayoutParams layoutParams;
     private WindowManager.LayoutParams virtualLayoutParams;
     private WindowManager.LayoutParams centerLayoutParams;
     private RelativeLayout.LayoutParams relativeParams;
 
+    private SharedPreferences sharedPreferences;
+
     private Intent intent;
 
-/*
     @Override
     public IBinder onBind(Intent arg0) {
         return null;
     }
-*/
-
 
     @Override
     public void onCreate() {
         super.onCreate();
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         createFloatView();
         refresh();
         startForeground(this);
-    }
+        checkMessage = new Runnable() {
 
+            public void run() {
+                // TODO Auto-generated method stub
+                sendMessage();
+                mHandler.postDelayed(checkMessage, MESSAGE_DURATION*2);
+            }
+        };
+        mHandler.post(checkMessage);
+    }
 
     @Override
     public void onDestroy() {
@@ -103,40 +133,20 @@ public class FloatingViewService extends WeChatNotification {
         stopForeground(true);
     }
 
-
     public void startForeground(Service context) {
+
         String channelId = generateChannelId(context);
+
         Notification notification = new NotificationCompat.Builder(this, channelId)
                 .setContentText("I'm running.")
                 .setWhen(System.currentTimeMillis())
                 .setPriority(Notification.PRIORITY_MIN)
                 .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("pet")
                 .setAutoCancel(true)
                 .build();
         context.startForeground(8888, notification);
     }
-
-
-    private String generateChannelId(Service context) {
-        String channelId;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            channelId = "floating_service";
-            String channelName = getResources().getString(R.string.app_name);
-            NotificationChannel notificationChannel = new NotificationChannel(
-                    channelId,
-                    channelName,
-                    NotificationManager.IMPORTANCE_NONE
-            );
-            notificationChannel.setLightColor(Color.BLUE);
-            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-            notificationManager.createNotificationChannel(notificationChannel);
-        } else {
-            channelId = "";
-        }
-        return channelId;
-    }
-
 
     /**
      * 关闭悬浮窗
@@ -148,19 +158,22 @@ public class FloatingViewService extends WeChatNotification {
         }
     }
 
-
     private void createFloatView() {
-        statusBarHeight = 0;
 
+        statusBarHeight = 0;
+        message = new Vector();
+        toast = new Toast(this);
         //获取status_bar_height资源的ID
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
             //根据资源ID获取响应的尺寸值
             statusBarHeight = getResources().getDimensionPixelSize(resourceId);
         }
+
         setTheme(R.style.AppTheme);
+
         int layoutID;
-        switch (PreferenceHelper.petModel) {
+        switch (sharedPreferences.getString(Key.PET_MODEL, "")) {
             case "model_1":
                 layoutID = R.layout.layout_pet_1;
                 break;
@@ -183,81 +196,23 @@ public class FloatingViewService extends WeChatNotification {
         menuView = LayoutInflater.from(this).inflate(R.layout.popup_menu, null);
         circleMenuView = menuView.findViewById(R.id.circle_menu);
 
-        windowManager = (WindowManager) this.getSystemService(WINDOW_SERVICE);
+        message_view = LayoutInflater.from(this).inflate(R.layout.layout_message, null);
+        tvMessage = message_view.findViewById(R.id.message_view);
 
-        /*
-         * LayoutParams.TYPE_SYSTEM_ERROR：保证该悬浮窗所有View的最上层
-         * LayoutParams.FLAG_NOT_FOCUSABLE:该浮动窗不会获得焦点，但可以获得拖动
-         * PixelFormat.TRANSPARENT：悬浮窗透明
-         */
-        if (Build.VERSION.SDK_INT > 26) {
-            layoutParams = new LayoutParams(
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.TYPE_APPLICATION_OVERLAY,
-                    LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSPARENT
-            );
-            virtualLayoutParams = new LayoutParams(
-                    LayoutParams.MATCH_PARENT,
-                    LayoutParams.MATCH_PARENT,
-                    LayoutParams.TYPE_APPLICATION_OVERLAY,
-                    LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSPARENT
-            );
-            centerLayoutParams = new LayoutParams(
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.TYPE_APPLICATION_OVERLAY,
-                    LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSPARENT
-            );
-        } else {
-            layoutParams = new LayoutParams(
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.TYPE_SYSTEM_ERROR,
-                    LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSPARENT
-            );
-            virtualLayoutParams = new LayoutParams(
-                    LayoutParams.MATCH_PARENT,
-                    LayoutParams.MATCH_PARENT,
-                    LayoutParams.TYPE_SYSTEM_ERROR,
-                    LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSPARENT
-            );
-            centerLayoutParams = new LayoutParams(
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.WRAP_CONTENT,
-                    LayoutParams.TYPE_SYSTEM_ERROR,
-                    LayoutParams.FLAG_NOT_FOCUSABLE,
-                    PixelFormat.TRANSPARENT
-            );
-        }
+        windowManager = (WindowManager) this.getSystemService(WINDOW_SERVICE);
+        dm = new DisplayMetrics();
+        windowManager.getDefaultDisplay().getMetrics(dm);
+        initLayoutParams();
+
         //悬浮窗开始在左上角显示
         layoutParams.gravity = Gravity.START | Gravity.TOP;
         layoutParams.windowAnimations = android.R.style.Animation_Dialog;
         virtualLayoutParams.gravity = Gravity.START | Gravity.TOP;
         virtualLayoutParams.windowAnimations = android.R.style.Animation_Dialog;
         centerLayoutParams.gravity = Gravity.CENTER;
-
         view.setOnTouchListener(new FloatingTouchListener());
         view.setOnClickListener(new FloatingClickListener());
         circleMenuView.setEventListener(new CircleMenuView.EventListener() {
-            public void onMenuOpenAnimationStart(@NonNull CircleMenuView view) {
-                Log.d(TAG, "onMenuOpenAnimationStart: ");
-            }
-
-            public void onMenuOpenAnimationEnd(@NonNull CircleMenuView view) {
-                Log.d(TAG, "onMenuOpenAnimationEnd: ");
-            }
-
-            @Override
-            public void onMenuCloseAnimationStart(@NonNull CircleMenuView v) {
-                Log.d("D", "onMenuCloseAnimationStart");
-            }
-
             @Override
             public void onMenuCloseAnimationEnd(@NonNull CircleMenuView v) {
                 Log.d(TAG, "onMenuCloseAnimationEnd: ");
@@ -292,15 +247,6 @@ public class FloatingViewService extends WeChatNotification {
         refresh();
     }
 
-    private int getMin(float left, float right, float up, float bottom) {
-        if (left <= right && left <= up && left <= bottom)
-            return TO_LEFT;
-        if (right <= up && right <= bottom)
-            return TO_RIGHT;
-        if (up <= bottom)
-            return TO_UP;
-        return TO_BOTTOM;
-    }
 
     /**
      * 刷新悬浮窗
@@ -320,10 +266,10 @@ public class FloatingViewService extends WeChatNotification {
         yNext = yNext - statusBarHeight;
         layoutParams.x = (int) xNext;
         layoutParams.y = (int) yNext;
-        virtualLayoutParams.windowAnimations = 0;
+        //virtualLayoutParams.windowAnimations = 0;
         windowManager.addView(virtualParent, virtualLayoutParams);
-        virtualLayoutParams.windowAnimations = android.R.style.Animation_Dialog;
-        windowManager.updateViewLayout(virtualParent, virtualLayoutParams);
+        //virtualLayoutParams.windowAnimations = android.R.style.Animation_Dialog;
+        //windowManager.updateViewLayout(virtualParent, virtualLayoutParams);
         virtualViewAdded = true;
         AnimationSet animationSet = new AnimationSet(true);
         //参数1～2：x轴的开始位置
@@ -360,17 +306,17 @@ public class FloatingViewService extends WeChatNotification {
             public void onAnimationEnd(Animation animation) {
                 // TODO Auto-generated method stub
 
-                layoutParams.windowAnimations = 0;
+                //layoutParams.windowAnimations = 0;
                 windowManager.addView(view, layoutParams);
                 viewAdded = true;
-                layoutParams.windowAnimations = android.R.style.Animation_Dialog;
-                windowManager.updateViewLayout(view, layoutParams);
+                //layoutParams.windowAnimations = android.R.style.Animation_Dialog;
+                //windowManager.updateViewLayout(view, layoutParams);
                 windowManager.removeView(virtualParent);
                 virtualViewAdded = false;
+                message.add("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
             }
         });
     }
-
 
     /**
      * 添加悬浮窗或者更新悬浮窗 如果悬浮窗还没添加则添加 如果已经添加则更新其位置
@@ -387,7 +333,7 @@ public class FloatingViewService extends WeChatNotification {
 
     private void setDownAnim() {
         int downAnimId;
-        switch (PreferenceHelper.petModel) {
+        switch (sharedPreferences.getString(Key.PET_MODEL, "")) {
             case "model_1":
                 downAnimId = R.drawable.down_anime_1;
                 break;
@@ -405,7 +351,7 @@ public class FloatingViewService extends WeChatNotification {
 
     private void setInitFrame() {
         int upFrameId;
-        switch (PreferenceHelper.petModel) {
+        switch (sharedPreferences.getString(Key.PET_MODEL, "")) {
             case "model_1":
                 upFrameId = R.drawable.test1_1;
                 break;
@@ -423,7 +369,7 @@ public class FloatingViewService extends WeChatNotification {
 
     private void setUpAnim() {
         int upAnimId;
-        switch (PreferenceHelper.petModel) {
+        switch (sharedPreferences.getString(Key.PET_MODEL, "")) {
             case "model_1":
                 upAnimId = R.drawable.up_anime_1;
                 break;
@@ -465,7 +411,6 @@ public class FloatingViewService extends WeChatNotification {
             int eventAction = event.getAction();
             switch (eventAction) {
                 case MotionEvent.ACTION_DOWN: // 按下事件，记录按下时手指在悬浮窗的XY坐标值
-
                     setDownAnim();
                     animationDrawable = (AnimationDrawable) petModel.getDrawable();
                     if (!animationDrawable.isRunning()) {
@@ -476,7 +421,6 @@ public class FloatingViewService extends WeChatNotification {
                     ScreenStartX = event.getRawX();
                     ScreenStartY = event.getRawY();
                     break;
-
                 case MotionEvent.ACTION_MOVE:
                     refreshView(event.getRawX() - fingerStartX, event.getRawY() - fingerStartY);
                     break;
@@ -487,8 +431,6 @@ public class FloatingViewService extends WeChatNotification {
                         animationDrawable.start();
                     }
                     setInitFrame();
-                    DisplayMetrics dm = new DisplayMetrics();
-                    windowManager.getDefaultDisplay().getMetrics(dm);
 
                     float ScreenEndX = event.getRawX();
                     float ScreenEndY = event.getRawY();
@@ -520,83 +462,153 @@ public class FloatingViewService extends WeChatNotification {
             return true;
         }
     }
+    private void sendMessage() {
+            if (viewAdded&&message.size()>0) {
 
-    //@Override
-    public void onAccessibilityEvent(AccessibilityEvent event) {
-        int eventType = event.getEventType();
-        switch (eventType) {
-            //每次在聊天界面中有新消息到来时都出触发该事件
-            case AccessibilityEvent.TYPE_VIEW_SCROLLED:
-                //获取当前聊天页面的根布局
-              //  AccessibilityNodeInfo rootNode = getRootInActiveWindow();
-                //获取聊天信息
-               // getWeChatLog(rootNode);
-               // String cn=new String(ChatName);
-              //  String cr=new String(ChatRecord);
-             //   String msg=cn+":"+cr;
-          //      sendMessage(msg);
-             //   break;
-        }
-    }
-    private synchronized void sendMessage(String msg)
-    {
-        while(msg.length()>MESSAGE_LENGTH)
-        {
-            message.add(msg.substring(0,MESSAGE_LENGTH-1));
-            msg=msg.substring(MESSAGE_LENGTH,msg.length()-1);
-        }
-        message.add(msg);
-        while(message.size()!=0)
-        {
-            if(viewAdded)
-            {
-                View message_layout = LayoutInflater.from(this).inflate(R.layout.layout_message, null);
-                TextView tvMessage =  message_layout.findViewById(R.id.message_view);
-                tvMessage.setText(message.get(0));
+                tvMessage.setText(message.elementAt(0).toString());
 
-                WindowManager.LayoutParams toastLayoutParams;
-                if (Build.VERSION.SDK_INT > 26) {
-                    toastLayoutParams = new LayoutParams(
-                            LayoutParams.WRAP_CONTENT,
-                            LayoutParams.WRAP_CONTENT,
-                            LayoutParams.TYPE_APPLICATION_OVERLAY,
-                            LayoutParams.FLAG_NOT_FOCUSABLE,
-                            PixelFormat.TRANSPARENT
-                    );
-                }
-                else {
-                    toastLayoutParams = new LayoutParams(
-                            LayoutParams.WRAP_CONTENT,
-                            LayoutParams.WRAP_CONTENT,
-                            LayoutParams.TYPE_SYSTEM_ERROR,
-                            LayoutParams.FLAG_NOT_FOCUSABLE,
-                            PixelFormat.TRANSPARENT
-                    );
-                }
-                int[] location=new int[2];
-                view.getLocationOnScreen(location);
+                float xOff = layoutParams.x + view.getWidth() / 2;
+                float yOff = layoutParams.y;
 
-                float xOff=location[0]+view.getWidth()/2-centerLayoutParams.x;
-                float yOff=location[1]+view.getHeight()/2-centerLayoutParams.y;
-                if(xOff>0)
-                {
-                    xOff-=view.getWidth()/2+message_layout.getWidth();
+                if (xOff > dm.widthPixels / 2) {
+                    float tvMessageWidth=countStringLength(tvMessage.getText().toString())*tvMessage.getTextSize()/RATIO;
+                    if(tvMessageWidth>layoutParams.x)
+                        tvMessageWidth=layoutParams.x;
+                    if(tvMessageWidth>dm.widthPixels/2)
+                        tvMessageWidth=dm.widthPixels/2;
+                    tvMessage.setMaxWidth((int)tvMessageWidth);
+                    xOff = xOff - view.getWidth() / 2 -tvMessageWidth ;
+                } else {
+                    xOff += view.getWidth() / 2;
+                    float tvMessageWidth=dm.widthPixels-xOff;
+                    if(tvMessageWidth>dm.widthPixels/2)
+                        tvMessageWidth=dm.widthPixels/2;
+                    tvMessage.setMaxWidth((int)tvMessageWidth);
                 }
-                else
-                {
-                    xOff+=view.getWidth()/2;
-                }
-                tvMessage.setTextColor(0x7fffffff);
-                tvMessage.setBackgroundColor(0x00000000);
-                Toast toast=new Toast(this);
-                toast.setGravity(Gravity.CENTER,(int)xOff,(int)yOff);
-                toast.setView(message_layout);
+                toast.setGravity(Gravity.START | Gravity.TOP, (int) xOff, (int) yOff);
+                toast.setView(message_view);
                 toast.setDuration(Toast.LENGTH_SHORT);
-                toast.show();
-                windowManager.addView(message_layout,toastLayoutParams);
                 message.remove(0);
+                toast.show();
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        toast.cancel();
+                    }
+                }, MESSAGE_DURATION);
+            }
+
+    }
+
+    public float countStringLength(String str) {
+
+        float count = 0;
+        for (int i = 0; i < str.length(); i++) {
+            char item = str.charAt(i);
+            if (item < 128) {
+                count = count + 1;
+            } else {
+                count = RATIO;
             }
         }
+        return count;
+    }
+
+    /**
+     * LayoutParams.TYPE_PHONE：保证该悬浮窗所有View的最上层
+     * LayoutParams.FLAG_NOT_FOCUSABLE:该浮动窗不会获得焦点，但可以获得拖动
+     * PixelFormat.TRANSPARENT：悬浮窗透明
+     */
+    private void initLayoutParams() {
+        if (Build.VERSION.SDK_INT > 26) {
+            layoutParams = new LayoutParams(
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSPARENT
+            );
+            virtualLayoutParams = new LayoutParams(
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSPARENT
+            );
+            centerLayoutParams = new LayoutParams(
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSPARENT
+            );
+        } else {
+            layoutParams = new LayoutParams(
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.TYPE_PHONE,
+                    LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSPARENT
+            );
+            virtualLayoutParams = new LayoutParams(
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.TYPE_PHONE,
+                    LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSPARENT
+            );
+            centerLayoutParams = new LayoutParams(
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.WRAP_CONTENT,
+                    LayoutParams.TYPE_PHONE,
+                    LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSPARENT
+            );
+        }
+    }
+
+    private String generateChannelId(Service context) {
+        String channelId;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            channelId = "floating_service";
+            String channelName = getResources().getString(R.string.app_name);
+            NotificationChannel notificationChannel = new NotificationChannel(
+                    channelId,
+                    channelName,
+                    NotificationManager.IMPORTANCE_NONE
+            );
+            notificationChannel.setLightColor(Color.BLUE);
+            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(notificationChannel);
+        } else {
+            channelId = "";
+        }
+        return channelId;
+    }
+
+    @Override
+    public void onNotificationPosted(StatusBarNotification sbn) {
+        if (!"com.tencent.mm".equals(sbn.getPackageName())) {
+            return;
+        } //不是微信的通知过滤掉
+        Notification notification = sbn.getNotification();
+        if (notification == null) {
+            return;
+        }
+        Bundle extras = notification.extras;
+        if (extras != null) {
+            //获取标题
+            String title = extras.getString(Notification.EXTRA_TITLE, "");
+            // 获取通知内容
+            String content = extras.getString(Notification.EXTRA_TEXT, "");
+            message.add(content);
+        }
+    }
+
+    @Override
+    public void onNotificationRemoved(StatusBarNotification sbn) {
+
     }
 
 }

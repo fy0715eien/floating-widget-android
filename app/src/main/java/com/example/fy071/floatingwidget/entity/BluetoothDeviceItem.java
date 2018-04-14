@@ -1,6 +1,7 @@
 package com.example.fy071.floatingwidget.entity;
 
 import android.bluetooth.BluetoothClass;
+import android.bluetooth.BluetoothDevice;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.ImageView;
@@ -20,19 +21,14 @@ public class BluetoothDeviceItem extends AbstractItem<BluetoothDeviceItem, Bluet
     public BluetoothClass bluetoothClass;
     public StringHolder name;
     public StringHolder address;
+    public BluetoothDevice bluetoothDevice;
 
-    public BluetoothDeviceItem withBluetoothClass(BluetoothClass mBluetoothClass) {
-        this.bluetoothClass = mBluetoothClass;
-        return this;
-    }
 
-    public BluetoothDeviceItem withName(String Name) {
-        this.name = new StringHolder(Name);
-        return this;
-    }
-
-    public BluetoothDeviceItem withAddress(String Address) {
-        this.address = new StringHolder(Address);
+    public BluetoothDeviceItem withBluetoothDevice(BluetoothDevice device) {
+        this.bluetoothDevice = device;
+        this.bluetoothClass = device.getBluetoothClass();
+        name = new StringHolder(device.getName());
+        address = new StringHolder(device.getAddress());
         return this;
     }
 

@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
@@ -33,32 +33,40 @@
             android:enabled="true" />
 
         <receiver
-            android:name=".component.OpenBroadcastReceiver"
+            android:name=".component.broadcastreceiver.OpenBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
-        <service android:name="com.example.fy071.floatingwidget.util.WeChatNotification"
+        <service
+            android:name=".component.service.WeChatNotificationListenerService"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
-<service android:name=".util.RandomDialog"
-    android:enabled="true"
-    android:exported="true"
-    ></service>
+        <service
+            android:name=".component.service.RandomDialogService"
+            android:enabled="true"
+            android:exported="true" />
+
         <activity
             android:name=".component.activity.SettingsActivity"
             android:launchMode="singleInstance" />
         <activity
             android:name=".component.activity.PairingActivity"
             android:launchMode="singleInstance" />
+        <activity android:name=".component.activity.BaseActivity" />
 
-        <activity android:name=".component.activity.BaseActivity"></activity>
+        <service
+            android:name=".component.service.NotificationListenerMonitorService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <activity android:name=".component.activity.ConnectedActivity"></activity>
     </application>
 
 </manifest>

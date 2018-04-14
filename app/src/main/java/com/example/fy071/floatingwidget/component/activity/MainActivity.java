@@ -1,37 +1,17 @@
 package com.example.fy071.floatingwidget.component.activity;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.ContextThemeWrapper;
-import android.view.Gravity;
 import android.view.View;
-import java.util.Random;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
+
 import com.example.fy071.floatingwidget.R;
-import com.example.fy071.floatingwidget.component.service.FloatingViewService;
-import com.example.fy071.floatingwidget.util.PreferenceHelper;
-import com.example.fy071.floatingwidget.util.RandomDialog;
-import com.example.fy071.floatingwidget.util.ToastUtil;
-import com.example.fy071.floatingwidget.util.WeChatNotification;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import android.graphics.Color;
-import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -101,22 +81,9 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
 
         //为工具栏加入打开抽屉的按钮
         drawer.setToolbar(this, toolbar, true);
-        Intent startIntent = new Intent(this, RandomDialog.class);
-        startService(startIntent);
-        Intent startIntent1 = new Intent(this, WeChatNotification.class);
-        startService(startIntent1);
-
-        if (!notificationListenerEnable()) {
-            openNotificationListenSettings();
-
-        }
-     //  PackageManager pm = getPackageManager();
-      // pm. setComponentEnabledSetting(new ComponentName(this,com.example.fy071.floatingwidget.util.WeChatNotification.class),
-               // PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-   //    pm.setComponentEnabledSetting(new ComponentName(this, com.example.fy071.floatingwidget.util.WeChatNotification.class),
-               // PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
 
     }
+
     @Override
     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
         final long id = drawerItem.getIdentifier();
@@ -167,35 +134,6 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
     public void onDrawerSlide(View drawerView, float slideOffset) {
         //required ride method
     }
-    public boolean notificationListenerEnable() {
-        boolean enable = false;
-        String packageName = getPackageName();
-        String flat= Settings.Secure.getString(getContentResolver(),"enabled_notification_listeners");
-        if (flat != null) {
-            enable= flat.contains(packageName);
-        }
-        return enable;
-    }
-
-    public void openNotificationListenSettings() {
-        try {
-            Intent intent;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
-                intent = new Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS);
-            } else {
-                intent = new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS");
-            }
-            startActivity(intent);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-
-
-
-
 
 
 }
