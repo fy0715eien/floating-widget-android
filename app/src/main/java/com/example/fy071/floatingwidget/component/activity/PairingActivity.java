@@ -100,15 +100,8 @@ public class PairingActivity extends BaseActivity {
             }
         }
 
-        // 停止一切运行中的搜索
-        if (bluetoothAdapter.isDiscovering()) {
-            bluetoothAdapter.cancelDiscovery();
-            scanDevice(false);
-        }
-
-        //
+        scanDevice(false);
         scanDevice(true);
-        progressBar.setVisibility(View.VISIBLE);
     }
 
     private BluetoothAdapter.LeScanCallback leScanCallback = new BluetoothAdapter.LeScanCallback() {
@@ -121,15 +114,6 @@ public class PairingActivity extends BaseActivity {
         }
     };
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        bluetoothAdapter.cancelDiscovery();//确保不继续搜索
-        if (bluetoothConnectService != null) {
-            bluetoothConnectService.cancelAll();
-        }
-        this.unregisterReceiver(receiver);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -176,6 +160,22 @@ public class PairingActivity extends BaseActivity {
         bleSearchHandler = new Handler();
     }
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        requestBluetoothEnable();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (bluetoothAdapter.isEnabled()) {
+            bluetoothConnectService = BluetoothConnectService.getInstance();
+            bluetoothConnectService.startServer();
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -194,12 +194,13 @@ public class PairingActivity extends BaseActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (bluetoothAdapter.isEnabled()) {
-            bluetoothConnectService = BluetoothConnectService.getInstance();
-            bluetoothConnectService.startServer();
+    protected void onDestroy() {
+        super.onDestroy();
+        scanDevice(false);//确保不继续搜索
+        if (bluetoothConnectService != null) {
+            bluetoothConnectService.cancelAll();
         }
+        this.unregisterReceiver(receiver);
     }
 
     private void initToolbar() {
@@ -254,12 +255,6 @@ public class PairingActivity extends BaseActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        requestBluetoothEnable();
-    }
-
-    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
@@ -275,23 +270,25 @@ public class PairingActivity extends BaseActivity {
     }
 
     private void scanDevice(final boolean enable) {
-        if (Build.VERSION.SDK_INT >= 18) {
-            if (enable) {
-                bleSearchHandler.postDelayed(new Runnable() {
-                    @SuppressLint("NewApi")
-                    @Override
-                    public void run() {
-                        // 停止BLE扫描
-                        bluetoothAdapter.stopLeScan(leScanCallback);
-                        // 开始传统扫描
-                        bluetoothAdapter.startDiscovery();
-                    }
-                }, SCAN_PERIOD);
+        if (enable) {
+            progressBar.setVisibility(View.VISIBLE);
 
-                bluetoothAdapter.startLeScan(leScanCallback);
-            } else {
-                bluetoothAdapter.stopLeScan(leScanCallback);
+            bluetoothAdapter.startLeScan(leScanCallback);
+
+            bleSearchHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    // 停止BLE扫描
+                    bluetoothAdapter.stopLeScan(leScanCallback);
+                    // 开始传统扫描
+                    bluetoothAdapter.startDiscovery();
+                }
+            }, SCAN_PERIOD);
+        } else {
+            if (bluetoothAdapter.isDiscovering()) {
+                bluetoothAdapter.cancelDiscovery();
             }
+            bluetoothAdapter.stopLeScan(leScanCallback);
         }
     }
 

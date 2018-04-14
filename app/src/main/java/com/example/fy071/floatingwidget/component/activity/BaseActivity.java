@@ -11,13 +11,14 @@ import android.support.v7.app.AppCompatActivity;
 import com.example.fy071.floatingwidget.component.service.FloatingViewService;
 import com.example.fy071.floatingwidget.component.service.NotificationListenerMonitorService;
 import com.example.fy071.floatingwidget.component.service.RandomDialogService;
-import com.example.fy071.floatingwidget.component.service.WeChatNotificationListenerService;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
 
 public class BaseActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     SharedPreferences sharedPreferences;
     SharedPreferences defaultSharedPreferences;
+
+    private static final String TAG = "BaseActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,13 +88,9 @@ public class BaseActivity extends AppCompatActivity implements SharedPreferences
         }
 
         intent = new Intent(this, NotificationListenerMonitorService.class);
-        // Enable时启动“保证通知监听服务开启”的服务
         if (PreferenceHelper.wechatNotification) {
             startService(intent);
-            // Disable时将两个服务都停止
         } else {
-            stopService(intent);
-            intent = new Intent(this, WeChatNotificationListenerService.class);
             stopService(intent);
         }
 

@@ -13,25 +13,25 @@ public class WeChatNotificationListenerService extends NotificationListenerServi
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
-        Log.d(TAG, "onNotificationPosted: " + getPackageName());
+        Log.w(TAG, "onNotificationPosted: " + getPackageName());
         if (!"com.tencent.mm".equals(sbn.getPackageName())) {
             return;
         } //不是微信的通知过滤掉
         Notification notification = sbn.getNotification();
-        Log.d(TAG, "onNotificationPosted: " + notification);
+        Log.w(TAG, "onNotificationPosted: " + notification);
         if (notification == null) {
             return;
         }
         Bundle extras = notification.extras;
-        Log.d(TAG, "onNotificationPosted: " + extras);
+        Log.w(TAG, "onNotificationPosted: " + extras);
 
         if (extras != null) {
             //获取标题
             String title = extras.getString(Notification.EXTRA_TITLE, "");
             // 获取通知内容
             String content = extras.getString(Notification.EXTRA_TEXT, "");
-            Log.d(TAG, "onNotificationPosted: " + title);
-            Log.d(TAG, "onNotificationPosted: " + content);
+            Log.w(TAG, "onNotificationPosted: " + title);
+            Log.w(TAG, "onNotificationPosted: " + content);
             System.out.print(content);
         }
     }
