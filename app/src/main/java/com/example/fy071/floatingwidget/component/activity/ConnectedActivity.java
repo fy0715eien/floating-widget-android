@@ -1,6 +1,7 @@
 package com.example.fy071.floatingwidget.component.activity;
 
 import android.annotation.SuppressLint;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 
 import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.entity.BluetoothConnectService;
+import com.example.fy071.floatingwidget.util.Key;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
 
 import java.lang.ref.WeakReference;
@@ -51,22 +53,19 @@ public class ConnectedActivity extends AppCompatActivity {
         bluetoothConnectService.setHandler(handler);
 
         initLocalPet();
-
-        initRemotePet();
+        initRemotePet(1);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // Test sending
-        bluetoothConnectService.sendData(1, 1);
-        bluetoothConnectService.sendData(2, 2);
-        bluetoothConnectService.sendData(3, 3);
-
     }
 
     private void setNewPosition(int x, int y) {
-        Log.w(TAG, "setNewPosition: " + "x=" + x + " y=" + y);
+        // 未初始化远程宠物模型，返回
+        if (remotePet == null) {
+            return;
+        }
         remotePet.setX((float) x);
         remotePet.setY((float) y);
     }
@@ -88,22 +87,28 @@ public class ConnectedActivity extends AppCompatActivity {
     private void initLocalPet() {
         switch (PreferenceHelper.petModel) {
             case "model_1":
-                localPet.setImageResource(R.drawable.down_anime_1);
+                localPet.setImageResource(R.drawable.test1_1);
                 break;
             case "model_2":
-                localPet.setImageResource(R.drawable.down_anime_2);
+                localPet.setImageResource(R.drawable.test1_2);
                 break;
             case "model_3":
-                localPet.setImageResource(R.drawable.down_anime_3);
+                localPet.setImageResource(R.drawable.test1_3);
                 break;
             default:
         }
 
         localPet.setOnTouchListener(new View.OnTouchListener() {
+            AnimationDrawable animationDrawable;
+
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+                        animationDrawable = (AnimationDrawable) localPet.getDrawable();
+                        if (!animationDrawable.isRunning()) {
+                            animationDrawable.start();
+                        }
                         //event.getRawXY()获得手指相对屏幕左上角的坐标
                         //v.getXY()获得view相对layout左上角的坐标
                         //二者原点不同故需先保存，之后补上相差坐标
@@ -118,9 +123,13 @@ public class ConnectedActivity extends AppCompatActivity {
                         v.setX(newX);
                         v.setY(newY);
                         Log.w(TAG, "onTouch: ACTION_MOVE");
-                        bluetoothConnectService.sendData((int) newX, (int) newY);
+                        bluetoothConnectService.sendCoordinate((int) newX, (int) newY);
                         break;
                     case MotionEvent.ACTION_UP:
+                        animationDrawable = (AnimationDrawable) localPet.getDrawable();
+                        if (!animationDrawable.isRunning()) {
+                            animationDrawable.start();
+                        }
                         break;
                 }
                 return true;
@@ -128,8 +137,20 @@ public class ConnectedActivity extends AppCompatActivity {
         });
     }
 
-    private void initRemotePet() {
-
+    private void initRemotePet(int modelNumber) {
+        switch (modelNumber) {
+            case 1:
+                remotePet.setImageResource(R.drawable.test1_1);
+                break;
+            case 2:
+                remotePet.setImageResource(R.drawable.test2_1);
+                break;
+            case 3:
+                remotePet.setImageResource(R.drawable.test3_1);
+                break;
+            default:
+                remotePet.setImageResource(R.drawable.test1_1);
+        }
     }
 
     static class MyHandler extends Handler {
@@ -143,7 +164,14 @@ public class ConnectedActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             ConnectedActivity activity = mActivity.get();
             if (activity != null) {
-                activity.setNewPosition(msg.arg1, msg.arg2);
+                switch (msg.what) {
+                    case Key.MESSAGE_WHAT_COORDINATE:
+                        activity.setNewPosition(msg.arg1, msg.arg2);
+                        break;
+                    case Key.MESSAGE_WHAT_MODEL:
+                        break;
+                    default:
+                }
             }
         }
     }
