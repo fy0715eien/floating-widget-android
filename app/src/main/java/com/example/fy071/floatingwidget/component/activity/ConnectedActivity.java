@@ -141,6 +141,7 @@ public class ConnectedActivity extends AppCompatActivity {
 
         @Override
         public void handleMessage(Message msg) {
+            Log.w(TAG, "handleMessage: message receive");
             ConnectedActivity activity = mActivity.get();
             if (activity != null) {
                 activity.setNewPosition(msg.arg1, msg.arg2);
