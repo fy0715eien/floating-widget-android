@@ -130,6 +130,7 @@ public class BluetoothConnectService {
         data[7] = (byte) ((y) & 0xff);
 
         connectedThread.write(data);
+        Log.w(TAG, "sendData: called");
     }
 
     //接收数据
@@ -137,7 +138,7 @@ public class BluetoothConnectService {
         Log.w(TAG, "receiveData: called");
         //检查传入字节数
         if (length < 8) {
-            //TODO SET_TOO_SHORT
+            Log.w(TAG, "receiveData: length too short");
         }
         //byte[]转int
         int[] pos = new int[2];

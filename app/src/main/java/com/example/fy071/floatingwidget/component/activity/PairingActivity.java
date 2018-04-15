@@ -51,21 +51,45 @@ public class PairingActivity extends BaseActivity {
     private static final int SCAN_PERIOD = 12000;
 
     private final PairingActivity.MyHandler handler = new PairingActivity.MyHandler(this);
+    private static final String TAG = "PairingActivity";
 
     BluetoothConnectService bluetoothConnectService;
 
-    private static final String TAG = "PairingActivity";
     private BluetoothAdapter bluetoothAdapter = null;
+
     @BindView(R.id.scan_progress_bar)
     ProgressBar progressBar;
+
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+
     @BindView(R.id.textView_devices)
     TextView devicesTextView;
+
     @BindView(R.id.recyclerview_device_list)
     RecyclerView recyclerView;
+
     @BindView(R.id.fab_search)
     FloatingActionButton floatingActionButton;
+
+    @OnClick(R.id.fab_search)
+    void search() {
+        devicesTextView.setVisibility(View.VISIBLE);
+
+        itemAdapter.clear();
+
+        Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
+        if (devices.size() > 0) {
+            for (BluetoothDevice device : devices) {
+                BluetoothDeviceItem bluetoothDeviceItem = new BluetoothDeviceItem().withBluetoothDevice(device);
+                itemAdapter.add(bluetoothDeviceItem);
+            }
+        }
+
+        scanDevice(false);
+        scanDevice(true);
+    }
+
     private ItemAdapter<BluetoothDeviceItem> itemAdapter;
     private Handler bleSearchHandler;
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -88,23 +112,7 @@ public class PairingActivity extends BaseActivity {
         }
     };
 
-    @OnClick(R.id.fab_search)
-    void search() {
-        devicesTextView.setVisibility(View.VISIBLE);
 
-        itemAdapter.clear();
-
-        Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
-        if (devices.size() > 0) {
-            for (BluetoothDevice device : devices) {
-                BluetoothDeviceItem bluetoothDeviceItem = new BluetoothDeviceItem().withBluetoothDevice(device);
-                itemAdapter.add(bluetoothDeviceItem);
-            }
-        }
-
-        scanDevice(false);
-        scanDevice(true);
-    }
 
     private BluetoothAdapter.LeScanCallback leScanCallback = new BluetoothAdapter.LeScanCallback() {
 

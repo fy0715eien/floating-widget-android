@@ -70,7 +70,6 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         }
     }
 
-
     private void checkPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getActivity())) {
             new AlertDialog.Builder(getActivity())
@@ -98,7 +97,6 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         }
     }
 
-
     @Override
     public boolean onPreferenceChange(final Preference preference, Object newValue) {
         final String key = preference.getKey();
@@ -125,7 +123,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
                 preference.setSummary(entries[index]);
             case Key.WECHAT_NOTIFICATION:
                 if (newValue.equals(true)) {
-                    if (!isNotificationListenerEnable()) {
+                    if (!isNotificationListenerEnabled()) {
                         new AlertDialog.Builder(getActivity())
                                 .setTitle(R.string.dialog_title_permission_notification)
                                 .setMessage(R.string.dialog_message_permission_notification)
@@ -149,7 +147,6 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         return true;
     }
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -167,7 +164,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
                 }
                 break;
             case NOTIFICATION_ACCESS_PERMISSION:
-                if (!isNotificationListenerEnable()) {
+                if (!isNotificationListenerEnabled()) {
                     Toast.makeText(getActivity(), "Permission not available", Toast.LENGTH_SHORT).show();
                     weChatNotification.setChecked(false);
                 }
@@ -180,7 +177,7 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
         randomDialog.setChecked(false);
     }
 
-    private boolean isNotificationListenerEnable() {
+    private boolean isNotificationListenerEnabled() {
         boolean enable = false;
         String packageName = getActivity().getPackageName();
         String flat = Settings.Secure.getString(getActivity().getContentResolver(), "enabled_notification_listeners");

@@ -23,17 +23,17 @@ import butterknife.ButterKnife;
 public class ConnectedActivity extends AppCompatActivity {
     private static final String TAG = "ConnectedActivity";
     private final MyHandler handler = new MyHandler(this);
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
 
     private BluetoothConnectService bluetoothConnectService;
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     @BindView(R.id.imageView_local)
     ImageView localPet;
 
     @BindView(R.id.imageView_remote)
     ImageView remotePet;
-
 
     private float fingerStartX, fingerStartY, viewStartX, viewStartY;
 
@@ -58,6 +58,7 @@ public class ConnectedActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        // Test sending
         bluetoothConnectService.sendData(1, 1);
         bluetoothConnectService.sendData(2, 2);
         bluetoothConnectService.sendData(3, 3);

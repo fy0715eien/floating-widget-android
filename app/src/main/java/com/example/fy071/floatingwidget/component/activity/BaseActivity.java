@@ -15,7 +15,6 @@ import com.example.fy071.floatingwidget.util.PreferenceHelper;
 
 public class BaseActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-    SharedPreferences sharedPreferences;
     SharedPreferences defaultSharedPreferences;
 
     private static final String TAG = "BaseActivity";
@@ -26,8 +25,7 @@ public class BaseActivity extends AppCompatActivity implements SharedPreferences
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         //overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
         defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        sharedPreferences = getPreferences(MODE_PRIVATE);
-        PreferenceHelper.setPreferences(defaultSharedPreferences, sharedPreferences);
+        PreferenceHelper.setPreferences(defaultSharedPreferences);
     }
 
     @Override
@@ -39,7 +37,6 @@ public class BaseActivity extends AppCompatActivity implements SharedPreferences
     @Override
     protected void onResume() {
         super.onResume();
-        sharedPreferences.registerOnSharedPreferenceChangeListener(this);
         defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this);
     }
 
@@ -49,12 +46,11 @@ public class BaseActivity extends AppCompatActivity implements SharedPreferences
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         //overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
         defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
-        sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
-        PreferenceHelper.setPreferences(defaultSharedPreferences, sharedPreferences);
+        PreferenceHelper.setPreferences(defaultSharedPreferences);
     }
 
     @Override
@@ -88,7 +84,7 @@ public class BaseActivity extends AppCompatActivity implements SharedPreferences
         }
 
         intent = new Intent(this, NotificationListenerMonitorService.class);
-        if (PreferenceHelper.wechatNotification) {
+        if (PreferenceHelper.weChatNotification) {
             startService(intent);
         } else {
             stopService(intent);
