@@ -14,7 +14,6 @@ import android.widget.ImageView;
 
 import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.entity.BluetoothConnectService;
-import com.example.fy071.floatingwidget.util.Key;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
 
 import java.lang.ref.WeakReference;
@@ -191,14 +190,7 @@ public class ConnectedActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             ConnectedActivity activity = mActivity.get();
             if (activity != null) {
-                switch (msg.what) {
-                    case Key.MESSAGE_WHAT_COORDINATE:
-                        activity.setNewPosition(msg.arg1, msg.arg2);
-                        break;
-                    case Key.MESSAGE_WHAT_MODEL:
-                        break;
-                    default:
-                }
+                activity.setNewPosition(msg.arg1, msg.arg2);
             }
         }
     }
