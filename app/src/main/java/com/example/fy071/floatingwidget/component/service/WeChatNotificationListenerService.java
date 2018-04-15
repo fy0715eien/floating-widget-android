@@ -4,9 +4,13 @@ package com.example.fy071.floatingwidget.component.service;
 import android.app.Notification;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
+
+import com.example.fy071.floatingwidget.util.Key;
 
 public class WeChatNotificationListenerService extends NotificationListenerService {
 
@@ -34,13 +38,15 @@ public class WeChatNotificationListenerService extends NotificationListenerServi
             Log.w(TAG, "onNotificationPosted: " + title);
             Log.w(TAG, "onNotificationPosted: " + content);
             System.out.print(content);
-
-            Intent intent=new Intent();
-            //与清单文件的receiver的anction对应
-            intent.setAction("com.wechat.message");
-            intent.putExtra("content",content);
-            //发送广播
-            sendBroadcast(intent);
+            if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(Key.WECHAT_NOTIFICATION,false))
+            {
+                Intent intent=new Intent();
+                //与清单文件的receiver的anction对应
+                intent.setAction("com.tofloatingpet.message");
+                intent.putExtra("content",content);
+                //发送广播
+                sendBroadcast(intent);
+            }
         }
     }
 

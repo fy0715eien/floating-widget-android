@@ -61,8 +61,12 @@ public class RandomDialogService extends Service {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        //放在UI线程弹Toast
-                        Toast.makeText(RandomDialogService.this, dialog[num], Toast.LENGTH_LONG).show();
+                        Intent intent=new Intent();
+                        //与清单文件的receiver的anction对应
+                        intent.setAction("com.tofloatingpet.message");
+                        intent.putExtra("content",dialog[num]);
+                        //发送广播
+                        sendBroadcast(intent);
                     }
                 });
             }

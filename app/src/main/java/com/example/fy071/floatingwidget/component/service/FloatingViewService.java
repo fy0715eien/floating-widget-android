@@ -112,7 +112,7 @@ public class FloatingViewService extends Service {
         mReciver = new WeChatMessageReceiver();
 
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("com.wechat.message");
+        intentFilter.addAction("com.tofloatingpet.message");
         registerReceiver(mReciver, intentFilter);
 
         createFloatView();
@@ -443,16 +443,12 @@ public class FloatingViewService extends Service {
                         v.performClick();
                     } else {
                         if (PxDpConverter.convertPixelsToDp(left) < TO_SIDE) {
-                            refreshView2(
-                                    event.getRawX() - fingerStartX,
-                                    event.getRawY() - fingerStartY,
+                            refreshView(
                                     0,
                                     event.getRawY() - fingerStartY
                             );
                         } else if (PxDpConverter.convertPixelsToDp(right) < TO_SIDE) {
-                            refreshView2(
-                                    event.getRawX() - fingerStartX,
-                                    event.getRawY() - fingerStartY,
+                            refreshView(
                                     dm.widthPixels - v.getWidth(),
                                     event.getRawY() - fingerStartY);
                         } else {
