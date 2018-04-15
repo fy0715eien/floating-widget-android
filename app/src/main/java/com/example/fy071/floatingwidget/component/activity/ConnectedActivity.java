@@ -1,12 +1,12 @@
 package com.example.fy071.floatingwidget.component.activity;
 
-import android.graphics.drawable.AnimationDrawable;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -21,18 +21,22 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ConnectedActivity extends AppCompatActivity {
+    private static final String TAG = "ConnectedActivity";
     private final MyHandler handler = new MyHandler(this);
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
     private BluetoothConnectService bluetoothConnectService;
 
-    private View localPet;
-    private ImageView petModel;
+    @BindView(R.id.imageView_local)
+    ImageView localPet;
+
+    @BindView(R.id.imageView_remote)
+    ImageView remotePet;
+
 
     private float fingerStartX, fingerStartY, viewStartX, viewStartY;
 
-    private View remotePet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +55,17 @@ public class ConnectedActivity extends AppCompatActivity {
         initRemotePet();
     }
 
-    public void setNewPosition(int x, int y) {
+    @Override
+    protected void onResume() {
+        super.onResume();
+        bluetoothConnectService.sendData(1, 1);
+        bluetoothConnectService.sendData(2, 2);
+        bluetoothConnectService.sendData(3, 3);
+
+    }
+
+    private void setNewPosition(int x, int y) {
+        Log.w(TAG, "setNewPosition: " + "x=" + x + " y=" + y);
         remotePet.setX((float) x);
         remotePet.setY((float) y);
     }
@@ -69,32 +83,26 @@ public class ConnectedActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void initLocalPet() {
         switch (PreferenceHelper.petModel) {
             case "model_1":
-                localPet = LayoutInflater.from(this).inflate(R.layout.layout_pet_1, null);
+                localPet.setImageResource(R.drawable.down_anime_1);
                 break;
             case "model_2":
-                localPet = LayoutInflater.from(this).inflate(R.layout.layout_pet_2, null);
+                localPet.setImageResource(R.drawable.down_anime_2);
                 break;
             case "model_3":
-                localPet = LayoutInflater.from(this).inflate(R.layout.layout_pet_3, null);
+                localPet.setImageResource(R.drawable.down_anime_3);
                 break;
             default:
         }
 
-        petModel = localPet.findViewById(R.id.imageView_pet);
-
         localPet.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                AnimationDrawable animationDrawable;
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        animationDrawable = (AnimationDrawable) petModel.getDrawable();
-                        if (!animationDrawable.isRunning()) {
-                            animationDrawable.start();
-                        }
                         //event.getRawXY()获得手指相对屏幕左上角的坐标
                         //v.getXY()获得view相对layout左上角的坐标
                         //二者原点不同故需先保存，之后补上相差坐标
@@ -108,14 +116,10 @@ public class ConnectedActivity extends AppCompatActivity {
                         float newY = event.getRawY() + viewStartY - fingerStartY;
                         v.setX(newX);
                         v.setY(newY);
+                        Log.w(TAG, "onTouch: ACTION_MOVE");
                         bluetoothConnectService.sendData((int) newX, (int) newY);
                         break;
                     case MotionEvent.ACTION_UP:
-                        petModel.setImageResource(R.drawable.up_anime_1);
-                        animationDrawable = (AnimationDrawable) petModel.getDrawable();
-                        if (!animationDrawable.isRunning()) {
-                            animationDrawable.start();
-                        }
                         break;
                 }
                 return true;
@@ -124,7 +128,7 @@ public class ConnectedActivity extends AppCompatActivity {
     }
 
     private void initRemotePet() {
-        remotePet = LayoutInflater.from(this).inflate(R.layout.layout_pet_1, null);
+
     }
 
     static class MyHandler extends Handler {

@@ -134,6 +134,7 @@ public class BluetoothConnectService {
 
     //接收数据
     private synchronized void receiveData(int length, byte[] data) {
+        Log.w(TAG, "receiveData: called");
         //检查传入字节数
         if (length < 8) {
             //TODO SET_TOO_SHORT
@@ -314,6 +315,7 @@ public class BluetoothConnectService {
         /* Call this from the main activity to send data to the remote device */
         public void write(byte[] bytes) {
             try {
+                Log.w(TAG, "write: called");
                 mmOutStream.write(bytes);
             } catch (IOException e) {
                 //TODO IOE
