@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.example.fy071.floatingwidget.component.service.FloatingViewService;
 import com.example.fy071.floatingwidget.component.service.NotificationListenerMonitorService;
@@ -83,6 +84,7 @@ public class BaseActivity extends AppCompatActivity implements SharedPreferences
             stopService(intent);
         }
 
+        Log.d(TAG, "startServices: " + PreferenceHelper.weChatNotification);
         intent = new Intent(this, NotificationListenerMonitorService.class);
         if (PreferenceHelper.weChatNotification) {
             startService(intent);

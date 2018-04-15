@@ -27,9 +27,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -208,9 +205,9 @@ public class FloatingViewService extends Service {
 
         //悬浮窗开始在左上角显示
         layoutParams.gravity = Gravity.START | Gravity.TOP;
-        layoutParams.windowAnimations = android.R.style.Animation_Dialog;
+        layoutParams.windowAnimations = android.R.style.Animation_Toast;
         virtualLayoutParams.gravity = Gravity.START | Gravity.TOP;
-        virtualLayoutParams.windowAnimations = android.R.style.Animation_Dialog;
+        virtualLayoutParams.windowAnimations = android.R.style.Animation_Toast;
         centerLayoutParams.gravity = Gravity.CENTER;
         view.setOnTouchListener(new FloatingTouchListener());
         view.setOnClickListener(new FloatingClickListener());
@@ -249,7 +246,6 @@ public class FloatingViewService extends Service {
         refresh();
     }
 
-
     /**
      * 刷新悬浮窗
      *
@@ -269,16 +265,16 @@ public class FloatingViewService extends Service {
         layoutParams.x = (int) xNext;
         layoutParams.y = (int) yNext;
         //virtualLayoutParams.windowAnimations = 0;
-        windowManager.addView(virtualParent, virtualLayoutParams);
+        //windowManager.addView(virtualParent, virtualLayoutParams);
         //virtualLayoutParams.windowAnimations = android.R.style.Animation_Dialog;
         //windowManager.updateViewLayout(virtualParent, virtualLayoutParams);
-        virtualViewAdded = true;
-        AnimationSet animationSet = new AnimationSet(true);
+        // virtualViewAdded = true;
+        // AnimationSet animationSet = new AnimationSet(true);
         //参数1～2：x轴的开始位置
         //参数3～4：y轴的开始位置
         //参数5～6：x轴的结束位置
         //参数7～8：x轴的结束位置
-        TranslateAnimation translateAnimation = new TranslateAnimation(
+        /*TranslateAnimation translateAnimation = new TranslateAnimation(
                 Animation.ABSOLUTE, xLast,
                 Animation.ABSOLUTE, xNext,
                 Animation.ABSOLUTE, yLast,
@@ -287,8 +283,6 @@ public class FloatingViewService extends Service {
         animationSet.addAnimation(translateAnimation);
         animationSet.setDuration(300);
 
-        layoutParams.x = (int) xNext;
-        layoutParams.y = (int) yNext;
         virtualPetModel.startAnimation(animationSet);
         animationSet.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -317,6 +311,9 @@ public class FloatingViewService extends Service {
                 virtualViewAdded = false;
             }
         });
+        */
+        windowManager.removeView(view);
+        windowManager.addView(view, layoutParams);
     }
 
     /**
@@ -443,12 +440,16 @@ public class FloatingViewService extends Service {
                         v.performClick();
                     } else {
                         if (PxDpConverter.convertPixelsToDp(left) < TO_SIDE) {
-                            refreshView(
+                            refreshView2(
+                                    event.getRawX() - fingerStartX,
+                                    event.getRawY() - fingerStartY,
                                     0,
                                     event.getRawY() - fingerStartY
                             );
                         } else if (PxDpConverter.convertPixelsToDp(right) < TO_SIDE) {
-                            refreshView(
+                            refreshView2(
+                                    event.getRawX() - fingerStartX,
+                                    event.getRawY() - fingerStartY,
                                     dm.widthPixels - v.getWidth(),
                                     event.getRawY() - fingerStartY);
                         } else {
