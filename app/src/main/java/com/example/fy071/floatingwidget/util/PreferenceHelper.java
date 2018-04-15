@@ -2,6 +2,11 @@ package com.example.fy071.floatingwidget.util;
 
 import android.content.SharedPreferences;
 
+/**
+ * 用于方便访问偏好，
+ * 只能在Activity中使用此类，
+ * Service中请使用sharedPreference访问偏好
+ */
 public class PreferenceHelper {
     public static SharedPreferences defaultSharedPreferences;
 

@@ -109,11 +109,12 @@ public class BluetoothConnectService {
         cancelConnected();
     }
 
-    /*
-    发送数据，两组int
-    需要发送数据直接调用这个方法
-    */
-    public synchronized void sendData(int x, int y) {
+    public synchronized void sendModel(int modelNumber) {
+
+    }
+
+    //发送坐标，两个int
+    public synchronized void sendCoordinate(int x, int y) {
         //检查连接
         if (connectedThread == null) {
             return;
@@ -132,7 +133,7 @@ public class BluetoothConnectService {
         data[7] = (byte) ((y) & 0xff);
 
         connectedThread.write(data);
-        Log.w(TAG, "sendData: called");
+        Log.w(TAG, "sendCoordinate: called");
     }
 
     //接收数据
