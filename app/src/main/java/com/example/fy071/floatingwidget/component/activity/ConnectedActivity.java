@@ -53,6 +53,8 @@ public class ConnectedActivity extends AppCompatActivity {
         bluetoothConnectService.setHandler(handler);
 
         initLocalPet();
+
+        // 远程宠物暂时使用默认模型
         initRemotePet(1);
     }
 
@@ -96,6 +98,7 @@ public class ConnectedActivity extends AppCompatActivity {
                 localPet.setImageResource(R.drawable.test1_3);
                 break;
             default:
+                localPet.setImageResource(R.drawable.test1_1);
         }
 
         localPet.setOnTouchListener(new View.OnTouchListener() {
@@ -105,10 +108,22 @@ public class ConnectedActivity extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+/*                        switch (PreferenceHelper.petModel) {
+                            case "model_1":
+                                localPet.setImageResource(R.drawable.down_anime_1);
+                                break;
+                            case "model_2":
+                                localPet.setImageResource(R.drawable.down_anime_2);
+                                break;
+                            case "model_3":
+                                localPet.setImageResource(R.drawable.down_anime_3);
+                                break;
+                            default:
+                        }
                         animationDrawable = (AnimationDrawable) localPet.getDrawable();
                         if (!animationDrawable.isRunning()) {
                             animationDrawable.start();
-                        }
+                        }*/
                         //event.getRawXY()获得手指相对屏幕左上角的坐标
                         //v.getXY()获得view相对layout左上角的坐标
                         //二者原点不同故需先保存，之后补上相差坐标
@@ -126,10 +141,22 @@ public class ConnectedActivity extends AppCompatActivity {
                         bluetoothConnectService.sendCoordinate((int) newX, (int) newY);
                         break;
                     case MotionEvent.ACTION_UP:
+/*                        switch (PreferenceHelper.petModel) {
+                            case "model_1":
+                                localPet.setImageResource(R.drawable.up_anime_1);
+                                break;
+                            case "model_2":
+                                localPet.setImageResource(R.drawable.up_anime_2);
+                                break;
+                            case "model_3":
+                                localPet.setImageResource(R.drawable.up_anime_3);
+                                break;
+                            default:
+                        }
                         animationDrawable = (AnimationDrawable) localPet.getDrawable();
                         if (!animationDrawable.isRunning()) {
                             animationDrawable.start();
-                        }
+                        }*/
                         break;
                 }
                 return true;
