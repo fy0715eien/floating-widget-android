@@ -39,4 +39,9 @@
     <string name="dialog_title_permission_overlay">需要特殊权限</string>
     <string name="dialog_message_permission_overlay">请在下个页面为本应用程序提供权限</string>
     <string name="pref_summary_start_on_boot">挂件将会在系统启动完毕时启动</string>
+    <string name="dialog_title_permission_notification">需要读取通知权限</string>
+    <string name="dialog_message_permission_notification">应用需要通知读取权限来读取微信通知</string>
+    <string name="hint_home">开启抽屉导航栏发现更多功能</string>
+    <string name="hint_alarm">闹钟将显示于此</string>
+    <string name="hint_pairing">被发现设备将显示于此</string>
 </resources>

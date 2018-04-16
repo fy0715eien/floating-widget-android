@@ -6,43 +6,67 @@
     android:layout_height="match_parent"
     tools:context=".component.activity.PairingActivity">
 
-    <include layout="@layout/layout_toolbar" />
-
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <include layout="@layout/layout_toolbar" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <include layout="@layout/layout_toolbar" />
+
+            <TextView
+                android:id="@+id/textView_devices"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="72dp"
+                android:layout_marginStart="72dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/devices"
+                android:textColor="@color/accent"
+                android:textStyle="bold"
+                android:visibility="invisible"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerview_device_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+            </android.support.v7.widget.RecyclerView>
+
+            <ProgressBar
+                android:id="@+id/scan_progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/imageView_pair_hint"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_bluetooth_grey_300_48dp" />
 
         <TextView
-            android:id="@+id/textView_devices"
-            android:visibility="invisible"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="72dp"
-            android:text="@string/devices"
-            android:textColor="@color/accent"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerview_device_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
-
-        </android.support.v7.widget.RecyclerView>
-
-        <ProgressBar
-            android:id="@+id/scan_progress_bar"
-            android:visibility="gone"
-            android:layout_gravity="center"
+            android:id="@+id/textView_pairing_hint"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_below="@id/imageView_pair_hint"
+            android:layout_centerHorizontal="true"
+            android:text="@string/hint_pairing"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
 
-    </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_search"
@@ -50,6 +74,7 @@
         android:layout_height="56dp"
         android:layout_marginBottom="24dp"
         android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
         android:clickable="true"
         android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"

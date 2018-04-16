@@ -12,6 +12,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.component.database.Alarm;
@@ -39,6 +41,12 @@ public class AlarmActivity extends AppCompatActivity {
 
     @BindView(R.id.recycler_view_alarm_list)
     RecyclerView recyclerView;
+
+    @BindView(R.id.imageView_alarm_hint)
+    ImageView imageView;
+
+    @BindView(R.id.textView_alarm_hint)
+    TextView textView;
 
     @BindView(R.id.new_alarm)
     FloatingActionButton floatingActionButton;
@@ -111,6 +119,10 @@ public class AlarmActivity extends AppCompatActivity {
 
     void initAlarmList() {
         List<Alarm> alarmList = dbManager.searchAll();
+        if (alarmList.size() > 0) {
+            imageView.setVisibility(View.GONE);
+            textView.setVisibility(View.GONE);
+        }
         for (Alarm alarm : alarmList) {
             itemAdapter.add(new AlarmItem().withAlarm(alarm));
         }
