@@ -49,21 +49,47 @@ public class PairingActivity extends BaseActivity {
     private static final int REQUEST_ACCESS_COARSE_LOCATION = 2;
 
     private static final int SCAN_PERIOD = 12000;
+
     private final PairingActivity.MyHandler handler = new PairingActivity.MyHandler(this);
+    private static final String TAG = "PairingActivity";
+
     BluetoothConnectService bluetoothConnectService;
 
-    private static final String TAG = "PairingActivity";
     private BluetoothAdapter bluetoothAdapter = null;
+
     @BindView(R.id.scan_progress_bar)
     ProgressBar progressBar;
+
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+
     @BindView(R.id.textView_devices)
     TextView devicesTextView;
+
     @BindView(R.id.recyclerview_device_list)
     RecyclerView recyclerView;
+
     @BindView(R.id.fab_search)
     FloatingActionButton floatingActionButton;
+
+    @OnClick(R.id.fab_search)
+    void search() {
+        devicesTextView.setVisibility(View.VISIBLE);
+
+        itemAdapter.clear();
+
+        Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
+        if (devices.size() > 0) {
+            for (BluetoothDevice device : devices) {
+                BluetoothDeviceItem bluetoothDeviceItem = new BluetoothDeviceItem().withBluetoothDevice(device);
+                itemAdapter.add(bluetoothDeviceItem);
+            }
+        }
+
+        scanDevice(false);
+        scanDevice(true);
+    }
+
     private ItemAdapter<BluetoothDeviceItem> itemAdapter;
     private Handler bleSearchHandler;
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -86,29 +112,6 @@ public class PairingActivity extends BaseActivity {
         }
     };
 
-    @OnClick(R.id.fab_search)
-    void search() {
-        devicesTextView.setVisibility(View.VISIBLE);
-
-        itemAdapter.clear();
-
-        Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
-        if (devices.size() > 0) {
-            for (BluetoothDevice device : devices) {
-                BluetoothDeviceItem bluetoothDeviceItem = new BluetoothDeviceItem().withBluetoothDevice(device);
-                itemAdapter.add(bluetoothDeviceItem);
-            }
-        }
-
-        if (bluetoothAdapter.isDiscovering()) {
-            bluetoothAdapter.cancelDiscovery();
-            scanLeDevice(false);
-        }
-
-        scanLeDevice(true);
-        progressBar.setVisibility(View.VISIBLE);
-    }
-
     private BluetoothAdapter.LeScanCallback leScanCallback = new BluetoothAdapter.LeScanCallback() {
 
         @Override
@@ -118,14 +121,6 @@ public class PairingActivity extends BaseActivity {
             }
         }
     };
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        bluetoothAdapter.cancelDiscovery();//确保不继续搜索
-        bluetoothConnectService.cancelAll();
-        this.unregisterReceiver(receiver);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,21 +134,21 @@ public class PairingActivity extends BaseActivity {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         //如果为null则本设备不支持蓝牙
         if (bluetoothAdapter == null) {
-            Toast.makeText(this, "Bluetooth is not available on this device", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Bluetooth is not available on this device, leaving activity", Toast.LENGTH_LONG).show();
             finish();
         }
-
 
         itemAdapter = new ItemAdapter<>();
 
         FastAdapter<BluetoothDeviceItem> fastAdapter = FastAdapter.with(itemAdapter);
-        fastAdapter.withSelectable(true)
+        fastAdapter
+                .withSelectable(true)
                 .withOnClickListener(new OnClickListener<BluetoothDeviceItem>() {
                     @Override
                     public boolean onClick(@Nullable View v, IAdapter<BluetoothDeviceItem> adapter, BluetoothDeviceItem item, int position) {
-                        Intent intent = new Intent(PairingActivity.this, ConnectedActivity.class);
-                        intent.putExtra("device", item.bluetoothDevice);
-                        startActivity(intent);
+                        bluetoothConnectService.connectServer(item.bluetoothDevice);
+                        Toast.makeText(PairingActivity.this, "Connecting", Toast.LENGTH_SHORT).show();
+
                         return false;
                     }
                 });
@@ -173,12 +168,29 @@ public class PairingActivity extends BaseActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        requestBluetoothEnable();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (bluetoothAdapter.isEnabled()) {
+            bluetoothConnectService = BluetoothConnectService.getInstance();
+            bluetoothConnectService.setHandler(handler);
+            bluetoothConnectService.startServer();
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case REQUEST_ENABLE_BT:
+                // 如果蓝牙开启则进入位置权限获取
                 if (resultCode == Activity.RESULT_OK) {
-
+                    requestLocationPermission();
                 } else {
                     Toast.makeText(this, "Bluetooth not enabled, leaving activity", Toast.LENGTH_SHORT).show();
                     finish();
@@ -189,12 +201,13 @@ public class PairingActivity extends BaseActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (bluetoothAdapter.isEnabled()) {
-            bluetoothConnectService = BluetoothConnectService.getInstance();
-            bluetoothConnectService.startServer();
+    protected void onDestroy() {
+        super.onDestroy();
+        scanDevice(false);//确保不继续搜索
+        if (bluetoothConnectService != null) {
+            bluetoothConnectService.cancelAll();
         }
+        this.unregisterReceiver(receiver);
     }
 
     private void initToolbar() {
@@ -210,18 +223,21 @@ public class PairingActivity extends BaseActivity {
         });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
+    private void requestBluetoothEnable() {
         if (!bluetoothAdapter.isEnabled()) {
             Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(intent, REQUEST_ENABLE_BT);
         }
+    }
 
+    private void requestLocationPermission() {
         if (Build.VERSION.SDK_INT >= 23) {
             int locationPermission = checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION);
+            // 如果无位置权限
             if (locationPermission == PackageManager.PERMISSION_DENIED) {
+                // 如果需要解释为何需要权限
                 if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                    // 弹出对话框
                     new AlertDialog.Builder(this)
                             .setTitle(R.string.dialog_title_permission_location)
                             .setMessage(R.string.dialog_message_permission_location)
@@ -229,18 +245,20 @@ public class PairingActivity extends BaseActivity {
                                 @SuppressLint("NewApi")
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                                    // 点击确认则弹出获取位置权限的对话框
+                                    requestPermissions(
+                                            new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                                             REQUEST_ACCESS_COARSE_LOCATION);
                                 }
                             })
                             .show();
                 } else {
-                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                    requestPermissions(
+                            new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                             REQUEST_ACCESS_COARSE_LOCATION);
                 }
             }
         }
-
     }
 
     @Override
@@ -258,22 +276,26 @@ public class PairingActivity extends BaseActivity {
         }
     }
 
-    private void scanLeDevice(final boolean enable) {
-        if (Build.VERSION.SDK_INT >= 18) {
-            if (enable) {
-                bleSearchHandler.postDelayed(new Runnable() {
-                    @SuppressLint("NewApi")
-                    @Override
-                    public void run() {
-                        bluetoothAdapter.stopLeScan(leScanCallback);
-                        bluetoothAdapter.startDiscovery();
-                    }
-                }, SCAN_PERIOD);
+    private void scanDevice(final boolean enable) {
+        if (enable) {
+            progressBar.setVisibility(View.VISIBLE);
 
-                bluetoothAdapter.startLeScan(leScanCallback);
-            } else {
-                bluetoothAdapter.stopLeScan(leScanCallback);
+            bluetoothAdapter.startLeScan(leScanCallback);
+
+            bleSearchHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    // 停止BLE扫描
+                    bluetoothAdapter.stopLeScan(leScanCallback);
+                    // 开始传统扫描
+                    bluetoothAdapter.startDiscovery();
+                }
+            }, SCAN_PERIOD);
+        } else {
+            if (bluetoothAdapter.isDiscovering()) {
+                bluetoothAdapter.cancelDiscovery();
             }
+            bluetoothAdapter.stopLeScan(leScanCallback);
         }
     }
 
@@ -309,6 +331,7 @@ public class PairingActivity extends BaseActivity {
         public void handleMessage(Message msg) {
             PairingActivity activity = mActivity.get();
             if (activity != null) {
+                Toast.makeText(activity, "Connected", Toast.LENGTH_SHORT).show();
                 activity.start();
             }
         }
