@@ -14,6 +14,4 @@ public class Key {
     public static final String RANDOM_DIALOG = "random_dialog";
 
     public static final int MESSAGE_WHAT_PAIRED = 1;
-    public static final int MESSAGE_WHAT_MODEL = 2;
-    public static final int MESSAGE_WHAT_COORDINATE = 3;
 }
