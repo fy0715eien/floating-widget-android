@@ -26,17 +26,17 @@ public class AlarmItem extends AbstractItem<AlarmItem, AlarmItem.ViewHolder> {
     }
 
     public AlarmItem withTime(String time) {
-        this.date = new StringHolder(time);
+        this.time = new StringHolder(time);
         return this;
     }
 
     public AlarmItem withTitle(String title) {
-        this.date = new StringHolder(title);
+        this.title = new StringHolder(title);
         return this;
     }
 
     public AlarmItem withContent(String content) {
-        this.date = new StringHolder(content);
+        this.content = new StringHolder(content);
         return this;
     }
 
@@ -83,7 +83,6 @@ public class AlarmItem extends AbstractItem<AlarmItem, AlarmItem.ViewHolder> {
             StringHolder.applyTo(item.time, time);
             StringHolder.applyTo(item.title, title);
             StringHolder.applyTo(item.content, content);
-
         }
 
         @Override
@@ -93,6 +92,5 @@ public class AlarmItem extends AbstractItem<AlarmItem, AlarmItem.ViewHolder> {
             title.setText(null);
             content.setText(null);
         }
-
     }
 }
