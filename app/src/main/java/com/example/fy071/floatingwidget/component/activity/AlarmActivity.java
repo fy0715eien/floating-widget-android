@@ -1,5 +1,6 @@
 package com.example.fy071.floatingwidget.component.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,11 +14,16 @@ import android.util.Log;
 import android.view.View;
 
 import com.example.fy071.floatingwidget.R;
+import com.example.fy071.floatingwidget.component.database.Alarm;
+import com.example.fy071.floatingwidget.component.database.DbManager;
 import com.example.fy071.floatingwidget.entity.AlarmItem;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.adapters.ItemAdapter;
+import com.mikepenz.fastadapter.listeners.ClickEventHook;
 import com.mikepenz.fastadapter.listeners.OnClickListener;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -25,6 +31,9 @@ import butterknife.OnClick;
 
 public class AlarmActivity extends AppCompatActivity {
     private static final String TAG = "AlarmActivity";
+
+    private DbManager dbManager = new DbManager(this);
+
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -37,7 +46,8 @@ public class AlarmActivity extends AppCompatActivity {
     @OnClick(R.id.new_alarm)
     void newAlarm() {
         Log.d(TAG, "newAlarm: called");
-        // TODO: 2018/4/16 新增闹钟操作
+        Intent intent = new Intent(AlarmActivity.this, ReminderConfigActivity.class);
+        startActivity(intent);
     }
 
     private ItemAdapter<AlarmItem> itemAdapter;
@@ -57,11 +67,13 @@ public class AlarmActivity extends AppCompatActivity {
                     @Override
                     public boolean onClick(@Nullable View v, IAdapter<AlarmItem> adapter, AlarmItem item, int position) {
                         Log.d(TAG, "onClick: custom");
-                        // TODO: 2018/4/16 修改闹钟操作
+                        Intent intent = new Intent(AlarmActivity.this, ReminderConfigActivity.class);
+                        intent.putExtra("id", item.id);
+                        startActivity(intent);
                         return false;
                     }
                 })
-                .withEventHook(new AlarmItem.ViewHolder.DeleteClickEvent() {
+                .withEventHook(new ClickEventHook<AlarmItem>() {
                     @Override
                     public View onBind(@NonNull RecyclerView.ViewHolder viewHolder) {
                         if (viewHolder instanceof AlarmItem.ViewHolder) {
@@ -81,27 +93,7 @@ public class AlarmActivity extends AppCompatActivity {
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(fastAdapter);
 
-        //Test item
-        itemAdapter.add(new AlarmItem()
-                .withDate("2018.04.16")
-                .withTime("20:03")
-                .withTitle("Test 1")
-                .withContent("Test content 1"));
-        itemAdapter.add(new AlarmItem()
-                .withDate("2018.04.17")
-                .withTime("20:05")
-                .withTitle("Test 2")
-                .withContent("Test content 2"));
-        itemAdapter.add(new AlarmItem()
-                .withDate("2018.04.18")
-                .withTime("20:08")
-                .withTitle("Test 3")
-                .withContent("Test content 3"));
-        itemAdapter.add(new AlarmItem()
-                .withDate("2018.04.19")
-                .withTime("20:10")
-                .withTitle("Test 4")
-                .withContent("Test content 4"));
+        initAlarmList();
     }
 
     private void initToolbar() {
@@ -116,4 +108,13 @@ public class AlarmActivity extends AppCompatActivity {
             }
         });
     }
+
+    void initAlarmList() {
+        List<Alarm> alarmList = dbManager.searchAll();
+        for (Alarm alarm : alarmList) {
+            itemAdapter.add(new AlarmItem().withAlarm(alarm));
+        }
+    }
+
+
 }

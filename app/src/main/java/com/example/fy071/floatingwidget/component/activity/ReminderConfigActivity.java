@@ -23,11 +23,21 @@ public class ReminderConfigActivity extends BaseActivity implements TimePickerDi
     private SharedPreferences.Editor editor;
     private Toolbar toolbar;
 
+    private static final int NEW_ALARM = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.reminder);
         ButterKnife.bind(this);
+
+
+        int id = getIntent().getIntExtra("id", NEW_ALARM);
+        if (id == NEW_ALARM) {
+            // TODO: 2018/4/16 新闹钟
+        } else {
+            // TODO: 2018/4/16 以id 读取数据库
+        }
 
         mTimePickerDialog = new TimePickerDialog(ReminderConfigActivity.this);
 

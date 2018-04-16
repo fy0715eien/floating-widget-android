@@ -1,11 +1,8 @@
-package com.example.fy071.floatingwidget.component.Database;
+package com.example.fy071.floatingwidget.component.database;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
-
-import junit.runner.Version;
+import android.database.sqlite.SQLiteOpenHelper;
 
 public class DbHelper extends SQLiteOpenHelper{
 

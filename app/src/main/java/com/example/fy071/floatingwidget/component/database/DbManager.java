@@ -1,14 +1,10 @@
-package com.example.fy071.floatingwidget.component.Database;
+package com.example.fy071.floatingwidget.component.database;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Environment;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +46,7 @@ public class DbManager {
         return alarm;
     }
 
-    public List serachAll(){
+    public List searchAll() {
         SQLiteDatabase db = myDbHelper.getReadableDatabase();
         Cursor cs = db.query("info",null,null,null,null,null,null);
         Alarm alarm = null;

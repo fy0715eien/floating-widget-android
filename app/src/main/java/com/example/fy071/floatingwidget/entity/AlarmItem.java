@@ -1,15 +1,14 @@
 package com.example.fy071.floatingwidget.entity;
 
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.fy071.floatingwidget.R;
+import com.example.fy071.floatingwidget.component.database.Alarm;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.items.AbstractItem;
-import com.mikepenz.fastadapter.listeners.ClickEventHook;
 import com.mikepenz.materialize.holder.StringHolder;
 
 import java.util.List;
@@ -18,10 +17,20 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class AlarmItem extends AbstractItem<AlarmItem, AlarmItem.ViewHolder> {
+    public int id;
     public StringHolder date;
     public StringHolder time;
     public StringHolder title;
     public StringHolder content;
+
+    public AlarmItem withAlarm(Alarm alarm) {
+        this.id = alarm.getId();
+        this.date = new StringHolder(alarm.getDate());
+        this.time = new StringHolder(alarm.getTime());
+        this.title = new StringHolder(alarm.getTitle());
+        this.content = new StringHolder(alarm.getContent());
+        return this;
+    }
 
     public AlarmItem withDate(String date) {
         this.date = new StringHolder(date);
@@ -97,21 +106,6 @@ public class AlarmItem extends AbstractItem<AlarmItem, AlarmItem.ViewHolder> {
             time.setText(null);
             title.setText(null);
             content.setText(null);
-        }
-
-        public static class DeleteClickEvent extends ClickEventHook<AlarmItem> {
-            @Override
-            public View onBind(@NonNull RecyclerView.ViewHolder viewHolder) {
-                if (viewHolder instanceof AlarmItem.ViewHolder) {
-                    return ((ViewHolder) viewHolder).delete;
-                }
-                return null;
-            }
-
-            @Override
-            public void onClick(View v, int position, FastAdapter<AlarmItem> fastAdapter, AlarmItem item) {
-
-            }
         }
     }
 }
