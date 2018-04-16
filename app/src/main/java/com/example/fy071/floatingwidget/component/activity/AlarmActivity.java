@@ -22,7 +22,7 @@ import butterknife.ButterKnife;
 public class AlarmActivity extends AppCompatActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.recyclerview_alarm_list)
+    @BindView(R.id.recycler_view_alarm_list)
     RecyclerView recyclerView;
 
     private ItemAdapter<AlarmItem> itemAdapter;
@@ -50,7 +50,26 @@ public class AlarmActivity extends AppCompatActivity {
         recyclerView.setAdapter(fastAdapter);
 
         //Test item
-        itemAdapter.add(new AlarmItem().withDate("2018.04.16").withTime("20:03").withTitle("Test").withContent("Test content"));
+        itemAdapter.add(new AlarmItem()
+                .withDate("2018.04.16")
+                .withTime("20:03")
+                .withTitle("Test 1")
+                .withContent("Test content 1"));
+        itemAdapter.add(new AlarmItem()
+                .withDate("2018.04.16")
+                .withTime("20:05")
+                .withTitle("Test 2")
+                .withContent("Test content 2"));
+        itemAdapter.add(new AlarmItem()
+                .withDate("2018.04.16")
+                .withTime("20:08")
+                .withTitle("Test 3")
+                .withContent("Test content 3"));
+        itemAdapter.add(new AlarmItem()
+                .withDate("2018.04.16")
+                .withTime("20:10")
+                .withTitle("Test 4")
+                .withContent("Test content 4"));
     }
 
     private void initToolbar() {
