@@ -31,11 +31,11 @@ public class DbHelper extends SQLiteOpenHelper{
         StringBuilder sql = new StringBuilder();
         sql.append("Create table if not exists ");
         sql.append(TABLE_NAME + "( ");
-        sql.append(INFO_ID + "integer primary key autoincrement, ");
-        sql.append(INFO_DATE + "varchar(15), ");
-        sql.append(INFO_TIME + "varchar(15), ");
-        sql.append(INFO_TITLE + "varchar(30), ");
-        sql.append(INFO_CONTENT + "varchar(120) ");
+        sql.append(INFO_ID + " integer primary key autoincrement, ");
+        sql.append(INFO_DATE + " varchar(15), ");
+        sql.append(INFO_TIME + " varchar(15), ");
+        sql.append(INFO_TITLE + " varchar(30), ");
+        sql.append(INFO_CONTENT + " varchar(120) ");
         sql.append(" )");
         db.execSQL(sql.toString());
     }

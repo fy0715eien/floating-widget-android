@@ -115,6 +115,4 @@ public class AlarmActivity extends AppCompatActivity {
             itemAdapter.add(new AlarmItem().withAlarm(alarm));
         }
     }
-
-
 }

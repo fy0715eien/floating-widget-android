@@ -23,6 +23,8 @@ public class ReminderConfigActivity extends BaseActivity implements TimePickerDi
     private SharedPreferences.Editor editor;
     private Toolbar toolbar;
 
+    private static final String TAG = "ReminderConfigActivity";
+
     private static final int NEW_ALARM = -1;
 
     @Override
@@ -31,7 +33,7 @@ public class ReminderConfigActivity extends BaseActivity implements TimePickerDi
         setContentView(R.layout.reminder);
         ButterKnife.bind(this);
 
-
+        // 判断是修改操作还是新增操作
         int id = getIntent().getIntExtra("id", NEW_ALARM);
         if (id == NEW_ALARM) {
             // TODO: 2018/4/16 新闹钟
@@ -39,19 +41,9 @@ public class ReminderConfigActivity extends BaseActivity implements TimePickerDi
             // TODO: 2018/4/16 以id 读取数据库
         }
 
-        mTimePickerDialog = new TimePickerDialog(ReminderConfigActivity.this);
+        initToolbar();
 
-        toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.drawer_item_reminder);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        mTimePickerDialog = new TimePickerDialog(ReminderConfigActivity.this);
 
         rd_content = findViewById(R.id.reminder_content);
 
@@ -81,11 +73,11 @@ public class ReminderConfigActivity extends BaseActivity implements TimePickerDi
         int day = mTimePickerDialog.getDay();
         int hour = mTimePickerDialog.getHour();
         int minute = mTimePickerDialog.getMinute();
-        Log.i("=====", "=======year======" + mTimePickerDialog.getYear());
-        Log.i("=====", "=======getMonth======" + mTimePickerDialog.getMonth());
-        Log.i("=====", "=======getDay======" + mTimePickerDialog.getDay());
-        Log.i("=====", "=======getHour======" + mTimePickerDialog.getHour());
-        Log.i("=====", "=======getMinute======" + mTimePickerDialog.getMinute());
+        Log.i(TAG, "year= " + mTimePickerDialog.getYear());
+        Log.i(TAG, "month= " + mTimePickerDialog.getMonth());
+        Log.i(TAG, "day= " + mTimePickerDialog.getDay());
+        Log.i(TAG, "hour= " + mTimePickerDialog.getHour());
+        Log.i(TAG, "minute= " + mTimePickerDialog.getMinute());
         reminder_time.setText(year + "年" + month + "月" + day + "日" + hour + ":" + minute);
     }
 
@@ -93,5 +85,19 @@ public class ReminderConfigActivity extends BaseActivity implements TimePickerDi
     @Override
     public void negativeListener() {
 
+    }
+
+    private void initToolbar() {
+        toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.drawer_item_reminder);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 }

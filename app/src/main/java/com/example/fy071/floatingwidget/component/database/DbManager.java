@@ -46,7 +46,7 @@ public class DbManager {
         return alarm;
     }
 
-    public List searchAll() {
+    public List<Alarm> searchAll() {
         SQLiteDatabase db = myDbHelper.getReadableDatabase();
         Cursor cs = db.query("info",null,null,null,null,null,null);
         Alarm alarm = null;
