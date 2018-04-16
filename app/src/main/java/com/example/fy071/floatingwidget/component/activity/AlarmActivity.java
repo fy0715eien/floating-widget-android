@@ -1,13 +1,20 @@
 package com.example.fy071.floatingwidget.component.activity;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.example.fy071.floatingwidget.R;
-import com.example.fy071.floatingwidget.entity.BluetoothDeviceItem;
+import com.example.fy071.floatingwidget.entity.AlarmItem;
+import com.mikepenz.fastadapter.FastAdapter;
+import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.adapters.ItemAdapter;
+import com.mikepenz.fastadapter.listeners.OnClickListener;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -15,7 +22,10 @@ import butterknife.ButterKnife;
 public class AlarmActivity extends AppCompatActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    private ItemAdapter<BluetoothDeviceItem> itemAdapter;
+    @BindView(R.id.recyclerview_alarm_list)
+    RecyclerView recyclerView;
+
+    private ItemAdapter<AlarmItem> itemAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,8 +33,24 @@ public class AlarmActivity extends AppCompatActivity {
         setContentView(R.layout.activity_alarm);
         ButterKnife.bind(this);
         initToolbar();
-        //Test item
 
+        itemAdapter = new ItemAdapter<>();
+        FastAdapter<AlarmItem> fastAdapter = FastAdapter.with(itemAdapter);
+        fastAdapter
+                .withSelectable(true)
+                .withOnClickListener(new OnClickListener<AlarmItem>() {
+                    @Override
+                    public boolean onClick(@Nullable View v, IAdapter<AlarmItem> adapter, AlarmItem item, int position) {
+                        return false;
+                    }
+                });
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(fastAdapter);
+
+        //Test item
+        itemAdapter.add(new AlarmItem().withDate("2018.04.16").withTime("20:03").withTitle("Test").withContent("Test content"));
     }
 
     private void initToolbar() {

@@ -138,7 +138,6 @@ public class PairingActivity extends BaseActivity {
             finish();
         }
 
-
         itemAdapter = new ItemAdapter<>();
 
         FastAdapter<BluetoothDeviceItem> fastAdapter = FastAdapter.with(itemAdapter);

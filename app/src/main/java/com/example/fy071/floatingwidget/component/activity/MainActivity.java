@@ -90,8 +90,7 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
         if (id == DRAWER_HOME) {
             intent = null;
         } else if (id == DRAWER_REMINDER) {
-            intent = new Intent(MainActivity.this, ReminderConfigActivity.class);
-            // TODO: 2018/4/8 change activity to ReminderActivity after it's completely written
+            intent = new Intent(MainActivity.this, AlarmActivity.class);
         } else if (id == DRAWER_PAIRING) {
             intent = new Intent(MainActivity.this, PairingActivity.class);
         } else if (id == DRAWER_SETTINGS) {
