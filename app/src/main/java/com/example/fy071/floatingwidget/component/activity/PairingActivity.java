@@ -112,8 +112,6 @@ public class PairingActivity extends BaseActivity {
         }
     };
 
-
-
     private BluetoothAdapter.LeScanCallback leScanCallback = new BluetoothAdapter.LeScanCallback() {
 
         @Override

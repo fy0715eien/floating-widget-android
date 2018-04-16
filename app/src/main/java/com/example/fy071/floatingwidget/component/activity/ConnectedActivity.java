@@ -38,7 +38,6 @@ public class ConnectedActivity extends AppCompatActivity {
 
     private float fingerStartX, fingerStartY, viewStartX, viewStartY;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
