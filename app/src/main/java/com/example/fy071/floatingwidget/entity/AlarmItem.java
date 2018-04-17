@@ -65,7 +65,7 @@ public class AlarmItem extends AbstractItem<AlarmItem, AlarmItem.ViewHolder> {
 
     @Override
     public int getLayoutRes() {
-        return R.layout.alarm_item;
+        return R.layout.item_alarm;
     }
 
     public static class ViewHolder extends FastAdapter.ViewHolder<AlarmItem> {

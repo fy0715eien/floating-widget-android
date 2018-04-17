@@ -45,7 +45,7 @@ public class BluetoothDeviceItem extends AbstractItem<BluetoothDeviceItem, Bluet
 
     @Override
     public int getLayoutRes() {
-        return R.layout.bt_device_item;
+        return R.layout.item_bt_device;
     }
 
     protected static class ViewHolder extends FastAdapter.ViewHolder<BluetoothDeviceItem> {
