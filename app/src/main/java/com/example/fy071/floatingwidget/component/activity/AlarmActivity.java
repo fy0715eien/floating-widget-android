@@ -128,7 +128,7 @@ public class AlarmActivity extends AppCompatActivity implements ItemFilterListen
 
                                     }
                                 })
-                                .create();
+                                .show();
                     }
                 });
 

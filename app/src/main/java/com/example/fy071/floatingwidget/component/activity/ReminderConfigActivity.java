@@ -89,7 +89,7 @@ public class ReminderConfigActivity extends BaseActivity implements TimePickerDi
 
     private void initToolbar() {
         toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.drawer_item_reminder);
+        toolbar.setTitle(R.string.toolbar_new_reminder);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
