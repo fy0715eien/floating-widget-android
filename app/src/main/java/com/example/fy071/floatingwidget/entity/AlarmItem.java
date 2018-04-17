@@ -3,6 +3,7 @@ package com.example.fy071.floatingwidget.entity;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.fy071.floatingwidget.R;
@@ -82,6 +83,9 @@ public class AlarmItem extends AbstractItem<AlarmItem, AlarmItem.ViewHolder> {
 
         @BindView(R.id.alarm_content)
         public TextView content;
+
+        @BindView(R.id.delete_container)
+        public RelativeLayout deleteContainer;
 
         @BindView(R.id.delete)
         public ImageView delete;

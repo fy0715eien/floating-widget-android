@@ -73,7 +73,7 @@ public class PairingActivity extends BaseActivity {
     @BindView(R.id.textView_devices)
     TextView devicesTextView;
 
-    @BindView(R.id.recyclerview_device_list)
+    @BindView(R.id.recyclerView_device_list)
     RecyclerView recyclerView;
 
     @BindView(R.id.fab_search)

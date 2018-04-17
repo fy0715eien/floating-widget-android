@@ -1,10 +1,12 @@
 package com.example.fy071.floatingwidget.component.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -103,15 +105,30 @@ public class AlarmActivity extends AppCompatActivity implements ItemFilterListen
                     @Override
                     public View onBind(@NonNull RecyclerView.ViewHolder viewHolder) {
                         if (viewHolder instanceof AlarmItem.ViewHolder) {
-                            return ((AlarmItem.ViewHolder) viewHolder).delete;
+                            return ((AlarmItem.ViewHolder) viewHolder).deleteContainer;
                         }
                         return null;
                     }
 
                     @Override
-                    public void onClick(View v, int position, FastAdapter<AlarmItem> fastAdapter, AlarmItem item) {
+                    public void onClick(View v, final int position, FastAdapter<AlarmItem> fastAdapter, AlarmItem item) {
                         Log.d(TAG, "onClick: delete");
-                        // TODO: 2018/4/16 删除操作
+                        new AlertDialog.Builder(AlarmActivity.this)
+                                .setTitle(R.string.dialog_title_delete)
+                                .setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        itemAdapter.remove(position);
+                                        // TODO: 2018/4/16 数据库删除操作
+                                    }
+                                })
+                                .setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                    }
+                                })
+                                .create();
                     }
                 });
 
