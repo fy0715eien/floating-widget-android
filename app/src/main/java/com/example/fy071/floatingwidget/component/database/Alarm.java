@@ -7,55 +7,67 @@ public class Alarm {
     private String title;
     private String content;
 
-    public void setId(int id){
+    public Alarm() {
+    }
+
+    public Alarm(int id, String date, String time, String title, String content) {
         this.id = id;
-    }
 
-    public void setDate(String date){
         this.date = date;
-    }
-
-    public void setTitle(String title){
+        this.time = time;
         this.title = title;
-    }
-
-    public void setContent(String content){
         this.content = content;
     }
 
-    public void setTime(String time){
-        this.time = time;
-    }
-
-    public int getId(){
+    public int getId() {
         return id;
     }
 
-    public String getDate(){
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getDate() {
         return date;
     }
 
-    public String getTime(){
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getTime() {
         return time;
     }
 
-    public String getTitle(){
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public String getTitle() {
         return title;
     }
 
-    public String getContent(){
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getContent() {
         return content;
     }
 
+    public void setContent(String content) {
+        this.content = content;
+    }
+
     @Override
-    public String toString(){
-            return "Alarm{" +
-                    "id=" + id +
-                    ", date'" + date + '\'' +
-                    ", time'" + time + '\'' +
-                    ", title'" + title + '\'' +
-                    ", cotent'" + content + '\'' +
-                    '}';
+    public String toString() {
+        return "Alarm{" +
+                "id=" + id +
+                ", date'" + date + '\'' +
+                ", time'" + time + '\'' +
+                ", title'" + title + '\'' +
+                ", cotent'" + content + '\'' +
+                '}';
 
     }
 

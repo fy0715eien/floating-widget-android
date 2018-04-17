@@ -102,10 +102,17 @@ public class AlarmActivity extends AppCompatActivity {
         recyclerView.setAdapter(fastAdapter);
 
         initAlarmList();
+
+        //Test
+        itemAdapter.add(new AlarmItem().withAlarm(new Alarm(123, "2018.04.17", "12:13", "Title", "Content")));
+        itemAdapter.add(new AlarmItem().withAlarm(new Alarm(123, "2018.04.17", "12:13", "Title", "Content")));
+        itemAdapter.add(new AlarmItem().withAlarm(new Alarm(123, "2018.04.17", "12:13", "Title", "Content")));
+        itemAdapter.add(new AlarmItem().withAlarm(new Alarm(123, "2018.04.17", "12:13", "Title", "Content")));
+
     }
 
     private void initToolbar() {
-        toolbar.setTitle("Alarm");
+        toolbar.setTitle(R.string.drawer_item_reminder);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
