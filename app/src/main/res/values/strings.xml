@@ -48,4 +48,6 @@
     <string name="hint_home">Toggle drawer to show app functions</string>
     <string name="hint_alarm">Upcoming alarms appear here</string>
     <string name="hint_pairing">Founded devices appear here</string>
+
+    <string name="menu_search">Search</string>
 </resources>

@@ -9,8 +9,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,8 +24,10 @@ import com.example.fy071.floatingwidget.component.database.DbManager;
 import com.example.fy071.floatingwidget.entity.AlarmItem;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
+import com.mikepenz.fastadapter.IItemAdapter;
 import com.mikepenz.fastadapter.adapters.ItemAdapter;
 import com.mikepenz.fastadapter.listeners.ClickEventHook;
+import com.mikepenz.fastadapter.listeners.ItemFilterListener;
 import com.mikepenz.fastadapter.listeners.OnClickListener;
 
 import java.util.List;
@@ -31,7 +36,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class AlarmActivity extends AppCompatActivity {
+public class AlarmActivity extends AppCompatActivity implements ItemFilterListener<AlarmItem> {
     private static final String TAG = "AlarmActivity";
 
     private DbManager dbManager = new DbManager(this);
@@ -65,16 +70,29 @@ public class AlarmActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alarm);
         ButterKnife.bind(this);
+
         initToolbar();
 
+        // 设置itemAdapter的过滤器用于搜索操作
         itemAdapter = new ItemAdapter<>();
+        itemAdapter.getItemFilter().withFilterPredicate(new IItemAdapter.Predicate<AlarmItem>() {
+            @Override
+            public boolean filter(@NonNull AlarmItem item, CharSequence constraint) {
+                //return true if we should filter it out
+                //return false to keep it
+                return item.title.getText().toString().toLowerCase().contains(constraint.toString().toLowerCase()) ||
+                        item.content.getText().toString().toLowerCase().contains(constraint.toString().toLowerCase());
+            }
+        });
+        itemAdapter.getItemFilter().withItemFilterListener(this);
+
+        // 设置fastAdapter的修改、删除监听器
         FastAdapter<AlarmItem> fastAdapter = FastAdapter.with(itemAdapter);
         fastAdapter
                 .withSelectable(true)
                 .withOnClickListener(new OnClickListener<AlarmItem>() {
                     @Override
                     public boolean onClick(@Nullable View v, IAdapter<AlarmItem> adapter, AlarmItem item, int position) {
-                        Log.d(TAG, "onClick: custom");
                         Intent intent = new Intent(AlarmActivity.this, ReminderConfigActivity.class);
                         intent.putExtra("id", item.id);
                         startActivity(intent);
@@ -97,18 +115,23 @@ public class AlarmActivity extends AppCompatActivity {
                     }
                 });
 
+        // 将adapter应用至recyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(fastAdapter);
 
+
+        //测试样例
+        itemAdapter.add(new AlarmItem().withAlarm(new Alarm(123, "2018.04.17", "12:13", "Apple", "Intel")));
+        itemAdapter.add(new AlarmItem().withAlarm(new Alarm(123, "2018.04.18", "12:13", "Pear", "AMD")));
+        itemAdapter.add(new AlarmItem().withAlarm(new Alarm(123, "2018.04.19", "12:13", "Mango", "NVIDIA")));
+        itemAdapter.add(new AlarmItem().withAlarm(new Alarm(123, "2018.04.20", "12:13", "Pineapple", "Microsoft")));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         initAlarmList();
-
-        //Test
-        itemAdapter.add(new AlarmItem().withAlarm(new Alarm(123, "2018.04.17", "12:13", "Title", "Content")));
-        itemAdapter.add(new AlarmItem().withAlarm(new Alarm(123, "2018.04.17", "12:13", "Title", "Content")));
-        itemAdapter.add(new AlarmItem().withAlarm(new Alarm(123, "2018.04.17", "12:13", "Title", "Content")));
-        itemAdapter.add(new AlarmItem().withAlarm(new Alarm(123, "2018.04.17", "12:13", "Title", "Content")));
-
     }
 
     private void initToolbar() {
@@ -124,7 +147,7 @@ public class AlarmActivity extends AppCompatActivity {
         });
     }
 
-    void initAlarmList() {
+    private void initAlarmList() {
         List<Alarm> alarmList = dbManager.searchAll();
         if (alarmList.size() > 0) {
             imageView.setVisibility(View.GONE);
@@ -133,5 +156,39 @@ public class AlarmActivity extends AppCompatActivity {
         for (Alarm alarm : alarmList) {
             itemAdapter.add(new AlarmItem().withAlarm(alarm));
         }
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.search, menu);
+        menu.findItem(R.id.search).setIcon(R.drawable.ic_search_white_24dp);
+
+        final SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                itemAdapter.filter(s);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                itemAdapter.filter(s);
+                return true;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public void itemsFiltered(@Nullable CharSequence constraint, @Nullable List<AlarmItem> results) {
+
+    }
+
+    @Override
+    public void onReset() {
+
     }
 }
