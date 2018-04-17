@@ -39,7 +39,6 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".component.broadcastreceiver.WeChatMessageReceiver"
             android:enabled="true" />
@@ -52,7 +51,6 @@
                 <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
-
         <service
             android:name=".component.service.RandomDialogService"
             android:enabled="true" />
@@ -70,7 +68,8 @@
             android:enabled="true"
             android:exported="false" />
 
-        <activity android:name=".component.activity.ConnectedActivity"></activity>
+        <activity android:name=".component.activity.ConnectedActivity" />
+        <activity android:name=".component.activity.AlarmActivity"></activity>
     </application>
 
 </manifest>

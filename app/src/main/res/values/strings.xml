@@ -44,4 +44,8 @@
 
     <string name="dialog_title_permission_notification">Notification access needed</string>
     <string name="dialog_message_permission_notification">Application needs notification access to get WeChat notifications</string>
+
+    <string name="hint_home">Toggle drawer to show app functions</string>
+    <string name="hint_alarm">Upcoming alarms appear here</string>
+    <string name="hint_pairing">Founded devices appear here</string>
 </resources>

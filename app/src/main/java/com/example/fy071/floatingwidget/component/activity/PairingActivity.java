@@ -24,6 +24,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,6 +64,12 @@ public class PairingActivity extends BaseActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
+    @BindView(R.id.imageView_pair_hint)
+    ImageView imageView;
+
+    @BindView(R.id.textView_pairing_hint)
+    TextView textView;
+
     @BindView(R.id.textView_devices)
     TextView devicesTextView;
 
@@ -77,6 +84,9 @@ public class PairingActivity extends BaseActivity {
         devicesTextView.setVisibility(View.VISIBLE);
 
         itemAdapter.clear();
+
+        imageView.setVisibility(View.GONE);
+        textView.setVisibility(View.GONE);
 
         Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
         if (devices.size() > 0) {
@@ -112,8 +122,6 @@ public class PairingActivity extends BaseActivity {
         }
     };
 
-
-
     private BluetoothAdapter.LeScanCallback leScanCallback = new BluetoothAdapter.LeScanCallback() {
 
         @Override
@@ -139,7 +147,6 @@ public class PairingActivity extends BaseActivity {
             Toast.makeText(this, "Bluetooth is not available on this device, leaving activity", Toast.LENGTH_LONG).show();
             finish();
         }
-
 
         itemAdapter = new ItemAdapter<>();
 

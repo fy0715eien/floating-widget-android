@@ -14,7 +14,6 @@ import android.widget.ImageView;
 
 import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.entity.BluetoothConnectService;
-import com.example.fy071.floatingwidget.util.Key;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
 
 import java.lang.ref.WeakReference;
@@ -38,7 +37,6 @@ public class ConnectedActivity extends AppCompatActivity {
     ImageView remotePet;
 
     private float fingerStartX, fingerStartY, viewStartX, viewStartY;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,14 +190,7 @@ public class ConnectedActivity extends AppCompatActivity {
             Log.w(TAG, "handleMessage: message receive");
             ConnectedActivity activity = mActivity.get();
             if (activity != null) {
-                switch (msg.what) {
-                    case Key.MESSAGE_WHAT_COORDINATE:
-                        activity.setNewPosition(msg.arg1, msg.arg2);
-                        break;
-                    case Key.MESSAGE_WHAT_MODEL:
-                        break;
-                    default:
-                }
+                activity.setNewPosition(msg.arg1, msg.arg2);
             }
         }
     }
