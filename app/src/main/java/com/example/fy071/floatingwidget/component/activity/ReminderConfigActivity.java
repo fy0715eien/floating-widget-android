@@ -9,6 +9,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TextView;
@@ -139,6 +140,8 @@ public class ReminderConfigActivity extends AppCompatActivity {
             toolbar.setTitle(R.string.toolbar_new_reminder);
         } else {
             toolbar.setTitle(R.string.toolbar_config_reminder);
+
+            Log.d(TAG, "onCreate: " + id);
 
             alarm = dbManager.search(id);
             alarmConfigTitle.setText(alarm.getTitle());

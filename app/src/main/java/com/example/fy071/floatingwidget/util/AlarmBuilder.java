@@ -144,12 +144,12 @@ public class AlarmBuilder {
         Log.d(TAG, c.getTime().toString());
 
         if (am != null) {
-            if(Build.VERSION.SDK_INT <21)
+            if (Build.VERSION.SDK_INT < 21)
                 am.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pi);
             else {
-                Intent i2=new Intent(context, ReminderConfigActivity.class);
-                i2.putExtra("id",id);
-                PendingIntent pi2=PendingIntent.getActivity(context, id, i2, 0);
+                Intent i2 = new Intent(context, ReminderConfigActivity.class);
+                i2.putExtra("id", id);
+                PendingIntent pi2 = PendingIntent.getActivity(context, id, i2, 0);
                 am.setAlarmClock(new AlarmManager.AlarmClockInfo(c.getTimeInMillis(), pi2), pi);
             }
         }
