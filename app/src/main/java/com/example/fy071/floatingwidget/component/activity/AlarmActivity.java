@@ -74,7 +74,7 @@ public class AlarmActivity extends AppCompatActivity implements ItemFilterListen
         ButterKnife.bind(this);
 
         initToolbar();
-
+        
         // 设置itemAdapter的过滤器用于搜索操作
         itemAdapter = new ItemAdapter<>();
         itemAdapter.getItemFilter().withFilterPredicate(new IItemAdapter.Predicate<AlarmItem>() {

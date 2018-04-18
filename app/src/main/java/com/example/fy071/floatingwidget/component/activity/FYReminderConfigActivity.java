@@ -140,7 +140,6 @@ public class FYReminderConfigActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         new android.support.v7.app.AlertDialog.Builder(this)
                 .setTitle(R.string.dialog_title_discard_changes)
                 .setPositiveButton(R.string.dialog_positive_button_discard, new DialogInterface.OnClickListener() {

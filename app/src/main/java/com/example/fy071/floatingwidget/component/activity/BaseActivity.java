@@ -23,9 +23,7 @@ public class BaseActivity extends AppCompatActivity implements SharedPreferences
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //overridePendingTransition(0, 0);
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-        //overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
+        //overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         PreferenceHelper.setPreferences(defaultSharedPreferences);
     }
@@ -45,9 +43,7 @@ public class BaseActivity extends AppCompatActivity implements SharedPreferences
     @Override
     protected void onPause() {
         super.onPause();
-        //overridePendingTransition(0, 0);
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-        //overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
+        //overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
     }
 
