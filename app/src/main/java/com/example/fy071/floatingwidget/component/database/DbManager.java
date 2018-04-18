@@ -12,28 +12,29 @@ import java.util.List;
 public class DbManager {
     private DbHelper myDbHelper;
 
-    public DbManager(Context context){
+    public DbManager(Context context) {
         myDbHelper = new DbHelper(context);
     }
 
-    public void insert(Alarm alarm){
+    public void insert(Alarm alarm) {
         SQLiteDatabase db = myDbHelper.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put("id",alarm.getId());
-        cv.put("date",alarm.getDate());
-        cv.put("time",alarm.getTime());
-        cv.put("title",alarm.getTitle());
-        cv.put("content",alarm.getContent());
-        db.insert("info",null,cv);
+        cv.put("date", alarm.getDate());
+        cv.put("time", alarm.getTime());
+        cv.put("title", alarm.getTitle());
+        cv.put("content", alarm.getContent());
+        db.insert("info", null, cv);
         db.close();
     }
 
-    public Alarm searchAlarm(String id){
+    public Alarm searchAlarm(int id) {
+
+
         SQLiteDatabase db = myDbHelper.getReadableDatabase();
 
-        Cursor cs = db.query("info",null,"_id = ? ",new String[]{id},null,null,null);
+        Cursor cs = db.query("info", null, "_id = ? ", new String[]{String.valueOf(id)}, null, null, null);
         Alarm alarm = null;
-        if(cs.moveToNext()){
+        if (cs.moveToNext()) {
             alarm = new Alarm();
             alarm.setId(cs.getInt(cs.getColumnIndex("_id")));
             alarm.setDate(cs.getString(cs.getColumnIndex("date")));
@@ -48,11 +49,11 @@ public class DbManager {
 
     public List<Alarm> searchAll() {
         SQLiteDatabase db = myDbHelper.getReadableDatabase();
-        Cursor cs = db.query("info",null,null,null,null,null,null);
+        Cursor cs = db.query("info", null, null, null, null, null, null);
         Alarm alarm = null;
         List<Alarm> list = new ArrayList<>();
 
-        while(cs.moveToNext()){
+        while (cs.moveToNext()) {
             alarm = new Alarm();
             alarm.setId(cs.getInt(cs.getColumnIndex("_id")));
             alarm.setDate(cs.getString((cs.getColumnIndex("date"))));
@@ -68,29 +69,30 @@ public class DbManager {
     }
 
 
-    public void delete_all(){
+    public void delete_all() {
         SQLiteDatabase db = myDbHelper.getWritableDatabase();
-        db.delete("info",null,null);
+        db.delete("info", null, null);
         db.close();
     }
 
 
-    public void delete_one(String id){
+    public void delete_one(int id) {
         SQLiteDatabase db = myDbHelper.getWritableDatabase();
-        db.delete("info","_id = ?",new String[]{id});
-        db.close();;
+        db.delete("info", "_id = ?", new String[]{String.valueOf(id)});
+        db.close();
+        ;
     }
 
-    public void update(Alarm alarm){
+    public void update(Alarm alarm) {
         SQLiteDatabase db = myDbHelper.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put("id",alarm.getId());
-        cv.put("date",alarm.getDate());
-        cv.put("time",alarm.getTime());
-        cv.put("title",alarm.getTitle());
-        cv.put("content",alarm.getContent());
+        cv.put("id", alarm.getId());
+        cv.put("date", alarm.getDate());
+        cv.put("time", alarm.getTime());
+        cv.put("title", alarm.getTitle());
+        cv.put("content", alarm.getContent());
         String id = String.valueOf(alarm.getId());
-        db.update("info",cv,"_id = ?",new String[]{id});
+        db.update("info", cv, "_id = ?", new String[]{id});
         db.close();
     }
 

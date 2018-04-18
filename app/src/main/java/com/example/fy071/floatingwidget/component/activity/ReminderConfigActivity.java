@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.component.TimePickerDialog;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class ReminderConfigActivity extends BaseActivity implements TimePickerDialog.TimePickerDialogInterface {
@@ -21,11 +22,13 @@ public class ReminderConfigActivity extends BaseActivity implements TimePickerDi
     private EditText rd_content;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
-    private Toolbar toolbar;
 
     private static final String TAG = "ReminderConfigActivity";
 
     private static final int NEW_ALARM = -1;
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,15 +36,18 @@ public class ReminderConfigActivity extends BaseActivity implements TimePickerDi
         setContentView(R.layout.reminder);
         ButterKnife.bind(this);
 
+
         // 判断是修改操作还是新增操作
         int id = getIntent().getIntExtra("id", NEW_ALARM);
         if (id == NEW_ALARM) {
+            toolbar.setTitle(R.string.toolbar_new_reminder);
             // TODO: 2018/4/16 新闹钟
         } else {
+            toolbar.setTitle(R.string.toolbar_config_reminder);
             // TODO: 2018/4/16 以id 读取数据库
         }
-
         initToolbar();
+
 
         mTimePickerDialog = new TimePickerDialog(ReminderConfigActivity.this);
 
@@ -88,8 +94,6 @@ public class ReminderConfigActivity extends BaseActivity implements TimePickerDi
     }
 
     private void initToolbar() {
-        toolbar = findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.toolbar_new_reminder);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);

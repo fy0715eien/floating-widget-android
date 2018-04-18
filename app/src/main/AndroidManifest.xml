@@ -69,7 +69,8 @@
             android:exported="false" />
 
         <activity android:name=".component.activity.ConnectedActivity" />
-        <activity android:name=".component.activity.AlarmActivity"></activity>
+        <activity android:name=".component.activity.AlarmActivity" />
+        <activity android:name=".component.activity.FYReminderConfigActivity"></activity>
     </application>
 
 </manifest>

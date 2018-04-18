@@ -1,15 +1,11 @@
 package com.example.fy071.floatingwidget.component.activity;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.component.fragment.SettingsFragment;
-import com.example.fy071.floatingwidget.util.PreferenceHelper;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -23,6 +19,7 @@ public class SettingsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         ButterKnife.bind(this);
+
         initToolbar();
 
         getFragmentManager().beginTransaction()

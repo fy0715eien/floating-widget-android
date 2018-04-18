@@ -31,6 +31,7 @@
         </LinearLayout>
 
         <ImageView
+            android:visibility="gone"
             android:id="@+id/imageView_alarm_hint"
             android:layout_width="96dp"
             android:layout_height="96dp"
@@ -39,6 +40,7 @@
             android:src="@drawable/ic_alarm_grey_300_48dp" />
 
         <TextView
+            android:visibility="gone"
             android:id="@+id/textView_alarm_hint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -48,7 +50,6 @@
             android:textSize="16sp"
             android:textStyle="bold" />
     </RelativeLayout>
-
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/new_alarm"

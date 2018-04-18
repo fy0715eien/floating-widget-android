@@ -61,7 +61,7 @@ public class AlarmActivity extends AppCompatActivity implements ItemFilterListen
     @OnClick(R.id.new_alarm)
     void newAlarm() {
         Log.d(TAG, "newAlarm: called");
-        Intent intent = new Intent(AlarmActivity.this, ReminderConfigActivity.class);
+        Intent intent = new Intent(AlarmActivity.this, FYReminderConfigActivity.class);
         startActivity(intent);
     }
 
@@ -95,7 +95,7 @@ public class AlarmActivity extends AppCompatActivity implements ItemFilterListen
                 .withOnClickListener(new OnClickListener<AlarmItem>() {
                     @Override
                     public boolean onClick(@Nullable View v, IAdapter<AlarmItem> adapter, AlarmItem item, int position) {
-                        Intent intent = new Intent(AlarmActivity.this, ReminderConfigActivity.class);
+                        Intent intent = new Intent(AlarmActivity.this, FYReminderConfigActivity.class);
                         intent.putExtra("id", item.id);
                         startActivity(intent);
                         return false;

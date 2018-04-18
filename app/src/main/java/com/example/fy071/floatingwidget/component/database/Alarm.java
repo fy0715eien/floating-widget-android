@@ -19,6 +19,13 @@ public class Alarm {
         this.content = content;
     }
 
+    public Alarm(String date, String time, String title, String content) {
+        this.date = date;
+        this.time = time;
+        this.title = title;
+        this.content = content;
+    }
+
     public int getId() {
         return id;
     }
