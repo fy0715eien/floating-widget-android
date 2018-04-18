@@ -35,17 +35,17 @@ public class LRJAlarmReceiver extends BroadcastReceiver {
             context.startActivity(intent1);*/
             String channelId = generateChannelId(context);
 
-            Notification notification = new NotificationCompat.Builder(context, channelId)
-                    .setContentTitle(intent.getStringExtra("title"))
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(context,channelId);
+                    builder.setContentTitle(intent.getStringExtra("title"))
                     .setContentText(intent.getStringExtra("content"))
                     .setWhen(System.currentTimeMillis())
                     .setPriority(Notification.PRIORITY_MIN)
                     .setSmallIcon(R.drawable.ic_alarm_black_24dp)
-                    .setAutoCancel(true)
-                    .build();
-            notification.defaults = Notification.DEFAULT_ALL;
-            Service con=(Service)context;
-            con.startForeground(8889, notification);
+                    .setDefaults(Notification.DEFAULT_VIBRATE)
+                    .setAutoCancel(true);
+            NotificationManager notificationManager=(NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(1,builder.build());
+
         }
     }
     private String generateChannelId(Context context) {
