@@ -2,17 +2,17 @@ package com.example.fy071.floatingwidget.component.database;
 
 public class Alarm {
     private int id;
-    private String date;
-    private String time;
     private String title;
     private String content;
+    private String date;
+    private String time;
+
 
     public Alarm() {
     }
 
     public Alarm(int id, String date, String time, String title, String content) {
         this.id = id;
-
         this.date = date;
         this.time = time;
         this.title = title;
@@ -24,6 +24,26 @@ public class Alarm {
         this.time = time;
         this.title = title;
         this.content = content;
+    }
+
+    public Alarm withDate(String date) {
+        this.date = date;
+        return this;
+    }
+
+    public Alarm withTitle(String title) {
+        this.title = title;
+        return this;
+    }
+
+    public Alarm withContent(String content) {
+        this.content = content;
+        return this;
+    }
+
+    public Alarm withTime(String time) {
+        this.time = time;
+        return this;
     }
 
     public int getId() {
