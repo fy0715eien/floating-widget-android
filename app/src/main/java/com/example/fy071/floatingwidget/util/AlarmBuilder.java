@@ -4,8 +4,10 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 
+import com.example.fy071.floatingwidget.component.activity.ReminderConfigActivity;
 import com.example.fy071.floatingwidget.component.broadcastreceiver.AlarmReceiver;
 
 import java.util.Calendar;
@@ -142,7 +144,14 @@ public class AlarmBuilder {
         Log.d(TAG, c.getTime().toString());
 
         if (am != null) {
-            am.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pi);
+            if(Build.VERSION.SDK_INT <21)
+                am.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pi);
+            else {
+                Intent i2=new Intent(context, ReminderConfigActivity.class);
+                i2.putExtra("id",id);
+                PendingIntent pi2=PendingIntent.getActivity(context, id, i2, 0);
+                am.setAlarmClock(new AlarmManager.AlarmClockInfo(c.getTimeInMillis(), pi2), pi);
+            }
         }
     }
 

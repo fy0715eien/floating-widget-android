@@ -10,8 +10,10 @@ import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.fy071.floatingwidget.R;
+import com.example.fy071.floatingwidget.component.activity.RingActivity;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -25,8 +27,8 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "onReceive: received");
         if("com.alarm.ring".equals(intent.getAction())){
-            Log.d(TAG, "onReceive: received app broadcast");
-           /* Log.i("test","闹钟响了");
+            /*Log.d(TAG, "onReceive: received app broadcast");
+            Log.i("test","闹钟响了");
             //跳转到Activity n //广播接受者中（跳转Activity）
             Intent intent1=new Intent(context,RingActivity.class);
             //给Intent设置标志位
@@ -44,7 +46,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                     .setAutoCancel(true);
             NotificationManager notificationManager=(NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.notify(1,builder.build());
-
+            Toast.makeText(context,"我收到了",Toast.LENGTH_LONG).show();
         }
     }
     private String generateChannelId(Context context) {
