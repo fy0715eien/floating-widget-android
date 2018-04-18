@@ -1,4 +1,4 @@
-package com.example.fy071.floatingwidget.component;
+package com.example.fy071.floatingwidget.gaosheng;
 
 import android.content.Context;
 import android.content.DialogInterface;

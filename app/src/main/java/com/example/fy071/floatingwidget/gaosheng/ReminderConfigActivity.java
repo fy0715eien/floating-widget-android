@@ -1,4 +1,4 @@
-package com.example.fy071.floatingwidget.component.activity;
+package com.example.fy071.floatingwidget.gaosheng;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,7 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.fy071.floatingwidget.R;
-import com.example.fy071.floatingwidget.component.TimePickerDialog;
+import com.example.fy071.floatingwidget.component.activity.BaseActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

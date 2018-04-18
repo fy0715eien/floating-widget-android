@@ -25,7 +25,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".component.activity.ReminderConfigActivity"
+            android:name=".gaosheng.ReminderConfigActivity"
             android:launchMode="singleInstance" />
 
         <service

@@ -12,7 +12,7 @@
         android:background="#afffffff"
         android:textColor="#af000000"
         android:textSize="20sp"
-        android:gravity="left"
+        android:gravity="start"
         android:layout_height="wrap_content"/>
 
 </LinearLayout>

@@ -19,6 +19,7 @@ import com.example.fy071.floatingwidget.component.database.Alarm;
 import com.example.fy071.floatingwidget.component.database.DbManager;
 
 import java.util.Calendar;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,8 +34,6 @@ public class FYReminderConfigActivity extends AppCompatActivity {
     EditText alarmConfigTitle;
     @BindView(R.id.alarm_config_content)
     EditText alarmConfigContent;
-    @BindView(R.id.alarm_config_time_hint)
-    TextView alarmTimeHint;
     @BindView(R.id.alarm_config_date)
     TextView alarmConfigDate;
     @BindView(R.id.alarm_config_time)
@@ -76,25 +75,24 @@ public class FYReminderConfigActivity extends AppCompatActivity {
         }
         finish();
     }
+
     private int id;
     private TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            final String time = String.valueOf(hourOfDay) + ":" + minute;
+            final String time = String.format(Locale.CHINA, "%02d:%02d", hourOfDay, minute);
             alarmConfigTime.setText(time);
         }
     };
     private DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-            alarmTimeHint.setVisibility(View.GONE);
-            final String date = String.valueOf(year) + "." + month + "." + dayOfMonth;
+            final String date = String.valueOf(year) + "." + (month + 1) + "." + dayOfMonth;
             alarmConfigDate.setText(date);
-            showTimePickerDialog();
         }
     };
 
-    @OnClick(R.id.linearLayout_date_time)
+    @OnClick(R.id.alarm_config_date)
     void showDatePickerDialog() {
         // Use the current date as the default date in the picker
         final Calendar c = Calendar.getInstance();
@@ -104,6 +102,7 @@ public class FYReminderConfigActivity extends AppCompatActivity {
         new DatePickerDialog(this, onDateSetListener, year, month, day).show();
     }
 
+    @OnClick(R.id.alarm_config_time)
     void showTimePickerDialog() {
         // Use the current time as the default values for the picker
         final Calendar c = Calendar.getInstance();
@@ -124,8 +123,6 @@ public class FYReminderConfigActivity extends AppCompatActivity {
         id = getIntent().getIntExtra("id", NEW_ALARM);
         if (id == NEW_ALARM) {
             toolbar.setTitle(R.string.toolbar_new_reminder);
-
-            alarmTimeHint.setVisibility(View.VISIBLE);
         } else {
             toolbar.setTitle(R.string.toolbar_config_reminder);
 

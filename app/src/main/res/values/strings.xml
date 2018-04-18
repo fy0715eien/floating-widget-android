@@ -59,5 +59,7 @@
 
     <string name="menu_search">Search</string>
 
-    <string name="snackbar_remove">1 item removed</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+
 </resources>

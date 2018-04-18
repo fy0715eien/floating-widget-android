@@ -44,4 +44,11 @@
     <string name="hint_home">开启抽屉导航栏发现更多功能</string>
     <string name="hint_alarm">闹钟将显示于此</string>
     <string name="hint_pairing">被发现设备将显示于此</string>
+    <string name="toolbar_config_reminder">修改提醒</string>
+    <string name="dialog_title_delete">删除此提醒？</string>
+    <string name="dialog_title_reminder_not_complete">未完成</string>
+    <string name="dialog_message_reminder_not_complete">请在保存前完成提醒</string>
+    <string name="dialog_title_discard_changes">放弃修改？</string>
+    <string name="dialog_positive_button_discard">放弃</string>
+    <string name="menu_search">搜索</string>
 </resources>
