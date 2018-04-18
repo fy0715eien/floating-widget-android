@@ -1,7 +1,9 @@
 package com.example.fy071.floatingwidget.component.activity;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -37,8 +39,43 @@ public class FYReminderConfigActivity extends AppCompatActivity {
     TextView alarmConfigDate;
     @BindView(R.id.alarm_config_time)
     TextView alarmConfigTime;
+
+    private Alarm alarm = new Alarm();
+
     private DbManager dbManager;
-    private Alarm alarm = null;
+
+    @OnClick(R.id.save_alarm)
+    void save() {
+        if (alarmConfigTitle.getText().toString().equals("")
+                || alarmConfigContent.getText().toString().equals("")
+                || alarmConfigDate.getText().toString().equals("")
+                || alarmConfigTime.getText().toString().equals("")) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.dialog_title_reminder_not_complete)
+                    .setMessage(R.string.dialog_message_reminder_not_complete)
+                    .setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    })
+                    .show();
+            return;
+        }
+
+        alarm.withTitle(alarmConfigTitle.getText().toString())
+                .withContent(alarmConfigContent.getText().toString())
+                .withDate(alarmConfigDate.getText().toString())
+                .withTime(alarmConfigTime.getText().toString());
+
+        if (id == NEW_ALARM) {
+            dbManager.insert(alarm);
+        } else {
+            alarm.withId(id);
+            dbManager.update(alarm);
+        }
+        finish();
+    }
     private int id;
     private TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
         @Override
@@ -92,15 +129,33 @@ public class FYReminderConfigActivity extends AppCompatActivity {
         } else {
             toolbar.setTitle(R.string.toolbar_config_reminder);
 
-            alarm = dbManager.searchAlarm(id);
+            alarm = dbManager.search(id);
             alarmConfigTitle.setText(alarm.getTitle());
             alarmConfigContent.setText(alarm.getContent());
             alarmConfigDate.setText(alarm.getDate());
             alarmConfigTime.setText(alarm.getTime());
         }
         initToolbar();
+    }
 
-        dbManager.insert(new Alarm("title", "content", "date", "time"));
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        new android.support.v7.app.AlertDialog.Builder(this)
+                .setTitle(R.string.dialog_title_discard_changes)
+                .setPositiveButton(R.string.dialog_positive_button_discard, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+                .setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .show();
     }
 
     private void initToolbar() {

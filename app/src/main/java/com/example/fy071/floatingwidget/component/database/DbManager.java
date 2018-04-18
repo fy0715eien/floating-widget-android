@@ -27,7 +27,7 @@ public class DbManager {
         db.close();
     }
 
-    public Alarm searchAlarm(int id) {
+    public Alarm search(int id) {
 
 
         SQLiteDatabase db = myDbHelper.getReadableDatabase();
@@ -69,14 +69,14 @@ public class DbManager {
     }
 
 
-    public void delete_all() {
+    public void deleteAll() {
         SQLiteDatabase db = myDbHelper.getWritableDatabase();
         db.delete("info", null, null);
         db.close();
     }
 
 
-    public void delete_one(int id) {
+    public void delete(int id) {
         SQLiteDatabase db = myDbHelper.getWritableDatabase();
         db.delete("info", "_id = ?", new String[]{String.valueOf(id)});
         db.close();
@@ -86,7 +86,7 @@ public class DbManager {
     public void update(Alarm alarm) {
         SQLiteDatabase db = myDbHelper.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put("id", alarm.getId());
+        cv.put("_id", alarm.getId());
         cv.put("date", alarm.getDate());
         cv.put("time", alarm.getTime());
         cv.put("title", alarm.getTitle());

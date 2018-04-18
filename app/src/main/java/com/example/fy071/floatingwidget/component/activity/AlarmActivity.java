@@ -111,7 +111,7 @@ public class AlarmActivity extends AppCompatActivity implements ItemFilterListen
                     }
 
                     @Override
-                    public void onClick(View v, final int position, FastAdapter<AlarmItem> fastAdapter, AlarmItem item) {
+                    public void onClick(View v, final int position, final FastAdapter<AlarmItem> fastAdapter, final AlarmItem item) {
                         Log.d(TAG, "onClick: delete");
                         new AlertDialog.Builder(AlarmActivity.this)
                                 .setTitle(R.string.dialog_title_delete)
@@ -119,7 +119,11 @@ public class AlarmActivity extends AppCompatActivity implements ItemFilterListen
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         itemAdapter.remove(position);
-                                        // TODO: 2018/4/16 数据库删除操作
+                                        if (itemAdapter.getAdapterItemCount() == 0) {
+                                            imageView.setVisibility(View.VISIBLE);
+                                            textView.setVisibility(View.VISIBLE);
+                                        }
+                                        dbManager.delete(item.id);
                                     }
                                 })
                                 .setNegativeButton(R.string.dialog_negative_button, new DialogInterface.OnClickListener() {
@@ -136,18 +140,12 @@ public class AlarmActivity extends AppCompatActivity implements ItemFilterListen
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(fastAdapter);
-
-
-        //测试样例
-        itemAdapter.add(new AlarmItem().withAlarm(new Alarm(123, "2018.04.17", "12:13", "Apple", "Intel")));
-        itemAdapter.add(new AlarmItem().withAlarm(new Alarm(123, "2018.04.18", "12:13", "Pear", "AMD")));
-        itemAdapter.add(new AlarmItem().withAlarm(new Alarm(123, "2018.04.19", "12:13", "Mango", "NVIDIA")));
-        itemAdapter.add(new AlarmItem().withAlarm(new Alarm(123, "2018.04.20", "12:13", "Pineapple", "Microsoft")));
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        itemAdapter.clear();
         initAlarmList();
     }
 
@@ -169,6 +167,9 @@ public class AlarmActivity extends AppCompatActivity implements ItemFilterListen
         if (alarmList.size() > 0) {
             imageView.setVisibility(View.GONE);
             textView.setVisibility(View.GONE);
+        } else {
+            imageView.setVisibility(View.VISIBLE);
+            textView.setVisibility(View.VISIBLE);
         }
         for (Alarm alarm : alarmList) {
             itemAdapter.add(new AlarmItem().withAlarm(alarm));

@@ -26,6 +26,11 @@ public class Alarm {
         this.content = content;
     }
 
+    public Alarm withId(int id) {
+        this.id = id;
+        return this;
+    }
+
     public Alarm withDate(String date) {
         this.date = date;
         return this;
