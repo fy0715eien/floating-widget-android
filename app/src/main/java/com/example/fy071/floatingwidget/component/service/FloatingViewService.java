@@ -505,9 +505,9 @@ public class FloatingViewService extends Service {
         for (int i = 0; i < str.length(); i++) {
             char item = str.charAt(i);
             if (item < 128) {
-                count = count + 1;
+                count++;
             } else {
-                count = RATIO;
+                count+= RATIO;
             }
         }
         return count;

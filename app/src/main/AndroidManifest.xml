@@ -42,7 +42,13 @@
         <receiver
             android:name=".component.broadcastreceiver.WeChatMessageReceiver"
             android:enabled="true" />
-
+        <receiver
+            android:name=".util.LRJAlarmReceiver"
+            android:process=":remote">
+            <intent-filter>
+                <action android:name="com.alarm.ring" />
+            </intent-filter>
+        </receiver>
         <service
             android:name=".component.service.WeChatNotificationListenerService"
             android:label="@string/app_name"
