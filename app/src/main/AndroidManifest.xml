@@ -24,9 +24,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".gaosheng.ReminderConfigActivity"
-            android:launchMode="singleInstance" />
 
         <service
             android:name=".component.service.FloatingViewService"
@@ -43,12 +40,12 @@
             android:name=".component.broadcastreceiver.WeChatMessageReceiver"
             android:enabled="true" />
         <receiver
-            android:name=".util.LRJAlarmReceiver"
+            android:name=".component.broadcastreceiver.AlarmReceiver"
+            android:enabled="true"
             android:process=":remote">
-            <intent-filter>
-                <action android:name="com.alarm.ring" />
-            </intent-filter>
+
         </receiver>
+
         <service
             android:name=".component.service.WeChatNotificationListenerService"
             android:label="@string/app_name"
@@ -76,7 +73,9 @@
 
         <activity android:name=".component.activity.ConnectedActivity" />
         <activity android:name=".component.activity.AlarmActivity" />
-        <activity android:name=".component.activity.FYReminderConfigActivity"></activity>
+        <activity android:name=".component.activity.ReminderConfigActivity">
+
+        </activity>
     </application>
 
 </manifest>

@@ -34,9 +34,9 @@ import android.widget.Toast;
 
 import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.component.activity.PairingActivity;
+import com.example.fy071.floatingwidget.component.activity.ReminderConfigActivity;
 import com.example.fy071.floatingwidget.component.activity.SettingsActivity;
 import com.example.fy071.floatingwidget.component.broadcastreceiver.WeChatMessageReceiver;
-import com.example.fy071.floatingwidget.gaosheng.ReminderConfigActivity;
 import com.example.fy071.floatingwidget.util.Key;
 import com.example.fy071.floatingwidget.util.PxDpConverter;
 import com.ramotion.circlemenu.CircleMenuView;

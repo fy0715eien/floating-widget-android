@@ -24,6 +24,7 @@ import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.component.database.Alarm;
 import com.example.fy071.floatingwidget.component.database.DbManager;
 import com.example.fy071.floatingwidget.entity.AlarmItem;
+import com.example.fy071.floatingwidget.util.AlarmBuilder;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.IItemAdapter;
@@ -61,7 +62,7 @@ public class AlarmActivity extends AppCompatActivity implements ItemFilterListen
     @OnClick(R.id.new_alarm)
     void newAlarm() {
         Log.d(TAG, "newAlarm: called");
-        Intent intent = new Intent(AlarmActivity.this, FYReminderConfigActivity.class);
+        Intent intent = new Intent(AlarmActivity.this, ReminderConfigActivity.class);
         startActivity(intent);
     }
 
@@ -74,7 +75,7 @@ public class AlarmActivity extends AppCompatActivity implements ItemFilterListen
         ButterKnife.bind(this);
 
         initToolbar();
-        
+
         // 设置itemAdapter的过滤器用于搜索操作
         itemAdapter = new ItemAdapter<>();
         itemAdapter.getItemFilter().withFilterPredicate(new IItemAdapter.Predicate<AlarmItem>() {
@@ -95,7 +96,7 @@ public class AlarmActivity extends AppCompatActivity implements ItemFilterListen
                 .withOnClickListener(new OnClickListener<AlarmItem>() {
                     @Override
                     public boolean onClick(@Nullable View v, IAdapter<AlarmItem> adapter, AlarmItem item, int position) {
-                        Intent intent = new Intent(AlarmActivity.this, FYReminderConfigActivity.class);
+                        Intent intent = new Intent(AlarmActivity.this, ReminderConfigActivity.class);
                         intent.putExtra("id", item.id);
                         startActivity(intent);
                         return false;
@@ -118,11 +119,19 @@ public class AlarmActivity extends AppCompatActivity implements ItemFilterListen
                                 .setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
+                                        //从列表中移除
                                         itemAdapter.remove(position);
                                         if (itemAdapter.getAdapterItemCount() == 0) {
                                             imageView.setVisibility(View.VISIBLE);
                                             textView.setVisibility(View.VISIBLE);
                                         }
+
+                                        //删除闹钟
+                                        AlarmBuilder alarmBuilder = new AlarmBuilder();
+                                        alarmBuilder.setId(item.id);
+                                        alarmBuilder.cancel(AlarmActivity.this);
+
+                                        //从数据库中移除
                                         dbManager.delete(item.id);
                                     }
                                 })

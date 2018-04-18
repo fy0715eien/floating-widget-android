@@ -1,9 +1,8 @@
-package com.example.fy071.floatingwidget.util;
+package com.example.fy071.floatingwidget.component.broadcastreceiver;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,10 +10,8 @@ import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.fy071.floatingwidget.R;
-import com.example.fy071.floatingwidget.component.activity.RingActivity;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
@@ -22,11 +19,13 @@ import static android.content.Context.NOTIFICATION_SERVICE;
  * Created by Administrator on 2018/4/18.
  */
 
-public class LRJAlarmReceiver extends BroadcastReceiver {
-
+public class AlarmReceiver extends BroadcastReceiver {
+    private static final String TAG = "AlarmReceiver";
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.d(TAG, "onReceive: received");
         if("com.alarm.ring".equals(intent.getAction())){
+            Log.d(TAG, "onReceive: received app broadcast");
            /* Log.i("test","闹钟响了");
             //跳转到Activity n //广播接受者中（跳转Activity）
             Intent intent1=new Intent(context,RingActivity.class);

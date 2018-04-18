@@ -5,18 +5,19 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.component.database.Alarm;
 import com.example.fy071.floatingwidget.component.database.DbManager;
+import com.example.fy071.floatingwidget.util.AlarmBuilder;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -25,15 +26,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class FYReminderConfigActivity extends AppCompatActivity {
-    private static final String TAG = "FYReminderConfigActivit";
+public class ReminderConfigActivity extends AppCompatActivity {
+    private static final String TAG = "ReminderConfigActivity";
     private static final int NEW_ALARM = -1;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.alarm_config_title)
-    EditText alarmConfigTitle;
+    TextInputEditText alarmConfigTitle;
     @BindView(R.id.alarm_config_content)
-    EditText alarmConfigContent;
+    TextInputEditText alarmConfigContent;
     @BindView(R.id.alarm_config_date)
     TextView alarmConfigDate;
     @BindView(R.id.alarm_config_time)
@@ -41,7 +42,32 @@ public class FYReminderConfigActivity extends AppCompatActivity {
 
     private Alarm alarm = new Alarm();
 
+    private AlarmBuilder alarmBuilder = new AlarmBuilder();
+
     private DbManager dbManager;
+    private TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
+        @Override
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            final String time = String.format(Locale.CHINA, "%02d:%02d", hourOfDay, minute);
+            alarmConfigTime.setText(time);
+
+            alarmBuilder.setHour(hourOfDay);
+            alarmBuilder.setMinute(minute);
+        }
+    };
+
+    private int id;
+    private DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+            final String date = String.valueOf(year) + "." + (month + 1) + "." + dayOfMonth;
+            alarmConfigDate.setText(date);
+
+            alarmBuilder.setYear(year);
+            alarmBuilder.setMonth(month + 1);
+            alarmBuilder.setDay(dayOfMonth);
+        }
+    };
 
     @OnClick(R.id.save_alarm)
     void save() {
@@ -68,29 +94,17 @@ public class FYReminderConfigActivity extends AppCompatActivity {
                 .withTime(alarmConfigTime.getText().toString());
 
         if (id == NEW_ALARM) {
+            alarm.withId((int) System.currentTimeMillis());
             dbManager.insert(alarm);
+
+            alarmBuilder.setId(alarm.getId());
+            alarmBuilder.start(this);
         } else {
             alarm.withId(id);
             dbManager.update(alarm);
         }
         finish();
     }
-
-    private int id;
-    private TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
-        @Override
-        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            final String time = String.format(Locale.CHINA, "%02d:%02d", hourOfDay, minute);
-            alarmConfigTime.setText(time);
-        }
-    };
-    private DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-            final String date = String.valueOf(year) + "." + (month + 1) + "." + dayOfMonth;
-            alarmConfigDate.setText(date);
-        }
-    };
 
     @OnClick(R.id.alarm_config_date)
     void showDatePickerDialog() {
@@ -114,7 +128,7 @@ public class FYReminderConfigActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_fyreminder_config);
+        setContentView(R.layout.activity_reminder_config);
         ButterKnife.bind(this);
 
         dbManager = new DbManager(this);

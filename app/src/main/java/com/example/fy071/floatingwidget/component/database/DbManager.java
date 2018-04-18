@@ -28,8 +28,6 @@ public class DbManager {
     }
 
     public Alarm search(int id) {
-
-
         SQLiteDatabase db = myDbHelper.getReadableDatabase();
 
         Cursor cs = db.query("info", null, "_id = ? ", new String[]{String.valueOf(id)}, null, null, null);
@@ -80,7 +78,6 @@ public class DbManager {
         SQLiteDatabase db = myDbHelper.getWritableDatabase();
         db.delete("info", "_id = ?", new String[]{String.valueOf(id)});
         db.close();
-        ;
     }
 
     public void update(Alarm alarm) {
@@ -95,5 +92,4 @@ public class DbManager {
         db.update("info", cv, "_id = ?", new String[]{id});
         db.close();
     }
-
 }

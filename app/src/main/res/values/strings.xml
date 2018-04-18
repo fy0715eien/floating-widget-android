@@ -62,4 +62,7 @@
     <string name="date">Date</string>
     <string name="time">Time</string>
 
+    <string name="title">Title</string>
+    <string name="content">Content</string>
+
 </resources>
