@@ -81,6 +81,8 @@ public class FYReminderConfigActivity extends AppCompatActivity {
         setContentView(R.layout.activity_fyreminder_config);
         ButterKnife.bind(this);
 
+        dbManager = new DbManager(this);
+
         // 判断是修改操作还是新增操作
         id = getIntent().getIntExtra("id", NEW_ALARM);
         if (id == NEW_ALARM) {
@@ -90,7 +92,6 @@ public class FYReminderConfigActivity extends AppCompatActivity {
         } else {
             toolbar.setTitle(R.string.toolbar_config_reminder);
 
-            dbManager = new DbManager(this);
             alarm = dbManager.searchAlarm(id);
             alarmConfigTitle.setText(alarm.getTitle());
             alarmConfigContent.setText(alarm.getContent());
