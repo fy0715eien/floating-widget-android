@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".component.activity.MainActivity"
+            android:name=".MainActivity"
             android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,28 +26,27 @@
         </activity>
 
         <service
-            android:name=".component.service.FloatingViewService"
+            android:name=".pet.FloatingViewService"
             android:enabled="true" />
 
         <receiver
-            android:name=".component.broadcastreceiver.OpenBroadcastReceiver"
+            android:name=".pet.OpenBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
         <receiver
-            android:name=".component.broadcastreceiver.WeChatMessageReceiver"
+            android:name=".pet.WeChatMessageReceiver"
             android:enabled="true" />
         <receiver
-            android:name=".component.broadcastreceiver.AlarmReceiver"
+            android:name=".alarm.AlarmReceiver"
             android:enabled="true"
             android:process=":remote">
-
         </receiver>
 
         <service
-            android:name=".component.service.WeChatNotificationListenerService"
+            android:name=".pet.WeChatNotificationListenerService"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
@@ -55,27 +54,32 @@
             </intent-filter>
         </service>
         <service
-            android:name=".component.service.RandomDialogService"
+            android:name=".pet.RandomDialogService"
             android:enabled="true" />
 
         <activity
-            android:name=".component.activity.SettingsActivity"
+            android:name=".settings.SettingsActivity"
             android:launchMode="singleInstance" />
         <activity
-            android:name=".component.activity.PairingActivity"
+            android:name=".bluetooth.PairingActivity"
             android:launchMode="singleInstance" />
-        <activity android:name=".component.activity.BaseActivity" />
+        <activity android:name=".BaseActivity" />
 
         <service
-            android:name=".component.service.NotificationListenerMonitorService"
+            android:name=".pet.NotificationListenerMonitorService"
             android:enabled="true"
             android:exported="false" />
 
-        <activity android:name=".component.activity.ConnectedActivity" />
-        <activity android:name=".component.activity.AlarmActivity" />
-        <activity android:name=".component.activity.ReminderConfigActivity">
+        <activity android:name=".bluetooth.ConnectedActivity" />
+        <activity android:name=".alarm.AlarmActivity" />
+        <activity android:name=".alarm.ReminderConfigActivity"></activity>
 
-        </activity>
+        <service
+            android:name=".alarm.AlarmService"
+            android:enabled="true"
+            android:exported="false">
+
+        </service>
     </application>
 
 </manifest>
