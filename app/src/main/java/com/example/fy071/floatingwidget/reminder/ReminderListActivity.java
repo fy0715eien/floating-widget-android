@@ -1,4 +1,4 @@
-package com.example.fy071.floatingwidget.alarm;
+package com.example.fy071.floatingwidget.reminder;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,8 +21,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.fy071.floatingwidget.R;
-import com.example.fy071.floatingwidget.alarm.database.Alarm;
-import com.example.fy071.floatingwidget.alarm.database.DbManager;
+import com.example.fy071.floatingwidget.reminder.database.Alarm;
+import com.example.fy071.floatingwidget.reminder.database.DbManager;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.IAdapter;
 import com.mikepenz.fastadapter.IItemAdapter;
@@ -37,8 +37,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class AlarmActivity extends AppCompatActivity implements ItemFilterListener<AlarmItem> {
-    private static final String TAG = "AlarmActivity";
+public class ReminderListActivity extends AppCompatActivity implements ItemFilterListener<ReminderListItem> {
+    private static final String TAG = "ReminderListActivity";
 
     private DbManager dbManager = new DbManager(this);
 
@@ -56,15 +56,14 @@ public class AlarmActivity extends AppCompatActivity implements ItemFilterListen
 
     @BindView(R.id.new_alarm)
     FloatingActionButton floatingActionButton;
+    private ItemAdapter<ReminderListItem> itemAdapter;
 
     @OnClick(R.id.new_alarm)
     void newAlarm() {
         Log.d(TAG, "newAlarm: called");
-        Intent intent = new Intent(AlarmActivity.this, ReminderConfigActivity.class);
+        Intent intent = new Intent(ReminderListActivity.this, ReminderConfigActivity.class);
         startActivity(intent);
     }
-
-    private ItemAdapter<AlarmItem> itemAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,9 +75,9 @@ public class AlarmActivity extends AppCompatActivity implements ItemFilterListen
 
         // 设置itemAdapter的过滤器用于搜索操作
         itemAdapter = new ItemAdapter<>();
-        itemAdapter.getItemFilter().withFilterPredicate(new IItemAdapter.Predicate<AlarmItem>() {
+        itemAdapter.getItemFilter().withFilterPredicate(new IItemAdapter.Predicate<ReminderListItem>() {
             @Override
-            public boolean filter(@NonNull AlarmItem item, CharSequence constraint) {
+            public boolean filter(@NonNull ReminderListItem item, CharSequence constraint) {
                 //return true if we should filter it out
                 //return false to keep it
                 return item.title.getText().toString().toLowerCase().contains(constraint.toString().toLowerCase()) ||
@@ -88,31 +87,31 @@ public class AlarmActivity extends AppCompatActivity implements ItemFilterListen
         itemAdapter.getItemFilter().withItemFilterListener(this);
 
         // 设置fastAdapter的修改、删除监听器
-        FastAdapter<AlarmItem> fastAdapter = FastAdapter.with(itemAdapter);
+        FastAdapter<ReminderListItem> fastAdapter = FastAdapter.with(itemAdapter);
         fastAdapter
                 .withSelectable(true)
-                .withOnClickListener(new OnClickListener<AlarmItem>() {
+                .withOnClickListener(new OnClickListener<ReminderListItem>() {
                     @Override
-                    public boolean onClick(@Nullable View v, IAdapter<AlarmItem> adapter, AlarmItem item, int position) {
-                        Intent intent = new Intent(AlarmActivity.this, ReminderConfigActivity.class);
+                    public boolean onClick(@Nullable View v, IAdapter<ReminderListItem> adapter, ReminderListItem item, int position) {
+                        Intent intent = new Intent(ReminderListActivity.this, ReminderConfigActivity.class);
                         intent.putExtra("id", item.id);
                         startActivity(intent);
                         return false;
                     }
                 })
-                .withEventHook(new ClickEventHook<AlarmItem>() {
+                .withEventHook(new ClickEventHook<ReminderListItem>() {
                     @Override
                     public View onBind(@NonNull RecyclerView.ViewHolder viewHolder) {
-                        if (viewHolder instanceof AlarmItem.ViewHolder) {
-                            return ((AlarmItem.ViewHolder) viewHolder).deleteContainer;
+                        if (viewHolder instanceof ReminderListItem.ViewHolder) {
+                            return ((ReminderListItem.ViewHolder) viewHolder).deleteContainer;
                         }
                         return null;
                     }
 
                     @Override
-                    public void onClick(View v, final int position, final FastAdapter<AlarmItem> fastAdapter, final AlarmItem item) {
+                    public void onClick(View v, final int position, final FastAdapter<ReminderListItem> fastAdapter, final ReminderListItem item) {
                         Log.d(TAG, "onClick: delete");
-                        new AlertDialog.Builder(AlarmActivity.this)
+                        new AlertDialog.Builder(ReminderListActivity.this)
                                 .setTitle(R.string.dialog_title_delete)
                                 .setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
                                     @Override
@@ -125,13 +124,13 @@ public class AlarmActivity extends AppCompatActivity implements ItemFilterListen
                                             imageView.setVisibility(View.VISIBLE);
                                             textView.setVisibility(View.VISIBLE);
                                             //停止闹钟服务
-                                            stopService(new Intent(AlarmActivity.this, AlarmService.class));
+                                            stopService(new Intent(ReminderListActivity.this, AlarmService.class));
                                         }
 
                                         //删除闹钟
                                         AlarmBuilder alarmBuilder = new AlarmBuilder();
                                         alarmBuilder.setId(item.id);
-                                        alarmBuilder.cancel(AlarmActivity.this);
+                                        alarmBuilder.cancel(ReminderListActivity.this);
 
                                         //从数据库中移除
                                         dbManager.delete(item.id);
@@ -183,7 +182,7 @@ public class AlarmActivity extends AppCompatActivity implements ItemFilterListen
             textView.setVisibility(View.VISIBLE);
         }
         for (Alarm alarm : alarmList) {
-            itemAdapter.add(new AlarmItem().withAlarm(alarm));
+            itemAdapter.add(new ReminderListItem().withAlarm(alarm));
         }
     }
 
@@ -212,7 +211,7 @@ public class AlarmActivity extends AppCompatActivity implements ItemFilterListen
     }
 
     @Override
-    public void itemsFiltered(@Nullable CharSequence constraint, @Nullable List<AlarmItem> results) {
+    public void itemsFiltered(@Nullable CharSequence constraint, @Nullable List<ReminderListItem> results) {
 
     }
 

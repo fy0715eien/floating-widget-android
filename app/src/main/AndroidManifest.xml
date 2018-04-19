@@ -30,7 +30,7 @@
             android:enabled="true" />
 
         <receiver
-            android:name=".pet.OpenBroadcastReceiver"
+            android:name=".pet.BootReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -40,7 +40,7 @@
             android:name=".pet.WeChatMessageReceiver"
             android:enabled="true" />
         <receiver
-            android:name=".alarm.AlarmReceiver"
+            android:name=".reminder.AlarmReceiver"
             android:enabled="true"
             android:process=":remote">
         </receiver>
@@ -71,11 +71,11 @@
             android:exported="false" />
 
         <activity android:name=".bluetooth.ConnectedActivity" />
-        <activity android:name=".alarm.AlarmActivity" />
-        <activity android:name=".alarm.ReminderConfigActivity"></activity>
+        <activity android:name=".reminder.ReminderListActivity" />
+        <activity android:name=".reminder.ReminderConfigActivity"></activity>
 
         <service
-            android:name=".alarm.AlarmService"
+            android:name=".reminder.AlarmService"
             android:enabled="true"
             android:exported="false">
 

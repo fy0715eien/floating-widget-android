@@ -1,4 +1,4 @@
-package com.example.fy071.floatingwidget.alarm;
+package com.example.fy071.floatingwidget.reminder;
 
 import android.app.Notification;
 import android.app.NotificationChannel;

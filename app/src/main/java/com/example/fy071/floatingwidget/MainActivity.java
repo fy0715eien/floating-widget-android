@@ -8,9 +8,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.fy071.floatingwidget.alarm.AlarmActivity;
 import com.example.fy071.floatingwidget.bluetooth.PairingActivity;
 import com.example.fy071.floatingwidget.pet.FloatingViewService;
+import com.example.fy071.floatingwidget.reminder.ReminderListActivity;
 import com.example.fy071.floatingwidget.settings.SettingsActivity;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
 import com.mikepenz.aboutlibraries.Libs;
@@ -112,7 +112,7 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
         if (id == DRAWER_HOME) {
             intent = null;
         } else if (id == DRAWER_REMINDER) {
-            intent = new Intent(MainActivity.this, AlarmActivity.class);
+            intent = new Intent(MainActivity.this, ReminderListActivity.class);
         } else if (id == DRAWER_PAIRING) {
             intent = new Intent(MainActivity.this, PairingActivity.class);
         } else if (id == DRAWER_SETTINGS) {

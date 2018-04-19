@@ -1,4 +1,4 @@
-package com.example.fy071.floatingwidget.alarm.database;
+package com.example.fy071.floatingwidget.reminder.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

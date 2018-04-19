@@ -9,7 +9,7 @@ import android.preference.PreferenceManager;
 
 import com.example.fy071.floatingwidget.util.Key;
 
-public class OpenBroadcastReceiver extends BroadcastReceiver {
+public class BootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {

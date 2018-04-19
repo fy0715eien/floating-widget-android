@@ -1,4 +1,4 @@
-package com.example.fy071.floatingwidget.alarm;
+package com.example.fy071.floatingwidget.reminder;
 
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -7,7 +7,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.fy071.floatingwidget.R;
-import com.example.fy071.floatingwidget.alarm.database.Alarm;
+import com.example.fy071.floatingwidget.reminder.database.Alarm;
 import com.mikepenz.fastadapter.FastAdapter;
 import com.mikepenz.fastadapter.items.AbstractItem;
 import com.mikepenz.materialize.holder.StringHolder;
@@ -17,14 +17,14 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class AlarmItem extends AbstractItem<AlarmItem, AlarmItem.ViewHolder> {
+public class ReminderListItem extends AbstractItem<ReminderListItem, ReminderListItem.ViewHolder> {
     public int id;
     public StringHolder date;
     public StringHolder time;
     public StringHolder title;
     public StringHolder content;
 
-    public AlarmItem withAlarm(Alarm alarm) {
+    public ReminderListItem withAlarm(Alarm alarm) {
         this.id = alarm.getId();
         this.date = new StringHolder(alarm.getDate());
         this.time = new StringHolder(alarm.getTime());
@@ -33,29 +33,29 @@ public class AlarmItem extends AbstractItem<AlarmItem, AlarmItem.ViewHolder> {
         return this;
     }
 
-    public AlarmItem withDate(String date) {
+    public ReminderListItem withDate(String date) {
         this.date = new StringHolder(date);
         return this;
     }
 
-    public AlarmItem withTime(String time) {
+    public ReminderListItem withTime(String time) {
         this.time = new StringHolder(time);
         return this;
     }
 
-    public AlarmItem withTitle(String title) {
+    public ReminderListItem withTitle(String title) {
         this.title = new StringHolder(title);
         return this;
     }
 
-    public AlarmItem withContent(String content) {
+    public ReminderListItem withContent(String content) {
         this.content = new StringHolder(content);
         return this;
     }
 
     @NonNull
     @Override
-    public AlarmItem.ViewHolder getViewHolder(@NonNull View v) {
+    public ReminderListItem.ViewHolder getViewHolder(@NonNull View v) {
         return new ViewHolder(v);
     }
 
@@ -69,7 +69,7 @@ public class AlarmItem extends AbstractItem<AlarmItem, AlarmItem.ViewHolder> {
         return R.layout.item_alarm;
     }
 
-    public static class ViewHolder extends FastAdapter.ViewHolder<AlarmItem> {
+    public static class ViewHolder extends FastAdapter.ViewHolder<ReminderListItem> {
         public View view;
 
         @BindView(R.id.alarm_date)
@@ -97,7 +97,7 @@ public class AlarmItem extends AbstractItem<AlarmItem, AlarmItem.ViewHolder> {
         }
 
         @Override
-        public void bindView(@NonNull AlarmItem item, @NonNull List<Object> payloads) {
+        public void bindView(@NonNull ReminderListItem item, @NonNull List<Object> payloads) {
             StringHolder.applyTo(item.date, date);
             StringHolder.applyTo(item.time, time);
             StringHolder.applyTo(item.title, title);
@@ -105,7 +105,7 @@ public class AlarmItem extends AbstractItem<AlarmItem, AlarmItem.ViewHolder> {
         }
 
         @Override
-        public void unbindView(@NonNull AlarmItem item) {
+        public void unbindView(@NonNull ReminderListItem item) {
             date.setText(null);
             time.setText(null);
             title.setText(null);

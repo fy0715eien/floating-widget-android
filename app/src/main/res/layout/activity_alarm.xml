@@ -5,7 +5,7 @@
     android:id="@+id/constraint_layout_alarm"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".alarm.AlarmActivity">
+    tools:context=".reminder.ReminderListActivity">
 
     <RelativeLayout
         android:id="@+id/relative_layout_alarm"

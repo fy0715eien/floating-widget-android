@@ -17,14 +17,14 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class BluetoothDeviceItem extends AbstractItem<BluetoothDeviceItem, BluetoothDeviceItem.ViewHolder> {
+public class DeviceListItem extends AbstractItem<DeviceListItem, DeviceListItem.ViewHolder> {
     public BluetoothClass bluetoothClass;
     public StringHolder name;
     public StringHolder address;
     public BluetoothDevice bluetoothDevice;
 
 
-    public BluetoothDeviceItem withBluetoothDevice(BluetoothDevice device) {
+    public DeviceListItem withBluetoothDevice(BluetoothDevice device) {
         this.bluetoothDevice = device;
         this.bluetoothClass = device.getBluetoothClass();
         name = new StringHolder(device.getName());
@@ -34,7 +34,7 @@ public class BluetoothDeviceItem extends AbstractItem<BluetoothDeviceItem, Bluet
 
     @NonNull
     @Override
-    public BluetoothDeviceItem.ViewHolder getViewHolder(@NonNull View v) {
+    public DeviceListItem.ViewHolder getViewHolder(@NonNull View v) {
         return new ViewHolder(v);
     }
 
@@ -48,7 +48,7 @@ public class BluetoothDeviceItem extends AbstractItem<BluetoothDeviceItem, Bluet
         return R.layout.item_bt_device;
     }
 
-    protected static class ViewHolder extends FastAdapter.ViewHolder<BluetoothDeviceItem> {
+    protected static class ViewHolder extends FastAdapter.ViewHolder<DeviceListItem> {
         protected View view;
 
         @BindView(R.id.bt_item_class)
@@ -67,20 +67,20 @@ public class BluetoothDeviceItem extends AbstractItem<BluetoothDeviceItem, Bluet
         }
 
         @Override
-        public void bindView(@NonNull BluetoothDeviceItem item, @NonNull List<Object> payloads) {
+        public void bindView(@NonNull DeviceListItem item, @NonNull List<Object> payloads) {
             setIcon(item);
             StringHolder.applyTo(item.name, name);
             StringHolder.applyTo(item.address, address);
         }
 
         @Override
-        public void unbindView(@NonNull BluetoothDeviceItem item) {
+        public void unbindView(@NonNull DeviceListItem item) {
             bluetoothClass.setImageDrawable(null);
             name.setText(null);
             address.setText(null);
         }
 
-        private void setIcon(BluetoothDeviceItem item) {
+        private void setIcon(DeviceListItem item) {
             switch (item.bluetoothClass.getDeviceClass()) {
                 case BluetoothClass.Device.AUDIO_VIDEO_CAMCORDER:
                 case BluetoothClass.Device.AUDIO_VIDEO_CAR_AUDIO:

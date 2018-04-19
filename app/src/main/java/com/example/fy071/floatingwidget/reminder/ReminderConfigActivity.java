@@ -1,4 +1,4 @@
-package com.example.fy071.floatingwidget.alarm;
+package com.example.fy071.floatingwidget.reminder;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -16,8 +16,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.example.fy071.floatingwidget.R;
-import com.example.fy071.floatingwidget.alarm.database.Alarm;
-import com.example.fy071.floatingwidget.alarm.database.DbManager;
+import com.example.fy071.floatingwidget.reminder.database.Alarm;
+import com.example.fy071.floatingwidget.reminder.database.DbManager;
 
 import java.util.Calendar;
 import java.util.Locale;

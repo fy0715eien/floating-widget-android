@@ -1,4 +1,4 @@
-package com.example.fy071.floatingwidget.alarm.database;
+package com.example.fy071.floatingwidget.reminder.database;
 
 public class Alarm {
     private int id;

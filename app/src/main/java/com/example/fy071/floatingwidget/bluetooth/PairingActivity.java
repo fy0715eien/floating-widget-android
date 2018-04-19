@@ -78,6 +78,8 @@ public class PairingActivity extends BaseActivity {
     @BindView(R.id.fab_search)
     FloatingActionButton floatingActionButton;
 
+    private ItemAdapter<DeviceListItem> itemAdapter;
+
     @OnClick(R.id.fab_search)
     void search() {
         devicesTextView.setVisibility(View.VISIBLE);
@@ -90,16 +92,14 @@ public class PairingActivity extends BaseActivity {
         Set<BluetoothDevice> devices = bluetoothAdapter.getBondedDevices();
         if (devices.size() > 0) {
             for (BluetoothDevice device : devices) {
-                BluetoothDeviceItem bluetoothDeviceItem = new BluetoothDeviceItem().withBluetoothDevice(device);
-                itemAdapter.add(bluetoothDeviceItem);
+                DeviceListItem deviceListItem = new DeviceListItem().withBluetoothDevice(device);
+                itemAdapter.add(deviceListItem);
             }
         }
 
         scanDevice(false);
         scanDevice(true);
     }
-
-    private ItemAdapter<BluetoothDeviceItem> itemAdapter;
     private Handler bleSearchHandler;
     private final BroadcastReceiver receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
@@ -149,12 +149,12 @@ public class PairingActivity extends BaseActivity {
 
         itemAdapter = new ItemAdapter<>();
 
-        FastAdapter<BluetoothDeviceItem> fastAdapter = FastAdapter.with(itemAdapter);
+        FastAdapter<DeviceListItem> fastAdapter = FastAdapter.with(itemAdapter);
         fastAdapter
                 .withSelectable(true)
-                .withOnClickListener(new OnClickListener<BluetoothDeviceItem>() {
+                .withOnClickListener(new OnClickListener<DeviceListItem>() {
                     @Override
-                    public boolean onClick(@Nullable View v, IAdapter<BluetoothDeviceItem> adapter, BluetoothDeviceItem item, int position) {
+                    public boolean onClick(@Nullable View v, IAdapter<DeviceListItem> adapter, DeviceListItem item, int position) {
                         bluetoothConnectService.connectServer(item.bluetoothDevice);
                         Toast.makeText(PairingActivity.this, "Connecting", Toast.LENGTH_SHORT).show();
 
@@ -309,8 +309,8 @@ public class PairingActivity extends BaseActivity {
     }
 
     private void addDevice(BluetoothDevice device) {
-        BluetoothDeviceItem bluetoothDeviceItem = new BluetoothDeviceItem().withBluetoothDevice(device);
-        itemAdapter.add(bluetoothDeviceItem);
+        DeviceListItem deviceListItem = new DeviceListItem().withBluetoothDevice(device);
+        itemAdapter.add(deviceListItem);
     }
 
     private void start() {
@@ -319,8 +319,8 @@ public class PairingActivity extends BaseActivity {
     }
 
     private boolean isExist(BluetoothDevice device) {
-        List<BluetoothDeviceItem> deviceList = itemAdapter.getAdapterItems();
-        for (BluetoothDeviceItem deviceItem : deviceList) {
+        List<DeviceListItem> deviceList = itemAdapter.getAdapterItems();
+        for (DeviceListItem deviceItem : deviceList) {
             //任意item的地址与参数地址相同则返回真
             if (deviceItem.address.toString().equals(device.getAddress())) {
                 return true;

@@ -33,8 +33,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.fy071.floatingwidget.R;
-import com.example.fy071.floatingwidget.alarm.ReminderConfigActivity;
 import com.example.fy071.floatingwidget.bluetooth.PairingActivity;
+import com.example.fy071.floatingwidget.reminder.ReminderConfigActivity;
 import com.example.fy071.floatingwidget.settings.SettingsActivity;
 import com.example.fy071.floatingwidget.util.Key;
 import com.example.fy071.floatingwidget.util.PxDpConverter;
