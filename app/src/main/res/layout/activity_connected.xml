@@ -8,6 +8,7 @@
     <include layout="@layout/layout_toolbar" />
 
     <ImageView
+        android:src="@color/md_brown_50"
         android:id="@+id/imageView_local"
         android:layout_width="100dp"
         android:layout_height="100dp"

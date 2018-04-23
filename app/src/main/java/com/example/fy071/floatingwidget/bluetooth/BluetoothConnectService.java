@@ -65,6 +65,8 @@ public class BluetoothConnectService {
 
     //连接后处理
     private synchronized void manageConnectedSocket(BluetoothSocket socket) {
+        Log.d(TAG, "manageConnectedSocket: called");
+
         cancelAccept();
         cancelConnect();
         cancelConnected();
@@ -192,7 +194,11 @@ public class BluetoothConnectService {
                 // If a connection was accepted
                 if (socket != null) {
                     // Do work to manage the connection (in a separate thread)
-                    manageConnectedSocket(socket);
+
+                    synchronized (BluetoothConnectService.this){
+                        manageConnectedSocket(socket);
+                    }
+
                     try {
                         mmServerSocket.close();
                     } catch (IOException e) {
@@ -217,6 +223,7 @@ public class BluetoothConnectService {
 
     //客户端连接线程
     private class ConnectThread extends Thread {
+        private static final String TAG = "ConnectThread";
         private final BluetoothSocket mmSocket;
         //private final BluetoothDevice mmDevice;
 
@@ -243,15 +250,23 @@ public class BluetoothConnectService {
             try {
                 // Connect the device through the socket. This will block
                 // until it succeeds or throws an exception
+                Log.d(TAG, "run: connecting");
                 mmSocket.connect();
             } catch (IOException connectException) {
                 // Unable to connect; close the socket and get out
+                Log.e(TAG, "run: IOE,Connection failed", connectException);
                 try {
                     mmSocket.close();
                 } catch (IOException closeException) {
                     //TODO IOE
                 }
                 return;
+            }
+
+            // Reset the ConnectThread because we're done
+            synchronized (BluetoothConnectService.this) {
+                Log.d(TAG, "run: reset ConnectThread");
+                connectThread = null;
             }
 
             // Do work to manage the connection (in a separate thread)
@@ -290,14 +305,16 @@ public class BluetoothConnectService {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
-                //TODO IOE
+                Log.e(TAG, "temp sockets not created", e);
             }
 
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
+
         }
 
         public void run() {
+            Log.w(TAG, "run: called");
             byte[] buffer = new byte[1024];  // buffer store for the stream
             int bytes; // bytes returned from read()
 
@@ -309,6 +326,7 @@ public class BluetoothConnectService {
                     // Send the obtained bytes to the UI activity
                     receiveData(bytes, buffer);
                 } catch (IOException e) {
+                    Log.e(TAG, "run: IOE");
                     break;
                 }
             }
