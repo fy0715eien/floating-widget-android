@@ -87,7 +87,7 @@ public class AlarmBuilder {
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.putExtra("title", title);
         intent.putExtra("content", content);
-        intent.setComponent(new ComponentName(context, AlarmReceiver.class));
+        intent.setComponent(new ComponentName("com.example.fy071.floatingwidget","com.example.fy071.floatingwidget.reminder.AlarmReceiver"));
         PendingIntent pi = PendingIntent.getBroadcast(context, id, intent, 0);
 
         //获取AlarmManager对象
