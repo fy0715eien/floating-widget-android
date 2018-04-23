@@ -94,6 +94,11 @@ public class FloatingViewService extends Service {
     private Intent intent;
     private WeChatMessageReceiver receiver;
 
+    private static int layoutID = R.layout.layout_pet_1;
+    private static int downAnimeID = R.drawable.down_anime_1;
+    private static int upFrameID = R.drawable.emoji_1_0;
+    private static int upAnimeID = R.drawable.up_anime_1;
+
     @Override
     public IBinder onBind(Intent arg0) {
         return null;
@@ -108,7 +113,7 @@ public class FloatingViewService extends Service {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("com.tofloatingpet.message");
         registerReceiver(receiver, intentFilter);
-
+        setModel();
         createFloatView();
         refresh();
         startForeground(this);
@@ -158,6 +163,9 @@ public class FloatingViewService extends Service {
 
     private void createFloatView() {
 
+
+
+
         statusBarHeight = 0;
         toast = new Toast(this);
         //获取status_bar_height资源的ID
@@ -169,20 +177,7 @@ public class FloatingViewService extends Service {
 
         setTheme(R.style.AppTheme);
 
-        int layoutID;
-        switch (sharedPreferences.getString(Key.PET_MODEL, "")) {
-            case "model_1":
-                layoutID = R.layout.layout_pet_1;
-                break;
-            case "model_2":
-                layoutID = R.layout.layout_pet_2;
-                break;
-            case "model_3":
-                layoutID = R.layout.layout_pet_3;
-                break;
-            default:
-                layoutID = R.layout.layout_pet_1;
-        }
+
         view = LayoutInflater.from(this).inflate(layoutID, null);
         petModel = view.findViewById(R.id.imageView_pet);
         setInitFrame();
@@ -335,58 +330,18 @@ public class FloatingViewService extends Service {
     }
 
     private void setDownAnim() {
-        int downAnimId;
-        switch (sharedPreferences.getString(Key.PET_MODEL, "")) {
-            case "model_1":
-                downAnimId = R.drawable.down_anime_1;
-                break;
-            case "model_2":
-                downAnimId = R.drawable.down_anime_2;
-                break;
-            case "model_3":
-                downAnimId = R.drawable.down_anime_3;
-                break;
-            default:
-                downAnimId = R.drawable.down_anime_1;
-        }
-        petModel.setImageResource(downAnimId);
+        petModel.setImageResource(downAnimeID);
     }
 
     private void setInitFrame() {
-        int upFrameId;
-        switch (sharedPreferences.getString(Key.PET_MODEL, "")) {
-            case "model_1":
-                upFrameId = R.drawable.test1_1;
-                break;
-            case "model_2":
-                upFrameId = R.drawable.test2_1;
-                break;
-            case "model_3":
-                upFrameId = R.drawable.test3_1;
-                break;
-            default:
-                upFrameId = R.drawable.test1_1;
-        }
-        petModel.setImageResource(upFrameId);
+        petModel.setImageResource(upFrameID);
     }
 
-    private void setUpAnim() {
-        int upAnimId;
-        switch (sharedPreferences.getString(Key.PET_MODEL, "")) {
-            case "model_1":
-                upAnimId = R.drawable.up_anime_1;
-                break;
-            case "model_2":
-                upAnimId = R.drawable.up_anime_2;
-                break;
-            case "model_3":
-                upAnimId = R.drawable.up_anime_3;
-                break;
-            default:
-                upAnimId = R.drawable.up_anime_1;
-        }
-        petModel.setImageResource(upAnimId);
+
+    private void setUpAnime() {
+        petModel.setImageResource(upAnimeID);
     }
+
 
     class FloatingClickListener implements View.OnClickListener {
         @Override
@@ -428,7 +383,7 @@ public class FloatingViewService extends Service {
                     refreshView(event.getRawX() - fingerStartX, event.getRawY() - fingerStartY);
                     break;
                 case MotionEvent.ACTION_UP:
-                    setUpAnim();
+                    setUpAnime();
                     animationDrawable = (AnimationDrawable) petModel.getDrawable();
                     if (!animationDrawable.isRunning()) {
                         animationDrawable.start();
@@ -568,6 +523,35 @@ public class FloatingViewService extends Service {
                     LayoutParams.FLAG_NOT_FOCUSABLE,
                     PixelFormat.TRANSPARENT
             );
+        }
+    }
+
+    //设置模型
+    private void setModel(){
+        switch(sharedPreferences.getString(Key.PET_MODEL, "")) {
+            case "model_1":
+                layoutID = R.layout.layout_pet_1;
+                downAnimeID = R.drawable.down_anime_1;
+                upFrameID = R.drawable.emoji_1_0;
+                upAnimeID = R.drawable.up_anime_1;
+                break;
+            case "model_2":
+                layoutID = R.layout.layout_pet_2;
+                downAnimeID = R.drawable.down_anime_2;
+                upFrameID = R.drawable.test2_1;
+                upAnimeID = R.drawable.up_anime_2;
+                break;
+            case "model_3":
+                layoutID = R.layout.layout_pet_3;
+                downAnimeID = R.drawable.down_anime_3;
+                upFrameID = R.drawable.test3_1;
+                upAnimeID = R.drawable.up_anime_3;
+                break;
+            default:
+                layoutID = R.layout.layout_pet_1;
+                downAnimeID = R.drawable.down_anime_1;
+                upFrameID = R.drawable.emoji_1_0;
+                upAnimeID = R.drawable.up_anime_1;
         }
     }
 

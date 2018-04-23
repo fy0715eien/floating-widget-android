@@ -86,16 +86,16 @@ public class ConnectedActivity extends AppCompatActivity {
     private void initLocalPet() {
         switch (PreferenceHelper.petModel) {
             case "model_1":
-                localPet.setImageResource(R.drawable.test1_1);
+                localPet.setImageResource(R.drawable.emoji_1_0);
                 break;
             case "model_2":
-                localPet.setImageResource(R.drawable.test1_2);
+                localPet.setImageResource(R.drawable.emoji_2_0);
                 break;
             case "model_3":
-                localPet.setImageResource(R.drawable.test1_3);
+                localPet.setImageResource(R.drawable.emoji_2_1);
                 break;
             default:
-                localPet.setImageResource(R.drawable.test1_1);
+                localPet.setImageResource(R.drawable.emoji_1_0);
         }
 
         localPet.setOnTouchListener(new View.OnTouchListener() {
@@ -164,7 +164,7 @@ public class ConnectedActivity extends AppCompatActivity {
     private void initRemotePet(int modelNumber) {
         switch (modelNumber) {
             case 1:
-                remotePet.setImageResource(R.drawable.test1_1);
+                remotePet.setImageResource(R.drawable.emoji_1_0);
                 break;
             case 2:
                 remotePet.setImageResource(R.drawable.test2_1);
@@ -173,7 +173,7 @@ public class ConnectedActivity extends AppCompatActivity {
                 remotePet.setImageResource(R.drawable.test3_1);
                 break;
             default:
-                remotePet.setImageResource(R.drawable.test1_1);
+                remotePet.setImageResource(R.drawable.emoji_1_0);
         }
     }
 
