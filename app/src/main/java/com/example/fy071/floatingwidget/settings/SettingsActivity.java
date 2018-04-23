@@ -26,6 +26,7 @@ public class SettingsActivity extends BaseActivity {
 
         initToolbar();
 
+
         getFragmentManager().beginTransaction()
                 .replace(R.id.content, new SettingsFragment())
                 .commit();

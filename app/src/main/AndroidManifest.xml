@@ -42,8 +42,7 @@
         <receiver
             android:name=".reminder.AlarmReceiver"
             android:enabled="true"
-            android:process=":remote">
-        </receiver>
+            android:process=":remote" />
 
         <service
             android:name=".pet.WeChatNotificationListenerService"
@@ -72,14 +71,9 @@
 
         <activity android:name=".bluetooth.ConnectedActivity" />
         <activity android:name=".reminder.ReminderListActivity" />
-        <activity android:name=".reminder.ReminderConfigActivity"></activity>
+        <activity android:name=".reminder.ReminderConfigActivity">
 
-        <service
-            android:name=".reminder.AlarmService"
-            android:enabled="true"
-            android:exported="false">
-
-        </service>
+        </activity>
     </application>
 
 </manifest>

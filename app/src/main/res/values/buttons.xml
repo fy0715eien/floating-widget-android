@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <array name="icons">
+        <item>@drawable/ic_power_settings_new_white_24dp</item>
         <item>@drawable/ic_alarm_black_24dp</item>
+        <item>@drawable/ic_alarm_add_black_24dp</item>
         <item>@drawable/ic_settings_black_24dp</item>
         <item>@drawable/ic_bluetooth_black_24dp</item>
     </array>
     <array name="colors">
+        <item>@android:color/holo_red_light</item>
+        <item>@android:color/background_light</item>
         <item>@android:color/background_light</item>
         <item>@android:color/background_light</item>
         <item>@android:color/background_light</item>

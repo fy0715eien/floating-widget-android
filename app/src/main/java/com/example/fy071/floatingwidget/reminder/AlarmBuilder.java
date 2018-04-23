@@ -18,6 +18,7 @@ import static android.content.Context.ALARM_SERVICE;
 
 public class AlarmBuilder {
     private static final String TAG = "AlarmBuilder";
+
     private int id;
     private String title;
     private String content;
@@ -27,20 +28,7 @@ public class AlarmBuilder {
     private int hour;
     private int minute;
 
-
-    public AlarmBuilder() {
-    }
-
-    public AlarmBuilder(int _id, String t, String c, int y, int m, int d, int h, int min) {
-        //创建Intent对象，action为ELITOR_CLOCK，附加信息为字符串
-        id = _id;
-        title = t;
-        content = c;
-        year = y;
-        month = m;
-        day = d;
-        hour = h;
-        minute = min;
+    AlarmBuilder() {
     }
 
     public int getId() {
@@ -67,61 +55,27 @@ public class AlarmBuilder {
         this.content = content;
     }
 
-    public int getYear() {
-        return year;
-    }
-
     public void setYear(int year) {
         this.year = year;
-    }
-
-    public int getMonth() {
-        return month;
     }
 
     public void setMonth(int month) {
         this.month = month;
     }
 
-    public int getDay() {
-        return day;
-    }
-
     public void setDay(int day) {
         this.day = day;
-    }
-
-    public int getHour() {
-        return hour;
     }
 
     public void setHour(int hour) {
         this.hour = hour;
     }
 
-    public int getMinute() {
-        return minute;
-    }
-
     public void setMinute(int minute) {
         this.minute = minute;
     }
 
-    public void set(int _id, String t, String c, int y, int m, int d, int h, int min) {
-        id = _id;
-        title = t;
-        content = c;
-        year = y;
-        month = m;
-        day = d;
-        hour = h;
-        minute = min;
-    }
-
     public void start(Context context) {
-        Intent serviceIntent = new Intent(context, AlarmService.class);
-        context.startService(serviceIntent);
-
         Calendar c = Calendar.getInstance();
         c.set(Calendar.YEAR, year);
         c.set(Calendar.MONTH, month - 1);//也可以填数字，0-11,一月为0
@@ -133,7 +87,7 @@ public class AlarmBuilder {
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.putExtra("title", title);
         intent.putExtra("content", content);
-        intent.setComponent(new ComponentName("com.example.fy071.floatingwidget","com.example.fy071.floatingwidget.broadcastreceiver.AlarmReceiver"));
+        intent.setComponent(new ComponentName(context, AlarmReceiver.class));
         PendingIntent pi = PendingIntent.getBroadcast(context, id, intent, 0);
 
         //获取AlarmManager对象
@@ -147,7 +101,7 @@ public class AlarmBuilder {
             if (Build.VERSION.SDK_INT < 21)
                 am.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pi);
             else {
-                Intent i2 = new Intent(context, ReminderConfigActivity.class);
+                Intent i2 = new Intent(context, ReminderListActivity.class);
                 i2.putExtra("id", id);
                 PendingIntent pi2 = PendingIntent.getActivity(context, id, i2, 0);
                 am.setAlarmClock(new AlarmManager.AlarmClockInfo(c.getTimeInMillis(), pi2), pi);

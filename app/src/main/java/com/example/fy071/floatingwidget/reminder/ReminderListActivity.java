@@ -123,8 +123,6 @@ public class ReminderListActivity extends AppCompatActivity implements ItemFilte
                                         if (itemAdapter.getAdapterItemCount() == 0) {
                                             imageView.setVisibility(View.VISIBLE);
                                             textView.setVisibility(View.VISIBLE);
-                                            //停止闹钟服务
-                                            stopService(new Intent(ReminderListActivity.this, AlarmService.class));
                                         }
 
                                         //删除闹钟

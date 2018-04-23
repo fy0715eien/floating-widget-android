@@ -35,6 +35,7 @@ import android.widget.Toast;
 import com.example.fy071.floatingwidget.R;
 import com.example.fy071.floatingwidget.bluetooth.PairingActivity;
 import com.example.fy071.floatingwidget.reminder.ReminderConfigActivity;
+import com.example.fy071.floatingwidget.reminder.ReminderListActivity;
 import com.example.fy071.floatingwidget.settings.SettingsActivity;
 import com.example.fy071.floatingwidget.util.Key;
 import com.example.fy071.floatingwidget.util.PxDpConverter;
@@ -45,14 +46,11 @@ import static java.lang.Math.abs;
 public class FloatingViewService extends Service {
     private static final String TAG = "FloatingViewService";
 
-    public static final int BUTTON_REMINDER = 0;
-    public static final int BUTTON_SETTINGS = 1;
-    public static final int BUTTON_CLOSE = 2;
-
-    private static final int TO_LEFT = 1;
-    private static final int TO_RIGHT = 2;
-    private static final int TO_UP = 3;
-    private static final int TO_BOTTOM = 4;
+    public static final int BUTTON_OFF = 0;
+    public static final int BUTTON_REMINDER = 1;
+    public static final int BUTTON_NEW_REMINDER = 2;
+    public static final int BUTTON_SETTINGS = 3;
+    public static final int BUTTON_PAIRING = 4;
 
     private static final int DIFFER = 5;//判断是否为点击操作
 
@@ -94,7 +92,7 @@ public class FloatingViewService extends Service {
     private SharedPreferences sharedPreferences;
 
     private Intent intent;
-    private WeChatMessageReceiver mReciver;
+    private WeChatMessageReceiver receiver;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -105,11 +103,11 @@ public class FloatingViewService extends Service {
     public void onCreate() {
         super.onCreate();
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        mReciver = new WeChatMessageReceiver();
+        receiver = new WeChatMessageReceiver();
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction("com.tofloatingpet.message");
-        registerReceiver(mReciver, intentFilter);
+        registerReceiver(receiver, intentFilter);
 
         createFloatView();
         refresh();
@@ -129,6 +127,7 @@ public class FloatingViewService extends Service {
     public void onDestroy() {
         super.onDestroy();
         removeView();
+        unregisterReceiver(receiver);
         stopForeground(true);
     }
 
@@ -222,13 +221,20 @@ public class FloatingViewService extends Service {
             @Override
             public void onButtonClickAnimationEnd(@NonNull CircleMenuView view, int index) {
                 switch (index) {
+                    case BUTTON_OFF:
+                        intent = null;
+                        stopSelf();
+                        break;
                     case BUTTON_REMINDER:
-                        intent = new Intent(FloatingViewService.this, ReminderConfigActivity.class);// TODO: 2018/4/8 change activity
+                        intent = new Intent(FloatingViewService.this, ReminderListActivity.class);
+                        break;
+                    case BUTTON_NEW_REMINDER:
+                        intent = new Intent(FloatingViewService.this, ReminderConfigActivity.class);
                         break;
                     case BUTTON_SETTINGS:
                         intent = new Intent(FloatingViewService.this, SettingsActivity.class);
                         break;
-                    case BUTTON_CLOSE:
+                    case BUTTON_PAIRING:
                         intent = new Intent(FloatingViewService.this, PairingActivity.class);
                         break;
                     default:
@@ -461,9 +467,9 @@ public class FloatingViewService extends Service {
     }
 
     private void sendMessage() {
-        if (viewAdded && mReciver.message.size() > 0) {
+        if (viewAdded && receiver.message.size() > 0) {
 
-            tvMessage.setText(mReciver.message.elementAt(0).toString());
+            tvMessage.setText(receiver.message.elementAt(0).toString());
 
             float xOff = layoutParams.x + view.getWidth() / 2;
             float yOff = layoutParams.y;
@@ -486,7 +492,7 @@ public class FloatingViewService extends Service {
             toast.setGravity(Gravity.START | Gravity.TOP, (int) xOff, (int) yOff);
             toast.setView(message_view);
             toast.setDuration(Toast.LENGTH_SHORT);
-            mReciver.message.remove(0);
+            receiver.message.remove(0);
             toast.show();
             mHandler.postDelayed(new Runnable() {
                 @Override
