@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.os.Build;
 import android.util.Log;
 
+import com.example.fy071.floatingwidget.reminder.database.Alarm;
+
 import java.util.Calendar;
 
 import static android.content.Context.ALARM_SERVICE;
@@ -17,76 +19,28 @@ import static android.content.Context.ALARM_SERVICE;
 
 public class AlarmBuilder {
     private static final String TAG = "AlarmBuilder";
+    private Alarm alarm;
 
-    private int id;
-    private String title;
-    private String content;
-    private int year;
-    private int month;
-    private int day;
-    private int hour;
-    private int minute;
-
-    AlarmBuilder() {
+    public AlarmBuilder() {
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public void setYear(int year) {
-        this.year = year;
-    }
-
-    public void setMonth(int month) {
-        this.month = month;
-    }
-
-    public void setDay(int day) {
-        this.day = day;
-    }
-
-    public void setHour(int hour) {
-        this.hour = hour;
-    }
-
-    public void setMinute(int minute) {
-        this.minute = minute;
+    AlarmBuilder(Alarm alarm) {
+        this.alarm = alarm;
     }
 
     public void start(Context context) {
         Calendar c = Calendar.getInstance();
-        c.set(Calendar.YEAR, year);
-        c.set(Calendar.MONTH, month - 1);//也可以填数字，0-11,一月为0
-        c.set(Calendar.DAY_OF_MONTH, day);
-        c.set(Calendar.HOUR_OF_DAY, hour);
-        c.set(Calendar.MINUTE, minute);
+        c.set(Calendar.YEAR, alarm.getYear());
+        c.set(Calendar.MONTH, alarm.getMonth());//也可以填数字，0-11,一月为0
+        c.set(Calendar.DAY_OF_MONTH, alarm.getDay());
+        c.set(Calendar.HOUR_OF_DAY, alarm.getHour());
+        c.set(Calendar.MINUTE, alarm.getMinute());
         c.set(Calendar.SECOND, 0);
         //设置一个PendingIntent对象，发送广播
         Intent intent = new Intent(context, AlarmReceiver.class);
-        intent.putExtra("title", title);
-        intent.putExtra("content", content);
-        PendingIntent pi = PendingIntent.getBroadcast(context, id, intent, 0);
+        intent.putExtra("title", alarm.getTitle());
+        intent.putExtra("content", alarm.getContent());
+        PendingIntent pi = PendingIntent.getBroadcast(context, alarm.getId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         //获取AlarmManager对象
         AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
@@ -100,16 +54,16 @@ public class AlarmBuilder {
                 am.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis(), pi);
             else {
                 Intent i2 = new Intent(context, ReminderListActivity.class);
-                i2.putExtra("id", id);
-                PendingIntent pi2 = PendingIntent.getActivity(context, id, i2, 0);
+                i2.putExtra("id", alarm.getId());
+                PendingIntent pi2 = PendingIntent.getActivity(context, alarm.getId(), i2, 0);
                 am.setAlarmClock(new AlarmManager.AlarmClockInfo(c.getTimeInMillis(), pi2), pi);
             }
         }
     }
 
-    public void cancel(Context context) {
+    public void cancel(Context context, int id) {
         Intent intent = new Intent(context, AlarmReceiver.class);
-        PendingIntent pi = PendingIntent.getBroadcast(context, id, intent, 0);
+        PendingIntent pi = PendingIntent.getBroadcast(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         AlarmManager am = (AlarmManager) context.getSystemService(ALARM_SERVICE);
         Log.d(TAG, "cancel: called" + am);

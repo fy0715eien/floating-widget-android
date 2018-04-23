@@ -19,26 +19,32 @@ public class DbManager {
     public void insert(Alarm alarm) {
         SQLiteDatabase db = myDbHelper.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put("date", alarm.getDate());
-        cv.put("time", alarm.getTime());
-        cv.put("title", alarm.getTitle());
-        cv.put("content", alarm.getContent());
-        db.insert("info", null, cv);
+        cv.put(DbHelper.INFO_TITLE, alarm.getTitle());
+        cv.put(DbHelper.INFO_CONTENT, alarm.getContent());
+        cv.put(DbHelper.INFO_YEAR, alarm.getYear());
+        cv.put(DbHelper.INFO_MONTH, alarm.getMonth());
+        cv.put(DbHelper.INFO_DAY, alarm.getDay());
+        cv.put(DbHelper.INFO_HOUR, alarm.getHour());
+        cv.put(DbHelper.INFO_MINUTE, alarm.getMinute());
+        db.insert(DbHelper.TABLE_NAME, null, cv);
         db.close();
     }
 
     public Alarm search(int id) {
         SQLiteDatabase db = myDbHelper.getReadableDatabase();
 
-        Cursor cs = db.query("info", null, "_id = ? ", new String[]{String.valueOf(id)}, null, null, null);
+        Cursor cs = db.query(DbHelper.TABLE_NAME, null, "_id = ? ", new String[]{String.valueOf(id)}, null, null, null);
         Alarm alarm = null;
         if (cs.moveToNext()) {
             alarm = new Alarm();
-            alarm.setId(cs.getInt(cs.getColumnIndex("_id")));
-            alarm.setDate(cs.getString(cs.getColumnIndex("date")));
-            alarm.setTime(cs.getString(cs.getColumnIndex("time")));
-            alarm.setTitle(cs.getString(cs.getColumnIndex("title")));
-            alarm.setContent(cs.getString(cs.getColumnIndex("content")));
+            alarm.setId(cs.getInt(cs.getColumnIndex(DbHelper.INFO_ID)));
+            alarm.setTitle(cs.getString(cs.getColumnIndex(DbHelper.INFO_TITLE)));
+            alarm.setContent(cs.getString(cs.getColumnIndex(DbHelper.INFO_CONTENT)));
+            alarm.setYear(cs.getInt(cs.getColumnIndex(DbHelper.INFO_YEAR)));
+            alarm.setMonth(cs.getInt(cs.getColumnIndex(DbHelper.INFO_MONTH)));
+            alarm.setDay(cs.getInt(cs.getColumnIndex(DbHelper.INFO_DAY)));
+            alarm.setHour(cs.getInt(cs.getColumnIndex(DbHelper.INFO_HOUR)));
+            alarm.setMinute(cs.getInt(cs.getColumnIndex(DbHelper.INFO_MINUTE)));
         }
         cs.close();
         db.close();
@@ -47,17 +53,20 @@ public class DbManager {
 
     public List<Alarm> searchAll() {
         SQLiteDatabase db = myDbHelper.getReadableDatabase();
-        Cursor cs = db.query("info", null, null, null, null, null, null);
+        Cursor cs = db.query(DbHelper.TABLE_NAME, null, null, null, null, null, null);
         Alarm alarm;
         List<Alarm> list = new ArrayList<>();
 
         while (cs.moveToNext()) {
             alarm = new Alarm();
-            alarm.setId(cs.getInt(cs.getColumnIndex("_id")));
-            alarm.setDate(cs.getString((cs.getColumnIndex("date"))));
-            alarm.setTime(cs.getString(cs.getColumnIndex("time")));
-            alarm.setTitle(cs.getString(cs.getColumnIndex("title")));
-            alarm.setContent(cs.getString(cs.getColumnIndex("content")));
+            alarm.setId(cs.getInt(cs.getColumnIndex(DbHelper.INFO_ID)));
+            alarm.setTitle(cs.getString(cs.getColumnIndex(DbHelper.INFO_TITLE)));
+            alarm.setContent(cs.getString(cs.getColumnIndex(DbHelper.INFO_CONTENT)));
+            alarm.setYear(cs.getInt(cs.getColumnIndex(DbHelper.INFO_YEAR)));
+            alarm.setMonth(cs.getInt(cs.getColumnIndex(DbHelper.INFO_MONTH)));
+            alarm.setDay(cs.getInt(cs.getColumnIndex(DbHelper.INFO_DAY)));
+            alarm.setHour(cs.getInt(cs.getColumnIndex(DbHelper.INFO_HOUR)));
+            alarm.setMinute(cs.getInt(cs.getColumnIndex(DbHelper.INFO_MINUTE)));
             list.add(alarm);
         }
 
@@ -77,27 +86,32 @@ public class DbManager {
 
     public void deleteAll() {
         SQLiteDatabase db = myDbHelper.getWritableDatabase();
-        db.delete("info", null, null);
+        db.delete(DbHelper.TABLE_NAME, null, null);
         db.close();
     }
 
 
     public void delete(int id) {
         SQLiteDatabase db = myDbHelper.getWritableDatabase();
-        db.delete("info", "_id = ?", new String[]{String.valueOf(id)});
+        db.delete(DbHelper.TABLE_NAME, "_id = ?", new String[]{String.valueOf(id)});
         db.close();
     }
 
     public void update(Alarm alarm) {
         SQLiteDatabase db = myDbHelper.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put("_id", alarm.getId());
-        cv.put("date", alarm.getDate());
-        cv.put("time", alarm.getTime());
-        cv.put("title", alarm.getTitle());
-        cv.put("content", alarm.getContent());
+
+        cv.put(DbHelper.INFO_ID, alarm.getId());
+        cv.put(DbHelper.INFO_TITLE, alarm.getTitle());
+        cv.put(DbHelper.INFO_CONTENT, alarm.getContent());
+        cv.put(DbHelper.INFO_YEAR, alarm.getYear());
+        cv.put(DbHelper.INFO_MONTH, alarm.getMonth());
+        cv.put(DbHelper.INFO_DAY, alarm.getDay());
+        cv.put(DbHelper.INFO_HOUR, alarm.getHour());
+        cv.put(DbHelper.INFO_MINUTE, alarm.getMinute());
+
         String id = String.valueOf(alarm.getId());
-        db.update("info", cv, "_id = ?", new String[]{id});
+        db.update(DbHelper.TABLE_NAME, cv, "_id = ?", new String[]{id});
         db.close();
     }
 }

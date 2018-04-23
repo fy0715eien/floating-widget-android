@@ -12,6 +12,7 @@ import com.example.fy071.floatingwidget.bluetooth.PairingActivity;
 import com.example.fy071.floatingwidget.pet.FloatingViewService;
 import com.example.fy071.floatingwidget.reminder.ReminderListActivity;
 import com.example.fy071.floatingwidget.settings.SettingsActivity;
+import com.example.fy071.floatingwidget.util.NotificationChannelsManager;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
 import com.mikepenz.aboutlibraries.Libs;
 import com.mikepenz.aboutlibraries.LibsBuilder;
@@ -104,6 +105,8 @@ public class MainActivity extends BaseActivity implements Drawer.OnDrawerItemCli
         //为工具栏加入打开抽屉的按钮
         drawer.setToolbar(this, toolbar, true);
 
+        // 创建通知通道
+        new NotificationChannelsManager(this);
     }
 
     @Override

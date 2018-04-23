@@ -17,6 +17,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.example.fy071.floatingwidget.util.DateTimeFormatter.dateFormatter;
+import static com.example.fy071.floatingwidget.util.DateTimeFormatter.timeFormatter;
+
 public class ReminderListItem extends AbstractItem<ReminderListItem, ReminderListItem.ViewHolder> {
     public int id;
     public StringHolder date;
@@ -26,30 +29,10 @@ public class ReminderListItem extends AbstractItem<ReminderListItem, ReminderLis
 
     public ReminderListItem withAlarm(Alarm alarm) {
         this.id = alarm.getId();
-        this.date = new StringHolder(alarm.getDate());
-        this.time = new StringHolder(alarm.getTime());
+        this.date = new StringHolder(dateFormatter(alarm.getYear(), alarm.getMonth(), alarm.getDay()));
+        this.time = new StringHolder(timeFormatter(alarm.getHour(), alarm.getMinute()));
         this.title = new StringHolder(alarm.getTitle());
         this.content = new StringHolder(alarm.getContent());
-        return this;
-    }
-
-    public ReminderListItem withDate(String date) {
-        this.date = new StringHolder(date);
-        return this;
-    }
-
-    public ReminderListItem withTime(String time) {
-        this.time = new StringHolder(time);
-        return this;
-    }
-
-    public ReminderListItem withTitle(String title) {
-        this.title = new StringHolder(title);
-        return this;
-    }
-
-    public ReminderListItem withContent(String content) {
-        this.content = new StringHolder(content);
         return this;
     }
 

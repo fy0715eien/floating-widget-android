@@ -20,11 +20,13 @@ import com.example.fy071.floatingwidget.reminder.database.Alarm;
 import com.example.fy071.floatingwidget.reminder.database.DbManager;
 
 import java.util.Calendar;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static com.example.fy071.floatingwidget.util.DateTimeFormatter.dateFormatter;
+import static com.example.fy071.floatingwidget.util.DateTimeFormatter.timeFormatter;
 
 public class ReminderConfigActivity extends AppCompatActivity {
     private static final String TAG = "ReminderConfigActivity";
@@ -42,17 +44,14 @@ public class ReminderConfigActivity extends AppCompatActivity {
 
     private Alarm alarm = new Alarm();
 
-    private AlarmBuilder alarmBuilder = new AlarmBuilder();
-
     private DbManager dbManager;
     private TimePickerDialog.OnTimeSetListener onTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            final String time = String.format(Locale.CHINA, "%02d:%02d", hourOfDay, minute);
-            alarmConfigTime.setText(time);
+            alarm.setHour(hourOfDay);
+            alarm.setMinute(minute);
 
-            alarmBuilder.setHour(hourOfDay);
-            alarmBuilder.setMinute(minute);
+            alarmConfigTime.setText(timeFormatter(hourOfDay, minute));
         }
     };
 
@@ -60,52 +59,35 @@ public class ReminderConfigActivity extends AppCompatActivity {
     private DatePickerDialog.OnDateSetListener onDateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-            final String date = String.valueOf(year) + "." + (month + 1) + "." + dayOfMonth;
-            alarmConfigDate.setText(date);
+            alarm.setYear(year);
+            alarm.setMonth(month);
+            alarm.setDay(dayOfMonth);
 
-            alarmBuilder.setYear(year);
-            alarmBuilder.setMonth(month + 1);
-            alarmBuilder.setDay(dayOfMonth);
+            alarmConfigDate.setText(dateFormatter(year, month, dayOfMonth));
         }
     };
 
     @OnClick(R.id.save_alarm)
     void save() {
-        // 判断提醒是否完成，未完成则弹窗
-        if (alarmConfigTitle.getText().toString().equals("")
-                || alarmConfigContent.getText().toString().equals("")
-                || alarmConfigDate.getText().toString().equals(getResources().getString(R.string.date))
-                || alarmConfigTime.getText().toString().equals(getResources().getString(R.string.time))) {
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.dialog_title_reminder_not_complete)
-                    .setMessage(R.string.dialog_message_reminder_not_complete)
-                    .setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-
-                        }
-                    })
-                    .show();
+        // 若未完成提醒则不保存
+        if (!isCompleted()) {
             return;
         }
 
         // 若完成则新建alarm对象，ID除外
-        alarm.withTitle(alarmConfigTitle.getText().toString())
-                .withContent(alarmConfigContent.getText().toString())
-                .withDate(alarmConfigDate.getText().toString())
-                .withTime(alarmConfigTime.getText().toString());
+        alarm.setTitle(alarmConfigTitle.getText().toString());
+        alarm.setContent(alarmConfigContent.getText().toString());
 
+        // 若是新建则等插入后获取id
         if (id == NEW_ALARM) {
             dbManager.insert(alarm);
-
-            alarmBuilder.setId(dbManager.getLastInsertedId());
-            alarmBuilder.start(getApplicationContext());
+            alarm.setId(dbManager.getLastInsertedId());
         } else {
             dbManager.update(alarm);
-
-            alarmBuilder.cancel(getApplicationContext());
-            alarmBuilder.start(getApplicationContext());
         }
+
+        // 以alarm对象设置实际闹钟
+        new AlarmBuilder(alarm).start(getApplicationContext());
         finish();
     }
 
@@ -145,11 +127,14 @@ public class ReminderConfigActivity extends AppCompatActivity {
 
             Log.d(TAG, "onCreate: " + id);
 
+            // 数据库中获取Alarm对象
             alarm = dbManager.search(id);
+
+            // 提取Alarm信息，写入UI
             alarmConfigTitle.setText(alarm.getTitle());
             alarmConfigContent.setText(alarm.getContent());
-            alarmConfigDate.setText(alarm.getDate());
-            alarmConfigTime.setText(alarm.getTime());
+            alarmConfigDate.setText(dateFormatter(alarm.getYear(), alarm.getMonth(), alarm.getDay()));
+            alarmConfigTime.setText(timeFormatter(alarm.getHour(), alarm.getMinute()));
         }
         initToolbar();
     }
@@ -184,4 +169,26 @@ public class ReminderConfigActivity extends AppCompatActivity {
             }
         });
     }
+
+    private boolean isCompleted() {
+        // 判断提醒是否完成，未完成则弹窗
+        if (alarmConfigTitle.getText().toString().equals("")
+                || alarmConfigContent.getText().toString().equals("")
+                || alarmConfigDate.getText().toString().equals(getResources().getString(R.string.date))
+                || alarmConfigTime.getText().toString().equals(getResources().getString(R.string.time))) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.dialog_title_reminder_not_complete)
+                    .setMessage(R.string.dialog_message_reminder_not_complete)
+                    .setPositiveButton(R.string.dialog_positive_button, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    })
+                    .show();
+            return false;
+        }
+        return true;
+    }
+
 }

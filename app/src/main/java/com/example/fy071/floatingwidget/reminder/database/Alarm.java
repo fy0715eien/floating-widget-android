@@ -4,51 +4,14 @@ public class Alarm {
     private int id;
     private String title;
     private String content;
-    private String date;
-    private String time;
+    private int year;
+    private int month;
+    private int day;
+    private int hour;
+    private int minute;
 
 
     public Alarm() {
-    }
-
-    public Alarm(int id, String date, String time, String title, String content) {
-        this.id = id;
-        this.date = date;
-        this.time = time;
-        this.title = title;
-        this.content = content;
-    }
-
-    public Alarm(String date, String time, String title, String content) {
-        this.date = date;
-        this.time = time;
-        this.title = title;
-        this.content = content;
-    }
-
-    public Alarm withId(int id) {
-        this.id = id;
-        return this;
-    }
-
-    public Alarm withDate(String date) {
-        this.date = date;
-        return this;
-    }
-
-    public Alarm withTitle(String title) {
-        this.title = title;
-        return this;
-    }
-
-    public Alarm withContent(String content) {
-        this.content = content;
-        return this;
-    }
-
-    public Alarm withTime(String time) {
-        this.time = time;
-        return this;
     }
 
     public int getId() {
@@ -57,22 +20,6 @@ public class Alarm {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
     }
 
     public String getTitle() {
@@ -91,16 +38,44 @@ public class Alarm {
         this.content = content;
     }
 
-    @Override
-    public String toString() {
-        return "Alarm{" +
-                "id=" + id +
-                ", date'" + date + '\'' +
-                ", time'" + time + '\'' +
-                ", title'" + title + '\'' +
-                ", cotent'" + content + '\'' +
-                '}';
+    public int getYear() {
+        return year;
+    }
 
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    public int getMonth() {
+        return month;
+    }
+
+    public void setMonth(int month) {
+        this.month = month;
+    }
+
+    public int getDay() {
+        return day;
+    }
+
+    public void setDay(int day) {
+        this.day = day;
+    }
+
+    public int getHour() {
+        return hour;
+    }
+
+    public void setHour(int hour) {
+        this.hour = hour;
+    }
+
+    public int getMinute() {
+        return minute;
+    }
+
+    public void setMinute(int minute) {
+        this.minute = minute;
     }
 
 }

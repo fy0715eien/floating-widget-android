@@ -1,13 +1,10 @@
 package com.example.fy071.floatingwidget.pet;
 
 import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
@@ -16,7 +13,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.v4.app.NotificationCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -38,6 +34,7 @@ import com.example.fy071.floatingwidget.reminder.ReminderConfigActivity;
 import com.example.fy071.floatingwidget.reminder.ReminderListActivity;
 import com.example.fy071.floatingwidget.settings.SettingsActivity;
 import com.example.fy071.floatingwidget.util.Key;
+import com.example.fy071.floatingwidget.util.NotificationChannelsManager;
 import com.example.fy071.floatingwidget.util.PxDpConverter;
 import com.ramotion.circlemenu.CircleMenuView;
 
@@ -137,18 +134,19 @@ public class FloatingViewService extends Service {
     }
 
     public void startForeground(Service context) {
-
-        String channelId = generateChannelId(context);
-
-        Notification notification = new NotificationCompat.Builder(this, channelId)
+        Notification.Builder builder = new Notification.Builder(this)
                 .setContentText("I'm running.")
                 .setWhen(System.currentTimeMillis())
                 .setPriority(Notification.PRIORITY_MIN)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("pet")
-                .setAutoCancel(true)
-                .build();
-        context.startForeground(8888, notification);
+                .setAutoCancel(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            builder.setChannelId(NotificationChannelsManager.FOREGROUND_SERVICE_CHANNEL);
+        }
+
+        context.startForeground(8888, builder.build());
     }
 
     /**
@@ -162,10 +160,6 @@ public class FloatingViewService extends Service {
     }
 
     private void createFloatView() {
-
-
-
-
         statusBarHeight = 0;
         toast = new Toast(this);
         //获取status_bar_height资源的ID
@@ -554,25 +548,4 @@ public class FloatingViewService extends Service {
                 upAnimeID = R.drawable.up_anime_1;
         }
     }
-
-    private String generateChannelId(Service context) {
-        String channelId;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            channelId = "floating_service";
-            String channelName = getResources().getString(R.string.app_name);
-            NotificationChannel notificationChannel = new NotificationChannel(
-                    channelId,
-                    channelName,
-                    NotificationManager.IMPORTANCE_NONE
-            );
-            notificationChannel.setLightColor(Color.BLUE);
-            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-            notificationManager.createNotificationChannel(notificationChannel);
-        } else {
-            channelId = "";
-        }
-        return channelId;
-    }
-
 }

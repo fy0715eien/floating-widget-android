@@ -1,17 +1,15 @@
 package com.example.fy071.floatingwidget.reminder;
 
 import android.app.Notification;
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.example.fy071.floatingwidget.R;
+import com.example.fy071.floatingwidget.util.NotificationChannelsManager;
 
 /**
  * Created by Administrator on 2018/4/18.
@@ -20,6 +18,7 @@ import com.example.fy071.floatingwidget.R;
 public class AlarmReceiver extends BroadcastReceiver {
     private static final String TAG = "AlarmReceiver";
     NotificationManager notificationManager;
+
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "onReceive: received");
@@ -32,38 +31,21 @@ public class AlarmReceiver extends BroadcastReceiver {
             context.startActivity(intent1);*/
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        String channelId = generateChannelId(context);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
-                .setContentTitle("title")
-                .setContentText("content")
+        Notification.Builder builder = new Notification.Builder(context)
+                .setContentTitle(intent.getStringExtra("title"))
+                .setContentText(intent.getStringExtra("content"))
                 .setWhen(System.currentTimeMillis())
-                .setPriority(Notification.PRIORITY_MAX)
+                .setPriority(Notification.PRIORITY_DEFAULT)
                 .setSmallIcon(R.drawable.ic_alarm_black_24dp)
                 .setDefaults(Notification.DEFAULT_VIBRATE)
                 .setAutoCancel(true);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            builder.setChannelId(NotificationChannelsManager.ALARM_CHANNEL);
+        }
+
         notificationManager.notify(12345, builder.build());
     }
 
-    private String generateChannelId(Context context) {
-        String channelId;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            channelId = "alarm_service";
-            String channelName = context.getResources().getString(R.string.app_name);
-            NotificationChannel notificationChannel = new NotificationChannel(
-                    channelId,
-                    channelName,
-                    NotificationManager.IMPORTANCE_NONE
-            );
-            notificationChannel.setLightColor(Color.BLUE);
-            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-            assert notificationManager != null;
-            notificationManager.createNotificationChannel(notificationChannel);
-        } else {
-            channelId = "";
-        }
-        return channelId;
-    }
 
 }
