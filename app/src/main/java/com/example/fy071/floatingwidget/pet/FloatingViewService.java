@@ -206,7 +206,6 @@ public class FloatingViewService extends Service {
                 circlemenuAdded = false;
                 refresh();
             }
-
             @Override
             public void onButtonClickAnimationEnd(@NonNull CircleMenuView view, int index) {
                 switch (index) {
@@ -347,7 +346,7 @@ public class FloatingViewService extends Service {
                 @Override
                 public void onGlobalLayout() {
                     circleMenuView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    circleMenuView.open(true);
+                   circleMenuView.open(true);
                 }
             });
         }

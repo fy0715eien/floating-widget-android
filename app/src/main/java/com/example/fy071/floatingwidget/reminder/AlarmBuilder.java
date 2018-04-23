@@ -40,6 +40,7 @@ public class AlarmBuilder {
         Intent intent = new Intent(context, AlarmReceiver.class);
         intent.putExtra("title", alarm.getTitle());
         intent.putExtra("content", alarm.getContent());
+        intent.putExtra("id",alarm.getId());
         PendingIntent pi = PendingIntent.getBroadcast(context, alarm.getId(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         //获取AlarmManager对象
