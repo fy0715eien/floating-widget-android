@@ -94,10 +94,9 @@ public class ReminderConfigActivity extends AppCompatActivity {
                 .withTime(alarmConfigTime.getText().toString());
 
         if (id == NEW_ALARM) {
-            alarm.withId((int) System.currentTimeMillis());
             dbManager.insert(alarm);
 
-            alarmBuilder.setId(alarm.getId());
+            alarmBuilder.setId(dbManager.getLastInsertedId());
             alarmBuilder.start(this);
         } else {
             alarm.withId(id);

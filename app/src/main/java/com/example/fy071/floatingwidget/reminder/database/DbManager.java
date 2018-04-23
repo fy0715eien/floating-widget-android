@@ -48,7 +48,7 @@ public class DbManager {
     public List<Alarm> searchAll() {
         SQLiteDatabase db = myDbHelper.getReadableDatabase();
         Cursor cs = db.query("info", null, null, null, null, null, null);
-        Alarm alarm = null;
+        Alarm alarm;
         List<Alarm> list = new ArrayList<>();
 
         while (cs.moveToNext()) {
@@ -66,6 +66,14 @@ public class DbManager {
         return list;
     }
 
+    public int getLastInsertedId() {
+        SQLiteDatabase db = myDbHelper.getWritableDatabase();
+        Cursor c = db.rawQuery("SELECT MAX(_id) FROM info", null);
+        c.moveToFirst();
+        int id = c.getInt(0);
+        c.close();
+        return id;
+    }
 
     public void deleteAll() {
         SQLiteDatabase db = myDbHelper.getWritableDatabase();
