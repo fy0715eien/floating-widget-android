@@ -84,13 +84,6 @@ public class DbManager {
         return id;
     }
 
-    public void deleteAll() {
-        SQLiteDatabase db = myDbHelper.getWritableDatabase();
-        db.delete(DbHelper.TABLE_NAME, null, null);
-        db.close();
-    }
-
-
     public void delete(int id) {
         SQLiteDatabase db = myDbHelper.getWritableDatabase();
         db.delete(DbHelper.TABLE_NAME, "_id = ?", new String[]{String.valueOf(id)});

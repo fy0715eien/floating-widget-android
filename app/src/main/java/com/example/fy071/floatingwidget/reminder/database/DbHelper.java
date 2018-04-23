@@ -21,7 +21,7 @@ public class DbHelper extends SQLiteOpenHelper {
         super(context, name, factory, version);
     }
 
-    public DbHelper(Context context) {
+    DbHelper(Context context) {
         super(context, DB_NAME, null, 1);
     }
 

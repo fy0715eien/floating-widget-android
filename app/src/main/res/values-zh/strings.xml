@@ -51,4 +51,8 @@
     <string name="dialog_title_discard_changes">放弃修改？</string>
     <string name="dialog_positive_button_discard">放弃</string>
     <string name="menu_search">搜索</string>
+    <string name="date">日期</string>
+    <string name="time">时间</string>
+    <string name="title">标题</string>
+    <string name="content">内容</string>
 </resources>

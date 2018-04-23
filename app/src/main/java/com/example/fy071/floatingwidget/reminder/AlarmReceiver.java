@@ -22,18 +22,13 @@ public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "onReceive: received");
-            /*Log.d(TAG, "onReceive: received app broadcast");
-            Log.i("test","闹钟响了");
-            //跳转到Activity n //广播接受者中（跳转Activity）
-            Intent intent1=new Intent(context,RingActivity.class);
-            //给Intent设置标志位
-            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent1);*/
+
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         Notification.Builder builder = new Notification.Builder(context)
                 .setContentTitle(intent.getStringExtra("title"))
                 .setContentText(intent.getStringExtra("content"))
+                .setShowWhen(true)
                 .setWhen(System.currentTimeMillis())
                 .setPriority(Notification.PRIORITY_DEFAULT)
                 .setSmallIcon(R.drawable.ic_alarm_black_24dp)
