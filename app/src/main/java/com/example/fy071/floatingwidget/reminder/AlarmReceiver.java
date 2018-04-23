@@ -9,12 +9,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.example.fy071.floatingwidget.R;
-
-import static android.content.Context.NOTIFICATION_SERVICE;
 
 /**
  * Created by Administrator on 2018/4/18.
@@ -22,7 +19,7 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class AlarmReceiver extends BroadcastReceiver {
     private static final String TAG = "AlarmReceiver";
-
+    NotificationManager notificationManager;
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "onReceive: received");
@@ -33,19 +30,20 @@ public class AlarmReceiver extends BroadcastReceiver {
             //给Intent设置标志位
             intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent1);*/
+        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
         String channelId = generateChannelId(context);
 
-        Notification notification = new NotificationCompat.Builder(context, channelId)
-                .setContentTitle(intent.getStringExtra("title"))
-                .setContentText(intent.getStringExtra("content"))
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
+                .setContentTitle("title")
+                .setContentText("content")
                 .setWhen(System.currentTimeMillis())
-                .setPriority(Notification.PRIORITY_MIN)
+                .setPriority(Notification.PRIORITY_MAX)
                 .setSmallIcon(R.drawable.ic_alarm_black_24dp)
                 .setDefaults(Notification.DEFAULT_VIBRATE)
-                .setAutoCancel(true)
-                .build();
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.notify(1, notification);
+                .setAutoCancel(true);
+
+        notificationManager.notify(12345, builder.build());
     }
 
     private String generateChannelId(Context context) {
@@ -60,7 +58,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             );
             notificationChannel.setLightColor(Color.BLUE);
             notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+            assert notificationManager != null;
             notificationManager.createNotificationChannel(notificationChannel);
         } else {
             channelId = "";

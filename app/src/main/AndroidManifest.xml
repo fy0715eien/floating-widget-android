@@ -39,11 +39,11 @@
         <receiver
             android:name=".pet.WeChatMessageReceiver"
             android:enabled="true" />
+
         <receiver
             android:name=".reminder.AlarmReceiver"
             android:enabled="true"
-            android:exported="true"
-            android:process=":remote" />
+            android:exported="false" />
 
         <service
             android:name=".pet.WeChatNotificationListenerService"

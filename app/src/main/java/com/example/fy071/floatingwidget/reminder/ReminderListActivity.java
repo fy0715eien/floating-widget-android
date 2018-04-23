@@ -128,7 +128,7 @@ public class ReminderListActivity extends AppCompatActivity implements ItemFilte
                                         //删除闹钟
                                         AlarmBuilder alarmBuilder = new AlarmBuilder();
                                         alarmBuilder.setId(item.id);
-                                        alarmBuilder.cancel(ReminderListActivity.this);
+                                        alarmBuilder.cancel(getApplicationContext());
 
                                         //从数据库中移除
                                         dbManager.delete(item.id);

@@ -71,10 +71,11 @@ public class ReminderConfigActivity extends AppCompatActivity {
 
     @OnClick(R.id.save_alarm)
     void save() {
+        // 判断提醒是否完成，未完成则弹窗
         if (alarmConfigTitle.getText().toString().equals("")
                 || alarmConfigContent.getText().toString().equals("")
-                || alarmConfigDate.getText().toString().equals("")
-                || alarmConfigTime.getText().toString().equals("")) {
+                || alarmConfigDate.getText().toString().equals(getResources().getString(R.string.date))
+                || alarmConfigTime.getText().toString().equals(getResources().getString(R.string.time))) {
             new AlertDialog.Builder(this)
                     .setTitle(R.string.dialog_title_reminder_not_complete)
                     .setMessage(R.string.dialog_message_reminder_not_complete)
@@ -88,6 +89,7 @@ public class ReminderConfigActivity extends AppCompatActivity {
             return;
         }
 
+        // 若完成则新建alarm对象，ID除外
         alarm.withTitle(alarmConfigTitle.getText().toString())
                 .withContent(alarmConfigContent.getText().toString())
                 .withDate(alarmConfigDate.getText().toString())
@@ -97,10 +99,12 @@ public class ReminderConfigActivity extends AppCompatActivity {
             dbManager.insert(alarm);
 
             alarmBuilder.setId(dbManager.getLastInsertedId());
-            alarmBuilder.start(this);
+            alarmBuilder.start(getApplicationContext());
         } else {
-            alarm.withId(id);
             dbManager.update(alarm);
+
+            alarmBuilder.cancel(getApplicationContext());
+            alarmBuilder.start(getApplicationContext());
         }
         finish();
     }
