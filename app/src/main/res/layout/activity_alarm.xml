@@ -2,11 +2,13 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraint_layout_alarm"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".component.activity.AlarmActivity">
+    tools:context=".reminder.ReminderListActivity">
 
     <RelativeLayout
+        android:id="@+id/relative_layout_alarm"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -22,13 +24,14 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recycler_view_alarm_list"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent">
 
             </android.support.v7.widget.RecyclerView>
 
         </LinearLayout>
 
         <ImageView
+            android:visibility="gone"
             android:id="@+id/imageView_alarm_hint"
             android:layout_width="96dp"
             android:layout_height="96dp"
@@ -37,6 +40,7 @@
             android:src="@drawable/ic_alarm_grey_300_48dp" />
 
         <TextView
+            android:visibility="gone"
             android:id="@+id/textView_alarm_hint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -46,7 +50,6 @@
             android:textSize="16sp"
             android:textStyle="bold" />
     </RelativeLayout>
-
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/new_alarm"

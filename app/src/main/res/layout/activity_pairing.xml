@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".component.activity.PairingActivity">
+    tools:context=".bluetooth.PairingActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -21,7 +21,6 @@
                 android:id="@+id/textView_devices"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="72dp"
                 android:layout_marginStart="72dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/devices"
@@ -31,7 +30,7 @@
                 app:layout_constraintStart_toStartOf="parent" />
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerview_device_list"
+                android:id="@+id/recyclerView_device_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp">
@@ -74,7 +73,6 @@
         android:layout_height="56dp"
         android:layout_marginBottom="24dp"
         android:layout_marginEnd="24dp"
-        android:layout_marginRight="24dp"
         android:clickable="true"
         android:focusable="true"
         app:layout_constraintBottom_toBottomOf="parent"
