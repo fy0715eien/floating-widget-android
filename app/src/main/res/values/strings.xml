@@ -8,6 +8,7 @@
     <string name="drawer_item_about">About</string>
 
     <string name="toolbar_new_reminder">New reminder</string>
+    <string name="toolbar_config_reminder">Reminder Config</string>
 
     <string name="reminder_time">Time</string>
     <string name="reminder_description">Description</string>
@@ -15,6 +16,7 @@
 
     <string name="dialog_positive_button">OK</string>
     <string name="dialog_negative_button">Cancel</string>
+    <string name="dialog_title_delete">Delete this reminder?</string>
 
     <string name="devices">Devices</string>
 
@@ -28,8 +30,39 @@
     <string name="pref_pet_model">Pet model</string>
     <string name="pref_wechat">WeChat notification</string>
     <string name="pref_start_on_boot">Start on boot</string>
+    <string name="pref_random_dialog">Random dialog</string>
 
     <string name="pref_summary_wechat">Shows popups when receiving new WeChat messages</string>
     <string name="pref_summary_enabled">Enabled</string>
     <string name="pref_summary_disabled">Disabled</string>
+    <string name="pref_summary_start_on_boot">Your pet will start when boot is completed</string>
+    <string name="pref_summary_random_dialog">Make your pet speaks randomly</string>
+
+    <string name="dialog_title_permission_location">Permission needed</string>
+    <string name="dialog_message_permission_location">Application needs location access to scan Bluetooth Low Energy (BLE) devices</string>
+
+    <string name="dialog_title_permission_overlay">Special permission needed</string>
+    <string name="dialog_message_permission_overlay">Please grant permission for this app in the next page</string>
+
+    <string name="dialog_title_permission_notification">Notification access needed</string>
+    <string name="dialog_message_permission_notification">Application needs notification access to get WeChat notifications</string>
+
+    <string name="dialog_title_reminder_not_complete">Not completed</string>
+    <string name="dialog_message_reminder_not_complete">Complete your reminder before save</string>
+
+    <string name="dialog_title_discard_changes">Discard changes?</string>
+    <string name="dialog_positive_button_discard">Discard</string>
+
+    <string name="hint_home">Toggle drawer to show app functions</string>
+    <string name="hint_alarm">Upcoming alarms appear here</string>
+    <string name="hint_pairing">Founded devices appear here</string>
+
+    <string name="menu_search">Search</string>
+
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+
+    <string name="title">Title</string>
+    <string name="content">Content</string>
+
 </resources>

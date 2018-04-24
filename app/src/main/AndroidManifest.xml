@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
@@ -15,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".component.activity.MainActivity"
+            android:name=".MainActivity"
             android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,44 +24,65 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".component.activity.ReminderConfigActivity"
-            android:launchMode="singleInstance" />
 
         <service
-            android:name=".component.service.FloatingViewService"
+            android:name=".pet.FloatingViewService"
             android:enabled="true" />
 
         <receiver
-            android:name=".component.OpenBroadcastReceiver"
+            android:name=".pet.BootReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".pet.WeChatMessageReceiver"
+            android:enabled="true" />
+
+        <receiver
+            android:name=".reminder.AlarmReceiver"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name=".reminder.NotificationClickReceiver"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name=".reminder.NotificationDismissReceiver"
+            android:enabled="true"
+            android:exported="false" />
 
         <service
-            android:name=".util.WeChatNotification"
-            android:enabled="true"
-            android:exported="true"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            android:name=".pet.WeChatNotificationListenerService"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
+                <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
-
-            <meta-data
-                android:name="android.accessibilityservice"
-                android:resource="@xml/wechatotification_config" />
         </service>
+        <service
+            android:name=".pet.RandomDialogService"
+            android:enabled="true" />
 
         <activity
-            android:name=".component.activity.SettingsActivity"
+            android:name=".settings.SettingsActivity"
             android:launchMode="singleInstance" />
         <activity
-            android:name=".component.activity.PairingActivity"
+            android:name=".bluetooth.PairingActivity"
             android:launchMode="singleInstance" />
+        <activity android:name=".BaseActivity" />
 
-        <activity android:name=".component.activity.BaseActivity"></activity>
+        <service
+            android:name=".pet.NotificationListenerMonitorService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <activity android:name=".bluetooth.ConnectedActivity" />
+        <activity android:name=".reminder.ReminderListActivity" />
+        <activity android:name=".reminder.ReminderConfigActivity">
+
+        </activity>
     </application>
 
 </manifest>

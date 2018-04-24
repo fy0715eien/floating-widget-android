@@ -45,6 +45,15 @@
             android:defaultValue="false"
             android:dependency="enable_widget"
             android:key="start_at_boot"
+            android:summary="@string/pref_summary_start_on_boot"
             android:title="@string/pref_start_on_boot" />
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:dependency="enable_widget"
+            android:key="random_dialog"
+            android:summary="@string/pref_summary_random_dialog"
+            android:title="@string/pref_random_dialog" />
+
     </PreferenceCategory>
+
 </PreferenceScreen>
