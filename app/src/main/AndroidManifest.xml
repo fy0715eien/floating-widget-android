@@ -44,6 +44,14 @@
             android:name=".reminder.AlarmReceiver"
             android:enabled="true"
             android:exported="false" />
+        <receiver
+            android:name=".reminder.NotificationClickReceiver"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name=".reminder.NotificationDismissReceiver"
+            android:enabled="true"
+            android:exported="false" />
 
         <service
             android:name=".pet.WeChatNotificationListenerService"

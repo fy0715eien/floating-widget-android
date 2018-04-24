@@ -2,6 +2,7 @@ package com.example.fy071.floatingwidget.reminder;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -30,6 +31,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setContentText(intent.getStringExtra("content"))
                 .setShowWhen(true)
                 .setWhen(System.currentTimeMillis())
+                .setShowWhen(true)
                 .setPriority(Notification.PRIORITY_DEFAULT)
                 .setSmallIcon(R.drawable.ic_alarm_black_24dp)
                 .setDefaults(Notification.DEFAULT_VIBRATE)
@@ -39,6 +41,16 @@ public class AlarmReceiver extends BroadcastReceiver {
             builder.setChannelId(NotificationChannelsManager.ALARM_CHANNEL);
         }
 
+        Intent clickIntent = new Intent("action_click",null,context, NotificationClickReceiver.class);
+        clickIntent.setAction("action_click");
+        clickIntent.putExtra("id",intent.getIntExtra("id",0));
+        Intent dismissIntent = new Intent("action_dismiss", null, context, NotificationDismissReceiver.class);
+        dismissIntent.setAction("action_dismiss");
+        dismissIntent.putExtra("id",intent.getIntExtra("id",0));
+        PendingIntent clickPendingIntent = PendingIntent.getBroadcast(context, intent.getIntExtra("id",0), clickIntent, 0);
+        PendingIntent dismissPendingIntent = PendingIntent.getBroadcast(context, intent.getIntExtra("id",0), dismissIntent, 0);
+        builder.setContentIntent(clickPendingIntent);
+        builder.setDeleteIntent(dismissPendingIntent);
         notificationManager.notify(12345, builder.build());
     }
 
