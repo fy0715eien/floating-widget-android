@@ -41,16 +41,19 @@ public class AlarmReceiver extends BroadcastReceiver {
             builder.setChannelId(NotificationChannelsManager.ALARM_CHANNEL);
         }
 
-        Intent clickIntent = new Intent("action_click",null,context, NotificationClickReceiver.class);
+        Intent clickIntent = new Intent("action_click", null, context, NotificationClickReceiver.class);
         clickIntent.setAction("action_click");
-        clickIntent.putExtra("id",intent.getIntExtra("id",0));
+        clickIntent.putExtra("id", intent.getIntExtra("id", 0));
+
         Intent dismissIntent = new Intent("action_dismiss", null, context, NotificationDismissReceiver.class);
         dismissIntent.setAction("action_dismiss");
-        dismissIntent.putExtra("id",intent.getIntExtra("id",0));
-        PendingIntent clickPendingIntent = PendingIntent.getBroadcast(context, intent.getIntExtra("id",0), clickIntent, 0);
-        PendingIntent dismissPendingIntent = PendingIntent.getBroadcast(context, intent.getIntExtra("id",0), dismissIntent, 0);
+        dismissIntent.putExtra("id", intent.getIntExtra("id", 0));
+
+        PendingIntent clickPendingIntent = PendingIntent.getBroadcast(context, intent.getIntExtra("id", 0), clickIntent, 0);
+        PendingIntent dismissPendingIntent = PendingIntent.getBroadcast(context, intent.getIntExtra("id", 0), dismissIntent, 0);
         builder.setContentIntent(clickPendingIntent);
         builder.setDeleteIntent(dismissPendingIntent);
+
         notificationManager.notify(12345, builder.build());
     }
 

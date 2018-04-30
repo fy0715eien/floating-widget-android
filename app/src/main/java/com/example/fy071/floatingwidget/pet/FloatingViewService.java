@@ -346,7 +346,7 @@ public class FloatingViewService extends Service {
                 @Override
                 public void onGlobalLayout() {
                     circleMenuView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                   circleMenuView.open(true);
+                    circleMenuView.open(true);
                 }
             });
         }
