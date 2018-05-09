@@ -65,4 +65,6 @@
     <string name="title">Title</string>
     <string name="content">Content</string>
 
+    <string name="shortcut_toggle">Toggle widget</string>
+
 </resources>

@@ -16,7 +16,7 @@ public class NotificationDismissReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        DbManager dbManager=new DbManager(context);
-        dbManager.delete(intent.getIntExtra("id",0));
+        DbManager dbManager = new DbManager(context);
+        dbManager.delete(intent.getIntExtra("id", 0));
     }
 }

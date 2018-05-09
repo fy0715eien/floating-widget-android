@@ -9,13 +9,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
-import com.example.fy071.floatingwidget.reminder.database.DbManager;
-
 public class NotificationClickReceiver extends BroadcastReceiver {
     private static final String TAG = "NotificationClickReceiver";
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Toast.makeText(context,"You click a notification",Toast.LENGTH_LONG).show();
+        Toast.makeText(context, "You click a notification", Toast.LENGTH_LONG).show();
     }
 }

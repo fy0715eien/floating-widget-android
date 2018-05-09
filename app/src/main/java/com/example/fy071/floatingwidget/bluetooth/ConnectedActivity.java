@@ -7,9 +7,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.example.fy071.floatingwidget.R;
@@ -23,6 +25,11 @@ import butterknife.ButterKnife;
 public class ConnectedActivity extends AppCompatActivity {
     private static final String TAG = "ConnectedActivity";
     private final MyHandler handler = new MyHandler(this);
+
+    public static final float RATIO = 10000;
+
+    private int width;
+    private int height;
 
     private BluetoothConnectService bluetoothConnectService;
 
@@ -53,6 +60,14 @@ public class ConnectedActivity extends AppCompatActivity {
 
         // 远程宠物暂时使用默认模型
         initRemotePet(1);
+
+        // 获取屏幕宽高(单位：像素)
+        WindowManager windowManager = (WindowManager) this.getSystemService(WINDOW_SERVICE);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        assert windowManager != null;
+        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+        width = displayMetrics.widthPixels;
+        height = displayMetrics.heightPixels;
     }
 
     @Override
@@ -65,8 +80,12 @@ public class ConnectedActivity extends AppCompatActivity {
         if (remotePet == null) {
             return;
         }
-        remotePet.setX((float) x);
-        remotePet.setY((float) y);
+
+        float newX = x * width / RATIO;
+        float newY = y * height / RATIO;
+
+        remotePet.setX(newX);
+        remotePet.setY(newY);
     }
 
     private void initToolbar() {
@@ -130,12 +149,16 @@ public class ConnectedActivity extends AppCompatActivity {
                         viewStartY = v.getY();
                         break;
                     case MotionEvent.ACTION_MOVE:
-                        float newX = event.getRawX() + viewStartX - fingerStartX;
-                        float newY = event.getRawY() + viewStartY - fingerStartY;
-                        v.setX(newX);
-                        v.setY(newY);
-                        Log.w(TAG, "onTouch: ACTION_MOVE");
-                        bluetoothConnectService.sendCoordinate((int) newX, (int) newY);
+                        // 设置本地坐标
+                        float localNewX = event.getRawX() + viewStartX - fingerStartX;
+                        float localNewY = event.getRawY() + viewStartY - fingerStartY;
+                        v.setX(localNewX);
+                        v.setY(localNewY);
+
+                        // 发送相对坐标(范围0-1，由于只能传整数，先乘比例，接收方除以比例)
+                        float tempNewX = (localNewX / width) * RATIO;
+                        float tempNewY = (localNewY / height) * RATIO;
+                        bluetoothConnectService.sendCoordinate((int) tempNewX, (int) tempNewY);
                         break;
                     case MotionEvent.ACTION_UP:
 /*                        switch (PreferenceHelper.petModel) {
