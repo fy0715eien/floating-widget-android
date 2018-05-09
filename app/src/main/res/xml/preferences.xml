@@ -10,7 +10,9 @@
             android:summaryOn="@string/pref_summary_enabled"
             android:title="@string/pref_enable_widget" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/pref_title_pet_profile">
+    <PreferenceCategory
+        android:dependency="enable_widget"
+        android:title="@string/pref_title_pet_profile">
 
         <EditTextPreference
             android:defaultValue="Pet"
@@ -33,23 +35,22 @@
             android:key="pet_model"
             android:title="@string/pref_pet_model" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/pref_title_widget_functions">
+    <PreferenceCategory
+        android:dependency="enable_widget"
+        android:title="@string/pref_title_widget_functions">
 
         <CheckBoxPreference
             android:defaultValue="false"
-            android:dependency="enable_widget"
             android:key="wechat_notification"
             android:summary="@string/pref_summary_wechat"
             android:title="@string/pref_wechat" />
         <CheckBoxPreference
             android:defaultValue="false"
-            android:dependency="enable_widget"
             android:key="start_at_boot"
             android:summary="@string/pref_summary_start_on_boot"
             android:title="@string/pref_start_on_boot" />
         <CheckBoxPreference
             android:defaultValue="false"
-            android:dependency="enable_widget"
             android:key="random_dialog"
             android:summary="@string/pref_summary_random_dialog"
             android:title="@string/pref_random_dialog" />

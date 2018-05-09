@@ -80,10 +80,12 @@ public class ConnectedActivity extends AppCompatActivity {
         if (remotePet == null) {
             return;
         }
-        x /= RATIO;
-        y /= RATIO;
-        remotePet.setX(x);
-        remotePet.setY(y);
+
+        float newX = x * width / RATIO;
+        float newY = y * height / RATIO;
+
+        remotePet.setX(newX);
+        remotePet.setY(newY);
     }
 
     private void initToolbar() {

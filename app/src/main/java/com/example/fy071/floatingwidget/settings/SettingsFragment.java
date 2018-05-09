@@ -5,6 +5,9 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
+import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,8 +22,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.fy071.floatingwidget.R;
+import com.example.fy071.floatingwidget.pet.FloatingViewService;
 import com.example.fy071.floatingwidget.util.Key;
 import com.example.fy071.floatingwidget.util.PreferenceHelper;
+
+import java.util.Collections;
 
 
 public class SettingsFragment extends PreferenceFragment implements Preference.OnPreferenceChangeListener {
@@ -111,8 +117,10 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
             case Key.ENABLE_WIDGET:
                 if (newValue.equals(true)) {
                     checkPermission();
+                    setShortcut();
                 } else {
                     resetWidgetFunctions();
+                    resetShortcut();
                 }
                 break;
             case Key.PET_NAME:
@@ -202,6 +210,33 @@ public class SettingsFragment extends PreferenceFragment implements Preference.O
             startActivityForResult(intent, NOTIFICATION_ACCESS_PERMISSION);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void setShortcut() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
+            ShortcutManager shortcutManager = getActivity().getSystemService(ShortcutManager.class);
+
+            Intent intent = new Intent(getContext(), FloatingViewService.class);
+            intent.setAction("");
+
+            ShortcutInfo shortcutInfo = new ShortcutInfo.Builder(getContext(), "id1")
+                    .setShortLabel(getResources().getString(R.string.shortcut_toggle))
+                    .setLongLabel(getResources().getString(R.string.shortcut_toggle))
+                    .setIcon(Icon.createWithResource(getContext(), R.drawable.ic_pets_black_24dp))
+                    .setIntent(intent)
+                    .build();
+
+            assert shortcutManager != null;
+            shortcutManager.setDynamicShortcuts(Collections.singletonList(shortcutInfo));
+        }
+    }
+
+    private void resetShortcut() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N_MR1) {
+            ShortcutManager shortcutManager = getActivity().getSystemService(ShortcutManager.class);
+            assert shortcutManager != null;
+            shortcutManager.removeAllDynamicShortcuts();
         }
     }
 }
